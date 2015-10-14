@@ -1,0 +1,10 @@
+*~
+*.pyc
+venv
+README.html
+build
+dist
+gegede.egg-info/
+*.html
+*.pdf
+*.tex
