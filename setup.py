@@ -9,7 +9,7 @@ setup(name = 'duneggd',
       license = 'GPLv2',
       url = 'https://github.com/tyleralion/duneggd',
       package_dir = {'':'python'},
-      packages = ['duneggd', 'duneggd.geo', 'duneggd.examples'],
+      packages = ['duneggd', 'duneggd.fgt'],
       # These are just what were developed against.  Older versions may be okay.
       #install_requires=[
       #    "pint >= 0.5.1",      # for units

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 '''
-Example gegede builders for a trivial LAr geometry
+Top level builder fo the Fine-Grained Tracker (FGT)
 '''
 
 import gegede.builder
@@ -10,13 +10,40 @@ class WorldBuilder(gegede.builder.Builder):
     Build a big box world volume.
     '''
 
-    def configure(self, size='50m', material='Rock', **kwds):
-        self.size = size
-        self.material = material
-        
+    #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
+    def configure(self, worldDim, worldMaterial='Rock', **kwds):
+        self.dimensions = worldDim
+        self.material   = worldMaterial
+        self.detEncBldr = self.get_builder("DetEnclosure")
+
+
+    #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
     def construct(self, geom):
 
-        g  = geom
+        self.prepare_materials(geom)
+
+        worldbox = geom.shapes.Box(   self.name,          dx=self.dimensions[0], 
+                                   dy=self.dimensions[1], dz=self.dimensions[2])
+        lv = geom.structure.Volume('vol'+self.name, material=self.material, shape=worldbox)
+        self.add_volume(lv)
+
+        # Position volDetEnclosure in the World Volume.
+        # THIS SETS THE ORIGIN wherever we need it in the detector
+        detEncDim = self.detEncBldr.dimensions
+        detEncPos = ['0cm', '0cm', 0.5*detEncDim[2] ]
+        detEnc_lv = self.detEncBldr.get_volume("volDetEnclosure")
+        detEnc_in_world = geom.structure.Position('DetEnc_in_World', detEncPos[0], detEncPos[1], detEncPos[2])
+        pD_in_W = geom.structure.Placement('placeDetEnc_in_World',
+                                           volume = detEnc_lv,
+                                           pos = detEnc_in_world)
+        lv.placements.append(pD_in_W.name)
+
+
+        return
+
+
+    #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
+    def prepare_materials(self, g):
         h  = g.matter.Element("Hydrogen",   "H",  1,  "1.0791*g/mole" )
         c  = g.matter.Element("Carbon",     "C",  6,  "12.0107*g/mole")
         n  = g.matter.Element("Nitrogen",   "N",  7,  "14.0671*g/mole")
@@ -59,26 +86,3 @@ class WorldBuilder(gegede.builder.Builder):
                                      ("Na2O",   0.0053),
                                      ("P2O5",   0.0007),
                                  ))
-
-        shape = geom.shapes.Box(self.name + '_box_shape', dx=self.size, dy=self.size, dz=self.size)
-        lv = geom.structure.Volume(self.name+'_volume', material=self.material, shape=shape)
-        self.add_volume(lv)
-
-        site_lv = self.builders.values()[0].volumes.values()[0] # expect one sub-builder with one logical volume
-        geom.structure.Placement('%s_in_%s' % (site_lv.name, self.name), volume = site_lv)
-        return
-
-class SiteBuilder(gegede.builder.Builder):
-    def configure(self, site='homestake', material = 'Air', **kwds):
-        self.site = site.lower()
-        self.material = material
-
-    def construct(self, geom):
-        if self.site == 'homestake':
-            shape = geom.shapes.Box('homestake site box', dx='10m', dy='10m', dz='10m')
-        elif self.site == '35t':
-            shape = geom.shapes.Box('35t site box', dx='5m', dy='5m', dz='5m')
-        else:
-            raise ValueError, 'Unknown site: "%s"' % self.site
-        lv = geom.structure.Volume(self.site + '_volume', material=self.material, shape=shape)
-        self.add_volume(lv)
