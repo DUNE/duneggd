@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 '''
-Top level builder fo the Fine-Grained Tracker (FGT)
+Top level builder of the Fine-Grained Tracker (FGT)
 '''
 
 import gegede.builder
@@ -11,9 +11,9 @@ class WorldBuilder(gegede.builder.Builder):
     '''
 
     #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
-    def configure(self, worldDim, worldMaterial='Rock', **kwds):
+    def configure(self, worldDim, worldMat='Rock', **kwds):
         self.dimensions = worldDim
-        self.material   = worldMaterial
+        self.material   = worldMat
         self.detEncBldr = self.get_builder("DetEnclosure")
 
 
@@ -22,10 +22,10 @@ class WorldBuilder(gegede.builder.Builder):
 
         self.prepare_materials(geom)
 
-        worldbox = geom.shapes.Box(   self.name,          dx=self.dimensions[0], 
+        worldBox = geom.shapes.Box(   self.name,          dx=self.dimensions[0], 
                                    dy=self.dimensions[1], dz=self.dimensions[2])
-        lv = geom.structure.Volume('vol'+self.name, material=self.material, shape=worldbox)
-        self.add_volume(lv)
+        world_lv = geom.structure.Volume('vol'+self.name, material=self.material, shape=worldBox)
+        self.add_volume(world_lv)
 
         # Position volDetEnclosure in the World Volume.
         # THIS SETS THE ORIGIN wherever we need it in the detector
@@ -36,7 +36,7 @@ class WorldBuilder(gegede.builder.Builder):
         pD_in_W = geom.structure.Placement('placeDetEnc_in_World',
                                            volume = detEnc_lv,
                                            pos = detEnc_in_world)
-        lv.placements.append(pD_in_W.name)
+        world_lv.placements.append(pD_in_W.name)
 
 
         return
