@@ -1,16 +1,16 @@
 #!/usr/bin/env python
 '''
-Example gegede builders for a trivial LAr geometry
+Build the Detector Enclosure.
 '''
 
 import gegede.builder
 
 class DetEncBuilder(gegede.builder.Builder):
 
-    def configure(self, detEncDim, detEncMat = 'Air', **kwds):
+    def configure(self, detEncDim=['50m','50m','50m'], detEncMat = 'Air', **kwds):
         self.material   = detEncMat
         self.dimensions = detEncDim
-        self.sttBldr = self.get_builder("STT")
+        self.sttBldr = self.get_builder('STT')
 
     def construct(self, geom):
         encBox = geom.shapes.Box(   self.name,          dx=self.dimensions[0], 
@@ -21,7 +21,7 @@ class DetEncBuilder(gegede.builder.Builder):
         # Position volSTT in volDetEnclosure
         sttDim = self.sttBldr.sttDim
         sttPos = ['0cm', '0cm', 0.5*sttDim[2] ]
-        stt_lv = self.sttBldr.get_volume("volSTT")
+        stt_lv = self.sttBldr.get_volume('volSTT')
         stt_in_detenc = geom.structure.Position('STT_in_DetEnc', sttPos[0], sttPos[1], sttPos[2])
         pSTT_in_DE = geom.structure.Placement('placeSTT_in_DetEnc',
                                               volume = stt_lv,

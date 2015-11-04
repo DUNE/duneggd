@@ -7,8 +7,17 @@ import gegede.builder
 
 class TargetPlaneBuilder(gegede.builder.Builder):
 
-    def configure( self, tTube_rmin, tTube_rmax, tTube_length, nTubesPerTarget, 
+    def configure( self, tTube_rmin=None, tTube_rmax=None, tTube_length=None, 
+                   tTube_spacing='0.505in', nTubesPerTarget=275, 
                    targetMat='Argon', **kwds ):
+
+        if tTube_rmin is None:
+            raise ValueError("No value given for tTube_rmin")
+        if tTube_rmax is None:
+            raise ValueError("No value given for tTube_rmax")
+        if tTube_length is None:
+            raise ValueError("No value given for tTube_length")
+
         self.targetMat   = targetMat
         self.defaultMat  = 'Air'
         self.tubeMat     = 'Aluminum'

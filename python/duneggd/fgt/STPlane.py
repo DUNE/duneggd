@@ -8,8 +8,8 @@ import math
 
 class STPlaneBuilder(gegede.builder.Builder):
 
-    def configure(self, sTube_rmin, sTube_rmax, sTube_length, 
-                  stPlaneMat="Air", strawMat="fibrous_glass", stGas="stGas", **kwds):
+    def configure(self, sTube_rmin='0.95cm', sTube_rmax='0.9565cm', sTube_length='350cm', 
+                  stPlaneMat='Air', strawMat='fibrous_glass', stGas='stGas', **kwds):
         self.material   = stPlaneMat
         self.strawMat   = strawMat
         self.stGas      = stGas

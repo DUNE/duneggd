@@ -11,7 +11,7 @@ class WorldBuilder(gegede.builder.Builder):
     '''
 
     #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
-    def configure(self, worldDim, worldMat='Rock', **kwds):
+    def configure(self, worldDim=['100m','100m','100m'], worldMat='Rock', **kwds):
         self.dimensions = worldDim
         self.material   = worldMat
         self.detEncBldr = self.get_builder("DetEnclosure")
