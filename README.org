@@ -32,6 +32,7 @@ Each time you log onto your machine, you need to activate your virtual envoronme
 Now you are ready to run the geometry generation! The command is gegede-cli, and takes several arguments (type "gegede-cli -h" to see each option.) Here is the minimum command to create a geometry:
 
 #+BEGIN_EXAMPLE
+  $ cd python/duneggd/fgt/
   $ gegede-cli fgt.cfg -w World -o fgt.gdml
 #+END_EXAMPLE
 
