@@ -1,0 +1,40 @@
+#+TITLE: duneggd - DUNE Geometries in GeGeDe
+
+This is a repository for developing any DUNE geometries with [[https://github.com/brettviren/gegede][gegede]]. Currently the only project using gegede is the Fine-Grained Tracker (FGT).
+
+* Getting Started
+
+See the [[https://github.com/brettviren/gegede/blob/master/doc/install.org][gegede installation page] for the prerequisites -- we will mainly be using GDML export (libxml2), so you need not worry about the ROOT parts if you dont already have ROOT. It is not necessary to install gegede directly, as described on the installation page, but you will need virtualenv:
+
+#+BEGIN_EXAMPLE
+  $ wget https://pypi.python.org/packages/source/v/virtualenv/virtualenv-1.11.tar.gz
+  $ tar -xf virtualenv-1.11.tar.gz
+  $ python virtualenv-1.11/virtualenv.py ggdvenv
+#+END_EXAMPLE
+
+You will also need this repository:
+
+#+BEGIN_EXAMPLE
+  $ git clone https://github.com/tyleralion/duneggd.git
+#+END_EXAMPLE
+
+** Every Time You Begin Working
+
+Each time you log onto your machine, you need to activate your virtual envoronment, setup duneggd, and set your python path:
+
+#+BEGIN_EXAMPLE
+  $ source ggdvenv/bin/activate
+  $ cd duneggd/
+  $ python setup.py install
+  $ export PYTHONPATH=`pwd`/python
+#+END_EXAMPLE
+
+Now you are ready to run the geometry generation! The command is gegede-cli, and takes several arguments (type "gegede-cli -h" to see each option.) Here is the minimum command to create a geometry:
+
+#+BEGIN_EXAMPLE
+  $ gegede-cli fgt.cfg -w World -o fgt.gdml
+#+END_EXAMPLE
+
+"World" is the name of the top builder, as set in the configuration file [[https://github.com/tyleralion/duneggd/blob/master/python/duneggd/fgt/fgt.cfg#L58][fgt.cfg]], and "fgt.gdml" is the intended output name. This will overwrite files existing in that name so be careful! The intended export format is interpreted from the -o name, in this case being GDML. Using "fgt.root" would have exported to ROOT format.
+
+
