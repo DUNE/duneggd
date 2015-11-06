@@ -10,7 +10,7 @@ class STPlaneBuilder(gegede.builder.Builder):
 
     #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
     def configure(self, sTube_rmin='0.95cm', sTube_rmax='0.9565cm', sTube_length='350cm', 
-                  stPlaneMat='Air', strawMat='fibrous_glass', stGas='stGas', **kwds):
+                  stPlaneMat='Air', strawMat='fibrous_glass', stGas='stGas_Ar', **kwds):
         self.material   = stPlaneMat
         self.strawMat   = strawMat
         self.stGas      = stGas
@@ -23,8 +23,8 @@ class STPlaneBuilder(gegede.builder.Builder):
     def construct(self, geom):
 
         # Make the straw tube shape and volume
-        sTube = geom.shapes.Tubs('StrawTube', rmin=self.sTube_rmin, rmax=self.sTube_rmax, dz=self.sTube_length)
-        sTube_lv = geom.structure.Volume('volStrawTube', material=self.material, shape=sTube)
+        sTube = geom.shapes.Tubs('StrawTube_'+self.name, rmin=self.sTube_rmin, rmax=self.sTube_rmax, dz=self.sTube_length)
+        sTube_lv = geom.structure.Volume('volStrawTube_'+self.name, material=self.stGas, shape=sTube)
         self.add_volume(sTube_lv)
 
         # Make the double-layer of straw tubes, used for both orientations

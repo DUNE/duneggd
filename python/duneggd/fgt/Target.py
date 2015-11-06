@@ -10,7 +10,7 @@ class TargetPlaneBuilder(gegede.builder.Builder):
     #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
     def configure( self, tTube_rmin=None, tTube_rmax=None, tTube_length=None, 
                    tTube_spacing='0.505in', nTubesPerTarget=275, 
-                   targetMat='Argon', **kwds ):
+                   targetMat='ArgonTarget', **kwds ):
 
         if tTube_rmin is None:
             raise ValueError("No value given for tTube_rmin")
@@ -46,5 +46,3 @@ class TargetPlaneBuilder(gegede.builder.Builder):
         self.add_volume(targetPlane_lv)
 
         # Place tubes
-
-

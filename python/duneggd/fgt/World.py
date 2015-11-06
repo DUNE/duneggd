@@ -21,7 +21,7 @@ class WorldBuilder(gegede.builder.Builder):
     #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
     def construct(self, geom):
 
-        self.prepare_materials(geom)
+        self.define_materials(geom)
 
         worldBox = geom.shapes.Box(   self.name,          dx=self.dimensions[0], 
                                    dy=self.dimensions[1], dz=self.dimensions[2])
@@ -44,7 +44,7 @@ class WorldBuilder(gegede.builder.Builder):
 
 
     #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
-    def prepare_materials(self, g):
+    def define_materials(self, g):
         h  = g.matter.Element("Hydrogen",   "H",  1,  "1.0791*g/mole" )
         c  = g.matter.Element("Carbon",     "C",  6,  "12.0107*g/mole")
         n  = g.matter.Element("Nitrogen",   "N",  7,  "14.0671*g/mole")
@@ -57,9 +57,10 @@ class WorldBuilder(gegede.builder.Builder):
         s  = g.matter.Element("Sulfur",     "S",  16, "32.065*g/mole" )
         ar = g.matter.Element("Argon",      "Ar", 18, "39.948*g/mole" )
         ca = g.matter.Element("Calcium",    "Ca", 20, "40.078*g/mole" )
+        ti = g.matter.Element("Titanium",   "Ti", 22, "47.867*g/mole" )
         fe = g.matter.Element("Iron",       "Fe", 26, "55.8450*g/mole")
-        
-        
+
+        # Molecules for Rock and fibrous_glass Mixtures 
         SiO2  = g.matter.Molecule("SiO2",  density="2.2*g/cc",   elements=(("Silicon",1),("Oxygen",2)))
         FeO   = g.matter.Molecule("FeO",   density="5.745*g/cc", elements=(("Iron",1),("Oxygen",1)))
         Al2O3 = g.matter.Molecule("Al2O3", density="3.97*g/cc",  elements=(("Aluminum",2),("Oxygen",3)))
@@ -67,13 +68,11 @@ class WorldBuilder(gegede.builder.Builder):
         CO2   = g.matter.Molecule("CO2",   density="1.562*g/cc", elements=(("Carbon",1),("Oxygen",2)))
         CaO   = g.matter.Molecule("CaO",   density="3.35*g/cc",  elements=(("Calcium",1),("Oxygen",1)))
         Na2O  = g.matter.Molecule("Na2O",  density="2.27*g/cc",  elements=(("Sodium",2),("Oxygen",1)))
-        P2O5  = g.matter.Molecule("P2O5",  density="1.562*g/cc", elements=(("Phosphorus",2),("Oxygen",5)))
-        
-        water = g.matter.Molecule("Water", density="1.0*kg/l",   elements=(("Oxygen",1),("Hydrogen",2)))
-        air   = g.matter.Mixture("Air", density = "1.290*mg/cc", 
-                                 components = (("Nitrogen", 0.7), ("Oxygen",0.3)))
-        
-        rock  = g.matter.Mixture("Rock", density = "2.82*g/cc", 
+        P2O5  = g.matter.Molecule("P2O5",  density="1.562*g/cc", elements=(("Phosphorus",2),("Oxygen",5)))        
+        TiO2  = g.matter.Molecule("TiO2",  density="4.23*g/cc",  elements=(("Titanium",1),("Oxygen",2)))
+        Fe2O3 = g.matter.Molecule("Fe2O3", density="5.24*g/cc",  elements=(("Iron",2),("Oxygen",3)))
+
+        rock  = g.matter.Mixture( "Rock", density = "2.82*g/cc", 
                                  components = (
                                      ("SiO2",   0.5267),
                                      ("FeO",    0.1174),
@@ -87,3 +86,36 @@ class WorldBuilder(gegede.builder.Builder):
                                      ("Na2O",   0.0053),
                                      ("P2O5",   0.0007),
                                  ))
+
+
+        air   = g.matter.Mixture( "Air", density = "1.290*mg/cc", 
+                                 components = (
+                                     ("Nitrogen", 0.781154), 
+                                     ("Oxygen",   0.209476),
+                                     ("Argon",    0.00934)
+                                 ))
+
+
+        fib_glass = g.matter.Mixture( "fibrous_glass", density = "0.1*g/cc", 
+                                      components = (
+                                          ("SiO2",   0.600),
+                                          ("CaO",    0.224),
+                                          ("Al2O3",  0.118),
+                                          ("MgO",    0.034),
+                                          ("TiO2",   0.013),
+                                          ("Na2O",   0.010),
+                                          ("Fe2O3",  0.001)
+                                      ))
+
+        # Materials for the radiators 
+        # WARNING! densities not right!
+        Fabric = g.matter.Molecule("Fabric", density="0.1*g/cc",   elements=(("Carbon",3),("Hydrogen",6)))
+        C3H6   = g.matter.Molecule("C3H6",   density="0.1*g/cc",   elements=(("Carbon",16),("Hydrogen",18),("Oxygen",1)))
+
+        # Materials for the targets
+        H2O      = g.matter.Molecule("Water",       density="1.0*kg/l",   elements=(("Oxygen",1),("Hydrogen",2)))
+        ArTarget = g.matter.Molecule("ArgonTarget", density="0.233*g/cc", elements=(("Argon",1)))
+        Aluminum = g.matter.Molecule("Aluminum",    density="2.70*g/cc",  elements=(("Aluminum",1)))
+
+    
+
