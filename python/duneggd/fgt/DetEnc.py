@@ -1,17 +1,22 @@
 #!/usr/bin/env python
 '''
-Build the Detector Enclosure.
+Subbuilder of WorldBuilder
 '''
 
 import gegede.builder
 
 class DetEncBuilder(gegede.builder.Builder):
+    '''
+    Build the Detector Enclosure.
+    '''
 
+    #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
     def configure(self, detEncDim=['50m','50m','50m'], detEncMat = 'Air', **kwds):
         self.material   = detEncMat
         self.dimensions = detEncDim
         self.sttBldr = self.get_builder('STT')
 
+    #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
     def construct(self, geom):
         encBox = geom.shapes.Box(   self.name,          dx=self.dimensions[0], 
                                  dy=self.dimensions[1], dz=self.dimensions[2])

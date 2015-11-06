@@ -8,6 +8,7 @@ import gegede.builder
 class WorldBuilder(gegede.builder.Builder):
     '''
     Build a big box world volume.
+    N.B. -- Global convention: index 0,1,2 = x,y,z
     '''
 
     #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^

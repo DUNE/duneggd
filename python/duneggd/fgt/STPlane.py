@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 '''
-Example gegede builders for a trivial LAr geometry
+Subbulder of STTBuilder
 '''
 
 import gegede.builder
@@ -8,6 +8,7 @@ import math
 
 class STPlaneBuilder(gegede.builder.Builder):
 
+    #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
     def configure(self, sTube_rmin='0.95cm', sTube_rmax='0.9565cm', sTube_length='350cm', 
                   stPlaneMat='Air', strawMat='fibrous_glass', stGas='stGas', **kwds):
         self.material   = stPlaneMat
@@ -17,6 +18,8 @@ class STPlaneBuilder(gegede.builder.Builder):
         self.sTube_rmax = sTube_rmax
         self.sTube_length = sTube_length
 
+
+    #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
     def construct(self, geom):
 
         # Make the straw tube shape and volume

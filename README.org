@@ -25,9 +25,11 @@ Each time you log onto your machine, you need to activate your virtual envoronme
 #+BEGIN_EXAMPLE
   $ source ggdvenv/bin/activate
   $ cd duneggd/
-  $ python setup.py install
+  $ python setup.py develop   # install for configuration-only use
   $ export PYTHONPATH=`pwd`/python
 #+END_EXAMPLE
+
+If you intend to write python code (develop builders), then use "python setup.py develop" so that any changed code is recompiled each run. If you are just changing configuration files, "python setup.py install" will skip this recompilation, drawing from the distribution created at setup instead.
 
 Now you are ready to run the geometry generation! The command is gegede-cli, and takes several arguments (type "gegede-cli -h" to see each option.) Here is the minimum command to create a geometry:
 

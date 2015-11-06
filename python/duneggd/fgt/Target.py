@@ -1,12 +1,13 @@
 #!/usr/bin/env python
 '''
-Example gegede builders for a trivial LAr geometry
+Subbuilder of STTBuilder
 '''
 
 import gegede.builder
 
 class TargetPlaneBuilder(gegede.builder.Builder):
 
+    #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
     def configure( self, tTube_rmin=None, tTube_rmax=None, tTube_length=None, 
                    tTube_spacing='0.505in', nTubesPerTarget=275, 
                    targetMat='Argon', **kwds ):
@@ -28,6 +29,7 @@ class TargetPlaneBuilder(gegede.builder.Builder):
         self.nTubesPerTarget = nTubesPerTarget
 
 
+    #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
     def construct(self, geom):
 
         # Make the tubes of target material
