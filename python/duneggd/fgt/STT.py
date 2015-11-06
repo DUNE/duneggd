@@ -15,12 +15,6 @@ class STTBuilder(gegede.builder.Builder):
         self.argonTargetBldr = self.get_builder('TargetPlaneArgon')
         self.radiatorBldr    = self.get_builder('Radiator')
 
-        print "Name:             Returned Name"
-        print "STPlaneTarget:    "+self.stPlaneTarBldr.name
-        print "STPlaneRadiator:  "+self.stPlaneRadBldr.name
-        print "TargetPlaneArgon: "+self.argonTargetBldr.name
-        print "Radiator:         "+self.radiatorBldr.name
-
         self.nTargetModules    = nTargetModules
         self.nRadiatorModules  = nRadiatorModules
 
@@ -40,9 +34,9 @@ class STTBuilder(gegede.builder.Builder):
         stPlaneRad_lv    = self.stPlaneRadBldr.get_volume('volSTPlaneRadiator')
 
         # Make STT volume -- imaginary box containing STPlanes, Targets, and Radiators
-        self.sttDim = self.stPlaneBldr.stPlaneDim # get the right x and y dimensions
-        self.sttDim[2] = (  self.nRadiatorModules*( self.radiatorDim[2] + self.stPlaneBldr.stPlaneDim[2] )
-                          + self.nTargetModules  *( self.targetDim[2]   + self.stPlaneBldr.stPlaneDim[2] ) )
+        self.sttDim = self.stPlaneTarBldr.stPlaneDim # get the right x and y dimensions
+        self.sttDim[2] = (  self.nRadiatorModules*( self.radiatorDim[2] + self.stPlaneDim[2] )
+                          + self.nTargetModules  *( self.targetDim[2]   + self.stPlaneDim[2] ) )
         sttBox = geom.shapes.Box(self.name, dx=self.sttDim[0], dy=self.sttDim[1], dz=self.sttDim[2])
         stt_lv = geom.structure.Volume('vol'+self.name, material=self.sttMat, shape=sttBox)
         self.add_volume(stt_lv)
