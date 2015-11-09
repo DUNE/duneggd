@@ -4,7 +4,7 @@ This is a repository for developing any DUNE geometries with [[https://github.co
 
 * Getting Started
 
-See the [[https://github.com/brettviren/gegede/blob/master/doc/install.org][gegede installation page] for the prerequisites -- we will mainly be using GDML export (libxml2), so you need not worry about the ROOT parts if you dont already have ROOT. It is not necessary to install gegede directly, as described on the installation page, but you will need virtualenv:
+See the [[https://github.com/brettviren/gegede/blob/master/doc/install.org][gegede installation page]] for the prerequisites -- we will mainly be using GDML export (libxml2), so you need not worry about the ROOT parts if you dont already have ROOT. It is not necessary to install gegede directly, as described on the installation page, but you will need virtualenv:
 
 #+BEGIN_EXAMPLE
   $ wget https://pypi.python.org/packages/source/v/virtualenv/virtualenv-1.11.tar.gz
