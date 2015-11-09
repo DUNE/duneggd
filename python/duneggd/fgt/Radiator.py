@@ -37,20 +37,20 @@ class RadiatorBuilder(gegede.builder.Builder):
     def construct(self, geom):
 
         # Make radiator foil and spacer for foils
-        radFoilBox = geom.shapes.Box( 'RadiatorFoil',        dx=self.radFoilDim[0], 
-                                      dy=self.radFoilDim[1], dz=self.radFoilDim[2])
-        spacerBox = geom.shapes.Box(  'RadiatorSpacer',      dx=self.spacerDim[0], 
-                                      dy=self.spacerDim[1],  dz=self.spacerDim[2])
+        radFoilBox = geom.shapes.Box( 'RadiatorFoil',            dx=0.5*self.radFoilDim[0], 
+                                      dy=0.5*self.radFoilDim[1], dz=0.5*self.radFoilDim[2])
+        spacerBox = geom.shapes.Box(  'RadiatorSpacer',          dx=0.5*self.spacerDim[0], 
+                                      dy=0.5*self.spacerDim[1],  dz=0.5*self.spacerDim[2])
         radFoil_lv = geom.structure.Volume('volRadiatorFoil',   material=self.radFoilMat, shape=radFoilBox)
         spacer_lv  = geom.structure.Volume('volRadiatorSpacer', material=self.spacerMat,  shape=spacerBox)
 
 
         # Set the dimensions for and create the volume that this builder 
         # builds, to be passed to the STT builder for each ratiator module
-        self.radiatorDim    = self.radFoilDim
-        self.radiatorDim[2] = self.nFoilsPerRadiator * ( self.radFoilDim[2] + self.spacerDim[2] ) 
-        radiatorBox = geom.shapes.Box( 'Radiator',             dx=self.radiatorDim[0], 
-                                       dy=self.radiatorDim[1], dz=self.radiatorDim[2])
+        self.radiatorDim    = [ self.radFoilDim[0], self.radFoilDim[0],
+                                self.nFoilsPerRadiator * ( self.radFoilDim[2] + self.spacerDim[2] ) ] 
+        radiatorBox = geom.shapes.Box( 'Radiator',                 dx=0.5*self.radiatorDim[0], 
+                                       dy=0.5*self.radiatorDim[1], dz=0.5*self.radiatorDim[2])
         radiator_lv = geom.structure.Volume('volRadiator', material=self.defaultMat, shape=radiatorBox)
 
     

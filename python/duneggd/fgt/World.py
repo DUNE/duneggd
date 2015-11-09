@@ -23,8 +23,8 @@ class WorldBuilder(gegede.builder.Builder):
 
         self.define_materials(geom)
 
-        worldBox = geom.shapes.Box(   self.name,          dx=self.dimensions[0], 
-                                   dy=self.dimensions[1], dz=self.dimensions[2])
+        worldBox = geom.shapes.Box( self.name,                 dx=0.5*self.dimensions[0], 
+                                    dy=0.5*self.dimensions[1], dz=0.5*self.dimensions[2])
         world_lv = geom.structure.Volume('vol'+self.name, material=self.material, shape=worldBox)
         self.add_volume(world_lv)
 

@@ -26,13 +26,13 @@ class STPlaneBuilder(gegede.builder.Builder):
         # rmin=0, else material at 0 would be default of STPlane
         sTube      = geom.shapes.Tubs('StrawTube_'+self.name, 
                                       rmin = '0cm',                   
-                                      rmax = self.sTube_outerDia, 
-                                      dz   = self.sTube_length)
+                                      rmax = 0.5*self.sTube_outerDia, 
+                                      dz   = 0.5*self.sTube_length)
         sTube_lv   = geom.structure.Volume('volStrawTube_'+self.name, material=self.stGas, shape=sTube)
         straw      = geom.shapes.Tubs('Straw_'+self.name, 
-                                      rmin = self.sTube_innerDia, 
-                                      rmax = self.sTube_outerDia, 
-                                      dz   = self.sTube_length)
+                                      rmin = 0.5*self.sTube_innerDia, 
+                                      rmax = 0.5*self.sTube_outerDia, 
+                                      dz   = 0.5*self.sTube_length)
         straw_lv   = geom.structure.Volume('volStraw_'+self.name, material=self.strawMat, shape=straw)
         pS_in_Tube = geom.structure.Placement( 'placeS_in_Tube_'+self.name, volume = straw_lv )
         sTube_lv.placements.append( pS_in_Tube.name )
@@ -42,15 +42,10 @@ class STPlaneBuilder(gegede.builder.Builder):
         self.stPlaneDim = [ self.sTube_length, 
                             self.sTube_length, 
                             2*self.sTube_outerDia*( 1 + math.sin( math.radians(60) ) ) ]
-        stPlaneBox = geom.shapes.Box(    self.name,          dx=self.stPlaneDim[0], 
-                                      dy=self.stPlaneDim[1], dz=self.stPlaneDim[2])
+        stPlaneBox = geom.shapes.Box( self.name,                 dx=0.5*self.stPlaneDim[0], 
+                                      dy=0.5*self.stPlaneDim[1], dz=0.5*self.stPlaneDim[2])
         stPlane_lv = geom.structure.Volume('vol'+self.name, material=self.material, shape=stPlaneBox)
         self.add_volume(stPlane_lv)
-
-        print ""
-        print " From SubBuilder named "+self.name+", dimensions are:"
-        print self.stPlaneDim
-        print ""
 
         
         nTubesPerPlane = int( math.floor((self.stPlaneDim[0] - 0.5*self.sTube_outerDia) / self.sTube_outerDia) )

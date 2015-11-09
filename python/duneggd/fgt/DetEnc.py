@@ -18,13 +18,13 @@ class DetEncBuilder(gegede.builder.Builder):
 
     #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
     def construct(self, geom):
-        encBox = geom.shapes.Box(   self.name,          dx=self.dimensions[0], 
-                                 dy=self.dimensions[1], dz=self.dimensions[2])
+        encBox = geom.shapes.Box( self.name,                 dx=0.5*self.dimensions[0], 
+                                  dy=0.5*self.dimensions[1], dz=0.5*self.dimensions[2])
         detEnc_lv = geom.structure.Volume('vol'+self.name, material=self.material, shape=encBox)
         self.add_volume(detEnc_lv)
 
         # Position volSTT in volDetEnclosure
-        sttDim = self.sttBldr.sttDim
+        sttDim = list(self.sttBldr.sttDim)
         sttPos = ['0cm', '0cm', 0.5*sttDim[2] ]
         stt_lv = self.sttBldr.get_volume('volSTT')
         stt_in_detenc = geom.structure.Position('STT_in_DetEnc', sttPos[0], sttPos[1], sttPos[2])
