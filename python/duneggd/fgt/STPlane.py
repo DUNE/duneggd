@@ -55,7 +55,6 @@ class STPlaneBuilder(gegede.builder.Builder):
         
         nTubesPerPlane = int( math.floor((self.stPlaneDim[0] - 0.5*self.sTube_outerDia) / self.sTube_outerDia) )
 
-        r90AboutX = geom.structure.Rotation('r90aboutX_'+self.name, '90deg', '0deg', '0deg')
         for i in range(nTubesPerPlane):
 
             #     <--- O O O O O O    ^      <--B_i+n    For each i, place ith A at (x,y,z) and
@@ -77,11 +76,11 @@ class STPlaneBuilder(gegede.builder.Builder):
             pst_in_p     = geom.structure.Placement( 'placeTube-'+str(i)+'_in_STPlane_'+self.name,
                                                      volume = sTube_lv,
                                                      pos = st_in_p,
-                                                     rot = r90AboutX)
+                                                     rot = "r90aboutX")
             pstnext_in_p = geom.structure.Placement( 'placeTube-'+str(i+nTubesPerPlane)+'_in_STPlane_'+self.name,
                                                      volume = sTube_lv,
                                                      pos = stnext_in_p,
-                                                     rot = r90AboutX)
+                                                     rot = "r90aboutX")
 
             stPlane_lv.placements.append( pst_in_p.name     )
             stPlane_lv.placements.append( pstnext_in_p.name )

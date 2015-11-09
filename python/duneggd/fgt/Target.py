@@ -71,12 +71,12 @@ class TargetPlaneBuilder(gegede.builder.Builder):
 
 
         # Place tubes
-        r90AboutX = geom.structure.Rotation('r90aboutX', '90deg', '0deg', '0deg')
+        r90aboutX = geom.structure.Rotation('r90aboutX', '90deg', '0deg', '0deg')
         xpos = -0.5*self.targetPlaneDim[0] # zips through the x intervals
         for i in range(self.nTubesPerTarget):
             T_in_Tar  = geom.structure.Position('Tube-'+str(i)+'_in_TargetPlane', xpos, '0cm', '0cm')
             pT_in_Tar = geom.structure.Placement( 'placeTube-'+str(i)+'_in_TargetPlane',
                                                   volume = targetTube_lv,
                                                   pos = T_in_Tar,
-                                                  rot = r90AboutX)
+                                                  rot = r90aboutX)
             targetPlane_lv.placements.append( pT_in_Tar.name )

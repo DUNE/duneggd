@@ -53,8 +53,7 @@ class RadiatorBuilder(gegede.builder.Builder):
                                        dy=self.radiatorDim[1], dz=self.radiatorDim[2])
         radiator_lv = geom.structure.Volume('volRadiator', material=self.defaultMat, shape=radiatorBox)
 
-
-        '''        
+    
         # Put the foils and spacers in the Radiator
         zpos = -0.5*self.radiatorDim[2] # keep this one variable to zip through all z positions
         for i in range(self.nFoilsPerRadiator):
@@ -74,9 +73,7 @@ class RadiatorBuilder(gegede.builder.Builder):
                                                 volume = spacer_lv,
                                                 pos = spacer_in_rad)
             radiator_lv.placements.append( pS_in_R.name )
-        '''
 
+
+        # add all of the volumes to this RadiatorBuilder
         self.add_volume(radFoil_lv, spacer_lv, radiator_lv)
-        print 'Radiator Builder Volumes (should be 3):'
-        print self.volumes
-        
