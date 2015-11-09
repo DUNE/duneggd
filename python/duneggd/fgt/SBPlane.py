@@ -18,6 +18,7 @@ class SBPlaneBuilder(gegede.builder.Builder):
 
 
         # Make the scint bar plane, used for both orientations
+	# This volume will be retrieved by ECAL*Builder
 
 
         # Place the bars in the plane
