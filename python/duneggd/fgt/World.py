@@ -114,8 +114,8 @@ class WorldBuilder(gegede.builder.Builder):
 
         # Materials for the targets
         H2O      = g.matter.Molecule("Water",       density="1.0*kg/l",   elements=(("oxygen",1),("hydrogen",2)))
-        ArTarget = g.matter.Molecule("ArgonTarget", density="0.233*g/cc", elements=(("argon",1)))
-        Aluminum = g.matter.Molecule("Aluminum",    density="2.70*g/cc",  elements=(("aluminum",1)))
+        #ArTarget = g.matter.Molecule("ArgonTarget", density="0.233*g/cc", elements=(("argon",1)))
+        #Aluminum = g.matter.Molecule("Aluminum",    density="2.70*g/cc",  elements=(("aluminum",1)))
 
     
 
