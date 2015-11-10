@@ -9,7 +9,7 @@ import math
 class STPlaneBuilder(gegede.builder.Builder):
 
     #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
-    def configure(self, sTube_innerDia='0.95cm', sTube_outerDia='0.9565cm', sTube_length='350cm', 
+    def configure(self, sTube_innerDia='0.95cm', sTube_outerDia='0.9565cm', sTube_length='350cm', sAnodeWire_Dia='0.003cm',
                   stPlaneMat='Air', strawMat='fibrous_glass', stGas='stGas_Ar', **kwds):
         self.material   = stPlaneMat
         self.strawMat   = strawMat
@@ -17,6 +17,7 @@ class STPlaneBuilder(gegede.builder.Builder):
         self.sTube_innerDia = sTube_innerDia
         self.sTube_outerDia = sTube_outerDia
         self.sTube_length = sTube_length
+        self.sAnodeWire_Dia = sAnodeWire_Dia
 
 
     #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
@@ -35,7 +36,15 @@ class STPlaneBuilder(gegede.builder.Builder):
                                       dz   = 0.5*self.sTube_length)
         straw_lv   = geom.structure.Volume('volStraw_'+self.name, material=self.strawMat, shape=straw)
         pS_in_Tube = geom.structure.Placement( 'placeS_in_Tube_'+self.name, volume = straw_lv )
+        wire       = geom.shapes.Tubs('Wire_'+self.name,
+                                       rmin = '0cm',
+                                       rmax = 0.5*self.sAnodeWire_Dia,
+                                       dz   = 0.5*self.sTube_length)
+        wire_lv    = geom.structure.Volume('volWire_'+self.name, material=self.strawMat, shape=wire)
+        pS_in_Straw= geom.structure.Placement('places_in_Straw_'+self.name, volume = wire_lv)
+
         sTube_lv.placements.append( pS_in_Tube.name )
+        straw_lv.placements.append( pS_in_Straw.name)
         self.add_volume(sTube_lv)
 
         # Make the double-layer of straw tubes, used for both orientations
@@ -76,7 +85,24 @@ class STPlaneBuilder(gegede.builder.Builder):
                                                      volume = sTube_lv,
                                                      pos = stnext_in_p,
                                                      rot = "r90aboutX")
+            aw_in_st     = geom.structure.Position( 'AWire-'+str(i)+'_in_STPlane_'+self.name,
+                                                    xpos,      ypos,  zpos)
+            awnext_in_st  = geom.structure.Position( 'AWire-'+str(i+nTubesPerPlane)+'_in_STPlane_'+self.name, 
+                                                    xpos_next, ypos, -zpos)
+            staw_in_st     = geom.structure.Placement( 'placeAWire-'+str(i)+'_in_STPlane_'+self.name,
+                                                     volume = straw_lv,
+                                                     pos = aw_in_st,
+                                                     rot = r90AboutX)
+            stawnext_in_st = geom.structure.Placement( 'placeAWire-'+str(i+nTubesPerPlane)+'_in_STPlane_'+self.name,
+                                                     volume = straw_lv,
+                                                     pos = awnext_in_st,
+                                                     rot = r90AboutX)
+
+
 
             stPlane_lv.placements.append( pst_in_p.name     )
             stPlane_lv.placements.append( pstnext_in_p.name )
+            stPlane_lv.placements.append( staw_in_st.name     )
+            stPlane_lv.placements.append( stawnext_in_st.name )
+
         
