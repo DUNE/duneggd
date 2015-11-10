@@ -15,7 +15,7 @@ See the [[https://github.com/brettviren/gegede/blob/master/doc/install.org][gege
 You will also need this repository:
 
 #+BEGIN_EXAMPLE
-  $ git clone https://github.com/tyleralion/duneggd.git
+  $ git clone https://github.com/DUNE/duneggd.git
 #+END_EXAMPLE
 
 ** Every Time You Begin Working
