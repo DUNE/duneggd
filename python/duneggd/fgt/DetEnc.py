@@ -40,8 +40,7 @@ class DetEncBuilder(gegede.builder.Builder):
         self.add_volume(detEnc_lv)
 
 
-
-        # Position detector in enclosur
+        # Position detector in enclosure
         det_lv = self.detBldr.get_volume('volDetector')
         detDim = list(self.detBldr.detDim)
         detPos = [ -0.5*self.detEncDim[0] + self.encBoundToDet[0] + 0.5*detDim[0], 

@@ -15,7 +15,7 @@ class MuIDEndBuilder(gegede.builder.Builder):
         if muidDim is None:
             raise ValueError("No value given for muidDim")
 
-        self.material = "Steel"
+        self.defMat  = "Steel"
         self.muidDim = muidDim
 
         #self.RPCTrayBldr = self.get_builder('RPCTray_End')
@@ -35,7 +35,7 @@ class MuIDEndBuilder(gegede.builder.Builder):
         # Make volume to be retrieved by DetectorBuilder
         muidEndBox = geom.shapes.Box( self.name,              dx=0.5*self.muidDim[0], 
                                       dy=0.5*self.muidDim[1], dz=0.5*self.muidDim[2]) 
-        muidEnd_lv = geom.structure.Volume('vol'+self.name, material=self.material, shape=muidEndBox)
+        muidEnd_lv = geom.structure.Volume('vol'+self.name, material=self.defMat, shape=muidEndBox)
         self.add_volume(muidEnd_lv)
 
 

@@ -16,7 +16,8 @@ class DetectorBuilder(gegede.builder.Builder):
         if magInDim is None:
             raise ValueError("No value given for magInDim")
 
-        self.material      = defMat
+        self.defMat      = defMat
+        self.magMat      = 'Steel'
 
         # dimensions of bounding box are calculated in construct
 
@@ -44,12 +45,14 @@ class DetectorBuilder(gegede.builder.Builder):
     def construct(self, geom):
 
         # Define magnet as boolean, with hole to fit ECAL inside
+        #magBox = geom.shapes.Box( 'Magnet',                 dx=0.5*self.magOutDim[0], 
+        #                          dy=0.5*self.magOutDim[1], dz=0.5*self.magOutDim[2]) 
         magOut = geom.shapes.Box( 'MagOut',                 dx=0.5*self.magOutDim[0], 
                                   dy=0.5*self.magOutDim[1], dz=0.5*self.magOutDim[2]) 
         magIn = geom.shapes.Box(  'MagIn',                  dx=0.5*self.magInDim[0], 
                                   dy=0.5*self.magInDim[1],  dz=0.5*self.magInDim[2]) 
-        magBox = geom.shapes.Boolean( 'Magnet', first=magOut, second=magIn ) 
-        mag_lv = geom.structure.Volume('volMagnet', material=self.material, shape=magBox)
+        magBox = geom.shapes.Boolean( 'Magnet', type='Subtraction', first=magOut, second=magIn ) 
+        mag_lv = geom.structure.Volume('volMagnet', material=self.magMat, shape=magBox)
         self.add_volume(mag_lv)
 
         
@@ -109,23 +112,17 @@ class DetectorBuilder(gegede.builder.Builder):
 
 
 
-
+        # Make detector box and place STT inside
         detBox = geom.shapes.Box( self.name,              dx=0.5*self.detDim[0], 
                                   dy=0.5*self.detDim[1],  dz=0.5*self.detDim[2])
-        det_lv = geom.structure.Volume('vol'+self.name, material=self.material, shape=detBox)
+        det_lv = geom.structure.Volume('vol'+self.name, material=self.defMat, shape=detBox)
         self.add_volume(det_lv)
-
-
         stt_lv = self.sttBldr.get_volume('volSTT')
         stt_in_det = geom.structure.Position('STT_in_Det', sttPos[0], sttPos[1], sttPos[2])
         pSTT_in_D = geom.structure.Placement('placeSTT_in_Det',
                                              volume = stt_lv,
                                              pos = stt_in_det)
         det_lv.placements.append(pSTT_in_D.name)
-
-
-
-
 
 
 

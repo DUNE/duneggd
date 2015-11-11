@@ -17,7 +17,7 @@ class MuIDBarrelBuilder(gegede.builder.Builder):
         if muidInDim is None:
             raise ValueError("No value given for muidInDim")
 
-        self.material = "Steel"
+        self.defMat = "Steel"
         self.muidInDim  = muidInDim
         self.muidOutDim = muidOutDim
 
@@ -39,12 +39,14 @@ class MuIDBarrelBuilder(gegede.builder.Builder):
 
 
         # Define barrel as boolean, with hole to fit magnet inside
+        #muidBarBox = geom.shapes.Box( 'MuIDOut',                 dx=0.5*self.muidOutDim[0], 
+        #                               dy=0.5*self.muidOutDim[1], dz=0.5*self.muidOutDim[2]) 
         muidOut = geom.shapes.Box( 'MuIDOut',                 dx=0.5*self.muidOutDim[0], 
                                    dy=0.5*self.muidOutDim[1], dz=0.5*self.muidOutDim[2]) 
         muidIn = geom.shapes.Box(  'MuIDIn',                  dx=0.5*self.muidInDim[0], 
                                    dy=0.5*self.muidInDim[1],  dz=0.5*self.muidInDim[2]) 
-        muidBarBox = geom.shapes.Boolean( self.name, first=muidOut, second=muidIn )
-        muidBar_lv = geom.structure.Volume('vol'+self.name, material=self.material, shape=muidBarBox)
+        muidBarBox = geom.shapes.Boolean( self.name, type='Subtraction', first=muidOut, second=muidIn )
+        muidBar_lv = geom.structure.Volume('vol'+self.name, material=self.defMat, shape=muidBarBox)
         self.add_volume(muidBar_lv)
 
 
