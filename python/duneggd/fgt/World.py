@@ -30,7 +30,7 @@ class WorldBuilder(gegede.builder.Builder):
 
         # Position volDetEnclosure in the World Volume.
         # THIS SETS THE ORIGIN wherever we need it in the detector
-        detEncDim = self.detEncBldr.dimensions
+        detEncDim = self.detEncBldr.detEncDim
         detEncPos = ['0cm', '0cm', 0.5*detEncDim[2] ]
         detEnc_lv = self.detEncBldr.get_volume("volDetEnclosure")
         detEnc_in_world = geom.structure.Position('DetEnc_in_World', detEncPos[0], detEncPos[1], detEncPos[2])

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 '''
-Subbuilder of RPCTray*Builder
+Subbuilder of RPCTrayBuilder
 '''
 
 import gegede.builder
