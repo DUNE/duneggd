@@ -10,8 +10,6 @@ class DetEncBuilder(gegede.builder.Builder):
     Build the Detector Enclosure.
     '''
 
-    # Should the detector subsystems go in volDetector from DetectorBuilder?
-
 
     #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
     def configure(self, detEncDim=None, encBoundToDet=None, detEncMat = 'Air', **kwds):

@@ -51,7 +51,7 @@ class DetectorBuilder(gegede.builder.Builder):
                                   dy=0.5*self.magOutDim[1], dz=0.5*self.magOutDim[2]) 
         magIn = geom.shapes.Box(  'MagIn',                  dx=0.5*self.magInDim[0], 
                                   dy=0.5*self.magInDim[1],  dz=0.5*self.magInDim[2]) 
-        magBox = geom.shapes.Boolean( 'Magnet', type='Subtraction', first=magOut, second=magIn ) 
+        magBox = geom.shapes.Boolean( 'Magnet', type='subtraction', first=magOut, second=magIn ) 
         mag_lv = geom.structure.Volume('volMagnet', material=self.magMat, shape=magBox)
         self.add_volume(mag_lv)
 

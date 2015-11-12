@@ -62,7 +62,7 @@ class TargetPlaneBuilder(gegede.builder.Builder):
 
 
         # Check parameter consistency
-        calculatedWidth = ( (self.nTubesPerTarget-1) * self.tTube_interval ) + 2*self.tTube_outerDia
+        calculatedWidth = ( (self.nTubesPerTarget-1) * self.tTube_interval ) + self.tTube_outerDia
         if( calculatedWidth > self.targetPlaneDim[0] ):
             # TODO: Make a set of warning string templates for printing things like this
             # parameters would be (builder name, iterated volume name, # of iterations, interval, mother volume)

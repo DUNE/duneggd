@@ -45,7 +45,7 @@ class MuIDBarrelBuilder(gegede.builder.Builder):
                                    dy=0.5*self.muidOutDim[1], dz=0.5*self.muidOutDim[2]) 
         muidIn = geom.shapes.Box(  'MuIDIn',                  dx=0.5*self.muidInDim[0], 
                                    dy=0.5*self.muidInDim[1],  dz=0.5*self.muidInDim[2]) 
-        muidBarBox = geom.shapes.Boolean( self.name, type='Subtraction', first=muidOut, second=muidIn )
+        muidBarBox = geom.shapes.Boolean( self.name, type='subtraction', first=muidOut, second=muidIn )
         muidBar_lv = geom.structure.Volume('vol'+self.name, material=self.defMat, shape=muidBarBox)
         self.add_volume(muidBar_lv)
 
