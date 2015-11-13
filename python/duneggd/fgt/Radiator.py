@@ -4,6 +4,8 @@ Subbuilder of STTBuilder.
 '''
 
 import gegede.builder
+from gegede import Quantity as Q
+
 
 class RadiatorBuilder(gegede.builder.Builder):
     '''
@@ -12,7 +14,7 @@ class RadiatorBuilder(gegede.builder.Builder):
     '''
 
     #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
-    def configure( self, foilThickness='0.004cm', spacerThickness='0.025cm', 
+    def configure( self, foilThickness=Q('0.004cm'), spacerThickness=Q('0.025cm'), 
                    nFoilsPerRadiator=60, radFoilDim = None, spacerDim = None,
                    radFoilMat='C3H6', spacerMat='Fabric', **kwds):
 

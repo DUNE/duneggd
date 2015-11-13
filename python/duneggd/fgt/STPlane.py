@@ -4,12 +4,15 @@ Subbulder of STTBuilder
 '''
 
 import gegede.builder
+from gegede import Quantity as Q
 import math
+
 
 class STPlaneBuilder(gegede.builder.Builder):
 
     #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
-    def configure(self, sTube_innerDia='0.95cm', sTube_outerDia='0.9565cm', sTube_length='350cm', sAnodeWire_Dia='0.003cm',
+    def configure(self, sTube_innerDia=Q('0.95cm'), sTube_outerDia=Q('0.9565cm'), 
+                  sTube_length=Q('350cm'), sAnodeWire_Dia=('0.003cm'),
                   stPlaneMat='Air', strawMat='fibrous_glass', stGas='stGas_Ar', **kwds):
         self.material   = stPlaneMat
         self.strawMat   = strawMat

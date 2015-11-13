@@ -4,6 +4,8 @@ Subbuilder of WorldBuilder
 '''
 
 import gegede.builder
+from gegede import Quantity as Q
+
 
 class DetEncBuilder(gegede.builder.Builder):
     '''
@@ -47,7 +49,7 @@ class DetEncBuilder(gegede.builder.Builder):
             self.detDim = list(self.detBldr.detDim)
 
             self.encBoundToDet = [ 0.5*self.detEncDim[0] - 0.5*self.detDim[0], # x: center it for now
-                                   0*self.detDim[1],                           # y: sit detector on floor
+                                   Q('0cm'),                                   # y: sit detector on floor
                                    self.encBoundToDet_z ]                      # z: configure
 
             detPos = [ -0.5*self.detEncDim[0] + self.encBoundToDet[0] + 0.5*self.detDim[0], 

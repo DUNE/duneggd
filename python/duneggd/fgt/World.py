@@ -5,7 +5,8 @@ Top level builder of the Fine-Grained Tracker (FGT)
 
 import gegede.builder
 import math
-#import gegede.Quantity as Q
+from gegede import Quantity as Q
+
 
 class WorldBuilder(gegede.builder.Builder):
     '''
@@ -14,14 +15,14 @@ class WorldBuilder(gegede.builder.Builder):
     '''
 
     #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
-    def configure(self, worldDim  =  ['100m','100m','100m'], 
-                  servBuildingDim =  ['45ft','37.5ft','135.5ft'], 
-                  secondHallDim   =  ['47ft','11ft','19ft'], 
-                  encBackWallToHall_z = '46.25ft',
-                  overburden          = '155.94ft', 
-                  primaryShaft_r      = '11ft', 
-                  secondaryShaft_r    = '8.5ft',
-                  shaftToEndBuilding  = '79ft',
+    def configure(self, worldDim  =  [Q('100m'),Q('100m'),Q('100m')], 
+                  servBuildingDim =  [Q('45ft'),Q('37.5ft'),Q('135.5ft')], 
+                  secondHallDim   =  [Q('47ft'),Q('11ft'),Q('19ft')], 
+                  encBackWallToHall_z = Q('46.25ft'),
+                  overburden          = Q('155.94ft'), 
+                  primaryShaft_r      = Q('11ft'), 
+                  secondaryShaft_r    = Q('8.5ft'),
+                  shaftToEndBuilding  = Q('79ft'),
                   placeDetector       = True,
                   worldMat='Rock', **kwds):
         self.worldDim = worldDim
@@ -52,7 +53,7 @@ class WorldBuilder(gegede.builder.Builder):
             encBoundToDet = list(self.detEncBldr.encBoundToDet)
             detDim        = list(self.detEncBldr.detDim)
         else:
-            encBoundToDet = [ 0*detEncDim[0], 0*detEncDim[1], 0*detEncDim[2]]
+            encBoundToDet = [ Q('0cm'), Q('0cm'), Q('0cm') ]
             detDim        = list(encBoundToDet)
 
 
@@ -118,9 +119,9 @@ class WorldBuilder(gegede.builder.Builder):
         skyDim        = [ self.worldDim[0],
                           0.5*self.worldDim[1] - (servBPos[1] - 0.5*self.servBDim[1]),
                           self.worldDim[2] ]
-        skyPos        = [ 0*servBPos[0],
+        skyPos        = [ Q('0cm'),
                           0.5*self.worldDim[1] - 0.5*skyDim[1],
-                          0*servBPos[0] ]
+                          Q('0cm') ]
 
 
         ########################### Above is math, below is GGD ###########################

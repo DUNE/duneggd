@@ -4,12 +4,13 @@ Subbuilder of STTBuilder
 '''
 
 import gegede.builder
+from gegede import Quantity as Q
 
 class TargetPlaneBuilder(gegede.builder.Builder):
 
     #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
     def configure( self, tTube_innerDia=None, tTube_outerDia=None, tTube_length=None, 
-                   tTube_interval='0.505in', nTubesPerTarget=275, 
+                   tTube_interval=Q('0.505in'), nTubesPerTarget=275, 
                    targetMat='ArgonTarget', **kwds ):
 
         if tTube_innerDia is None:

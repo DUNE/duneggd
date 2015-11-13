@@ -4,6 +4,7 @@ Subbuilder of RPCTray*Builder
 '''
 
 import gegede.builder
+from gegede import Quantity as Q
 
 class RPCModBuilder(gegede.builder.Builder):
     '''
@@ -12,8 +13,13 @@ class RPCModBuilder(gegede.builder.Builder):
     '''
 
     #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
-    def configure(self, rpcModDim=['200cm','100cm','1.5cm'], resiplateDim=['196cm','96cm','0.8cm'], stripDim=['0.765cm','0.75cm','0.35cm'],
-                 gas_thicknes='0.2cm', rpcModMat='Air', resiplateMat='fib_glass', gasMat='stGas_Ar', rpcReadoutMat='fib_glass', **kwds):
+    def configure(self, 
+                  rpcModDim    = [ Q('200cm'),   Q('100cm'),  Q('1.5cm')  ], 
+                  resiplateDim = [ Q('196cm'),   Q('96cm'),   Q('0.8cm')  ], 
+                  stripDim     = [ Q('0.765cm'), Q('0.75cm'), Q('0.35cm') ],
+                  gas_thicknes =   Q('0.2cm'), 
+                  rpcModMat='Air', resiplateMat='fib_glass', 
+                  gasMat='stGas_Ar', rpcReadoutMat='fib_glass', **kwds):
          self.rpcModMat     = rpcModMat
          self.rpcReadoutMat = rpcReadoutMat
          self.resiplateMat  = resiplateMat

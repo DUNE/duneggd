@@ -4,6 +4,7 @@ Subbuilder of MuID*Builder
 '''
 
 import gegede.builder
+from gegede import Quantity as Q
 
 class RPCTrayBuilder(gegede.builder.Builder):
     '''

@@ -4,6 +4,8 @@ Subbuilder of Detector
 '''
 
 import gegede.builder
+from gegede import Quantity as Q
+
 
 class MuIDBarrelBuilder(gegede.builder.Builder):
     '''

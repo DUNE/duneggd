@@ -4,6 +4,7 @@ Subbuilder of DetEncBuilder
 '''
 
 import gegede.builder
+from gegede import Quantity as Q
 
 class DetectorBuilder(gegede.builder.Builder):
     '''
@@ -12,7 +13,7 @@ class DetectorBuilder(gegede.builder.Builder):
 
     #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
     def configure(self, defMat = 'Air',
-                  magInDim=None, magThickness='60cm', **kwds):
+                  magInDim=None, magThickness=Q('60cm'), **kwds):
         if magInDim is None:
             raise ValueError("No value given for magInDim")
 
@@ -85,7 +86,7 @@ class DetectorBuilder(gegede.builder.Builder):
         # Position MuID Barrel and ends.
         # Since the MuID is the outermost part of the detector... assume Barrel 
         #  is centered, with the z boundaries of the Barrel and ends touching
-        muidBarPos  = [ '0cm','0cm', 
+        muidBarPos  = [ Q('0cm'),Q('0cm'), 
                         -0.5*self.detDim[2] + muidUpDim[2] + 0.5*muidBarDim[2] ]
         muidDownPos = [ muidBarPos[0], muidBarPos[1], # add shift parameter if there is any xy shift rel to Barrel
                         muidBarPos[2] + 0.5*muidBarDim[2] + 0.5*muidDownDim[2] ]
