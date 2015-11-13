@@ -4,6 +4,8 @@ Top level builder of the Fine-Grained Tracker (FGT)
 '''
 
 import gegede.builder
+import math
+#import gegede.Quantity as Q
 
 class WorldBuilder(gegede.builder.Builder):
     '''
@@ -12,26 +14,126 @@ class WorldBuilder(gegede.builder.Builder):
     '''
 
     #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
-    def configure(self, worldDim=['100m','100m','100m'], worldMat='Rock', **kwds):
-        self.dimensions = worldDim
+    def configure(self, worldDim  =  ['100m','100m','100m'], 
+                  servBuildingDim =  ['45ft','37.5ft','135.5ft'], 
+                  secondHallDim   =  ['47ft','11ft','19ft'], 
+                  encBackWallToHall_z = '46.25ft',
+                  overburden          = '155.94ft', 
+                  primaryShaft_r      = '11ft', 
+                  secondaryShaft_r    = '8.5ft',
+                  shaftToEndBuilding  = '79ft',
+                  placeDetector       = True,
+                  worldMat='Rock', **kwds):
+        self.worldDim = worldDim
         self.material   = worldMat
         self.detEncBldr = self.get_builder("DetEnclosure")
+
+        self.servBDim            = servBuildingDim
+        self.overburden          = overburden
+        self.primaryShaft_r      = primaryShaft_r
+        self.secondaryShaft_r    = secondaryShaft_r
+        self.secondHallDim       = secondHallDim
+        self.encBackWallToHall_z = encBackWallToHall_z
+        self.shaftToEndBuilding  = shaftToEndBuilding
+        self.placeDet            = placeDetector
+
+        self.secHallMat = 'Air'
+        self.servBMat   = 'Air'
+        self.shaftMat   = 'Air'
 
 
     #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
     def construct(self, geom):
 
-        self.define_materials(geom)
+        # Get relevant dimensions
+        detEncDim     = list(self.detEncBldr.detEncDim)
+        secShaft_y    = self.overburden + detEncDim[1] - self.secondHallDim[1]
+        if self.placeDet:
+            encBoundToDet = list(self.detEncBldr.encBoundToDet)
+            detDim        = list(self.detEncBldr.detDim)
+        else:
+            encBoundToDet = [ 0*detEncDim[0], 0*detEncDim[1], 0*detEncDim[2]]
+            detDim        = list(encBoundToDet)
 
-        worldBox = geom.shapes.Box( self.name,                 dx=0.5*self.dimensions[0], 
-                                    dy=0.5*self.dimensions[1], dz=0.5*self.dimensions[2])
+
+        ########################### SET THE ORIGIN  #############################
+        #                                                                       #
+        # Position volDetEnclosure in the World Volume, displacing the world    #
+        #  origin relative to the detector enclosure, thereby putting it        #
+        #  anywhere in or around the detector we need.                          #
+        #                                                                       #
+        # Bring x=0 to -x of detEnc, then to det face, then to center of det    #
+        setXCenter    =   0.5*detEncDim[0] - encBoundToDet[0] - 0.5*detDim[0]   #
+                                                                                #
+        # Bring y=0 to bottom of detEnc, then to center of detector             #
+        setYCenter    =   0.5*detEncDim[1] - encBoundToDet[1] - 0.5*detDim[1]   #
+                                                                                #
+        # Bring z=0 to back of detEnc, then to upstream face of detector.       #
+        setZCenter    =   0.5*detEncDim[2] - encBoundToDet[2]                   #
+        #  should we leave this at the back of the enclosure?:                  #
+        #setZCenter    =  -0.5*detEncDim[2]                                     #
+                                                                                #
+        detEncPos     = [ setXCenter, setYCenter, setZCenter ]                  #
+        #########################################################################
+
+
+
+
+        # Position shafts and secondary hall around DetEnclosure
+        primShaftPos  = [ detEncPos[0],  # center for now
+                          detEncPos[1] + 0.5*detEncDim[1] + 0.5*self.overburden,
+                          detEncPos[2] - 0.5*detEncDim[2] + self.primaryShaft_r ]
+
+        secHallPos    = [ detEncPos[0] - 0.5*detEncDim[0] - 0.5*self.secondHallDim[0],
+                          detEncPos[1] - 0.5*detEncDim[1] + 0.5*self.secondHallDim[1],
+                          detEncPos[2] - 0.5*detEncDim[2] + self.encBackWallToHall_z + 0.5*self.secondHallDim[2] ]
+
+        secShaftPos   = [ secHallPos[0] - 0.5*self.secondHallDim[0] + self.secondaryShaft_r,
+                          secHallPos[1] + 0.5*self.secondHallDim[1] + 0.5*secShaft_y,
+                          secHallPos[2] ]
+                          
+
+
+        # Determine rotation around y bassed off of shaft positions
+        #   In local coordinates of service building, assume the
+        #    primary shaft is centered in x (blatantly wrong), 
+        #    and positive x boundary bisects secondary shaft
+        primToSec_aboutX_worldC = math.atan( (secShaftPos[0] - primShaftPos[0]) / (secShaftPos[2] - primShaftPos[2]) )
+
+        secToPrim_aboutX_servBC = math.atan( 0.5*self.servBDim[0] / (self.shaftToEndBuilding - self.secondaryShaft_r) )
+        
+        servBRot_aboutY         = secToPrim_aboutX_servBC - primToSec_aboutX_worldC
+
+        shaftCent_to_servBCent  = 0.5*self.secondaryShaft_r + self.shaftToEndBuilding - 0.5*self.servBDim[2]
+
+
+
+        # Position sevice building on top of primary shaft
+        servBPos      = [ primShaftPos[0] - shaftCent_to_servBCent*math.sin(servBRot_aboutY),
+                          primShaftPos[1] + 0.5*self.overburden + 0.5*self.servBDim[1],
+                          primShaftPos[2] + shaftCent_to_servBCent*math.cos(servBRot_aboutY) ]
+
+
+        # Put Sky around Building
+        skyDim        = [ self.worldDim[0],
+                          0.5*self.worldDim[1] - (servBPos[1] - 0.5*self.servBDim[1]),
+                          self.worldDim[2] ]
+        skyPos        = [ 0*servBPos[0],
+                          0.5*self.worldDim[1] - 0.5*skyDim[1],
+                          0*servBPos[0] ]
+
+
+        ########################### Above is math, below is GGD ###########################
+
+        self.define_materials(geom)
+        r90aboutX = geom.structure.Rotation('r90aboutX', '90deg', '0deg', '0deg')
+
+        worldBox = geom.shapes.Box( self.name,               dx=0.5*self.worldDim[0], 
+                                    dy=0.5*self.worldDim[1], dz=0.5*self.worldDim[2])
         world_lv = geom.structure.Volume('vol'+self.name, material=self.material, shape=worldBox)
         self.add_volume(world_lv)
 
-        # Position volDetEnclosure in the World Volume.
-        # THIS SETS THE ORIGIN wherever we need it in the detector
-        detEncDim = list(self.detEncBldr.detEncDim)
-        detEncPos = ['0cm', '0cm', 0.5*detEncDim[2] ]
+        # Get volDetEnclosure and place it
         detEnc_lv = self.detEncBldr.get_volume("volDetEnclosure")
         detEnc_in_world = geom.structure.Position('DetEnc_in_World', detEncPos[0], detEncPos[1], detEncPos[2])
         pD_in_W = geom.structure.Placement('placeDetEnc_in_World',
@@ -39,6 +141,72 @@ class WorldBuilder(gegede.builder.Builder):
                                            pos = detEnc_in_world)
         world_lv.placements.append(pD_in_W.name)
 
+
+        # Hall from DetEnc to Secondary Shaft
+        secHallBox = geom.shapes.Box( 'SecondaryHall',              dx=0.5*self.secondHallDim[0], 
+                                      dy=0.5*self.secondHallDim[1], dz=0.5*self.secondHallDim[2])
+        secHall_lv = geom.structure.Volume('volSecondaryHall', material=self.secHallMat, shape=secHallBox)
+        secHall_in_world = geom.structure.Position('secHall_in_World', secHallPos[0], secHallPos[1], secHallPos[2])
+        p_secHall_in_W = geom.structure.Placement('place_secHall_in_World',
+                                                  volume = secHall_lv,
+                                                  pos = secHall_in_world)
+        world_lv.placements.append(p_secHall_in_W.name)
+
+
+
+        # Primary Shaft
+        pShaftTube    = geom.shapes.Tubs('PrimaryShaft', 
+                                         rmin = '0cm',              
+                                         rmax = self.primaryShaft_r, 
+                                         dz   = 0.5*self.overburden)
+        pShaft_lv = geom.structure.Volume('volPrimaryShaft', material=self.shaftMat, shape=pShaftTube)
+        pShaft_in_world = geom.structure.Position('pShaft_in_World', primShaftPos[0], primShaftPos[1], primShaftPos[2])
+        pS_in_W = geom.structure.Placement('placePrimShaft_in_World',
+                                           volume = pShaft_lv,
+                                           pos = pShaft_in_world, rot='r90aboutX')
+        world_lv.placements.append(pS_in_W.name)
+
+
+        # Secondary Shaft
+        sShaftTube    = geom.shapes.Tubs('SecondaryShaft', 
+                                         rmin = '0cm',              
+                                         rmax = self.secondaryShaft_r, 
+                                         dz   = 0.5*secShaft_y)
+        sShaft_lv = geom.structure.Volume('volSecondaryShaft', material=self.shaftMat, shape=sShaftTube)
+        sShaft_in_world = geom.structure.Position('sShaft_in_World', secShaftPos[0], secShaftPos[1], secShaftPos[2])
+        sS_in_W = geom.structure.Placement('placeSecShaft_in_World',
+                                           volume = sShaft_lv,
+                                           pos = sShaft_in_world, rot='r90aboutX')
+        world_lv.placements.append(sS_in_W.name)
+
+
+
+        # Sky with building
+        skyBox = geom.shapes.Box( 'Sky',            dx=0.5*skyDim[0], 
+                                  dy=0.5*skyDim[1], dz=0.5*skyDim[2])
+        sky_lv = geom.structure.Volume('volSky', material='Air', shape=skyBox)
+        sky_in_world = geom.structure.Position('sky_in_World', skyPos[0], skyPos[1], skyPos[2])
+        p_sky_in_W = geom.structure.Placement('place_sky_in_World',
+                                              volume = sky_lv,
+                                              pos = sky_in_world)
+        world_lv.placements.append(p_sky_in_W.name)
+
+
+        # Sevice Building
+        servBBox = geom.shapes.Box( 'ServiceBuilding',       dx=0.5*self.servBDim[0], 
+                                    dy=0.5*self.servBDim[1], dz=0.5*self.servBDim[2])
+        servB_lv = geom.structure.Volume('volServiceBuilding', material=self.servBMat, shape=servBBox)
+        yrot = str(servBRot_aboutY)+'rad'
+        rServB_aboutY = geom.structure.Rotation('rSevBuilding_aboutY', '0deg', yrot, '0deg')
+        #servB_in_world = geom.structure.Position('servB_in_World', servBPos[0], servBPos[1], servBPos[2])
+        servB_in_sky = geom.structure.Position('servB_in_Sky', 
+                                               servBPos[0], 
+                                               -0.5*skyDim[1] + 0.5*self.servBDim[1], 
+                                               servBPos[2])
+        p_servB_in_S = geom.structure.Placement('place_servB_in_Sky',
+                                                volume = servB_lv,
+                                                pos = servB_in_sky, rot = rServB_aboutY)
+        sky_lv.placements.append(p_servB_in_S.name)
 
         return
 

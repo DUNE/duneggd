@@ -74,7 +74,6 @@ class TargetPlaneBuilder(gegede.builder.Builder):
 
 
         # Place tubes
-        r90aboutX = geom.structure.Rotation('r90aboutX', '90deg', '0deg', '0deg')
         xstart = -0.5*self.targetPlaneDim[0] + 0.5*self.tTube_outerDia
         for i in range(self.nTubesPerTarget):
 

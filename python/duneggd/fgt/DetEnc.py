@@ -12,11 +12,12 @@ class DetEncBuilder(gegede.builder.Builder):
 
 
     #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
-    def configure(self, detEncDim=None, encBoundToDet=None, detEncMat = 'Air', **kwds):
+    def configure(self, detEncDim=None, encBoundToDet_z=None, 
+                  placeDetector=True, detEncMat = 'Air', **kwds):
         if detEncDim is None:
             raise ValueError("No value given for detEncDim")
-        if encBoundToDet is None:
-            raise ValueError("No value given for encBoundToDet")
+        if encBoundToDet_z is None:
+            raise ValueError("No value given for encBoundToDet_z")
 
 
         self.material      = detEncMat
@@ -24,9 +25,11 @@ class DetEncBuilder(gegede.builder.Builder):
 
         # Space from negative face of volDetEnc to closest face of volDet
         #  This positions the detector in the enclosure
-        self.encBoundToDet = encBoundToDet 
+        self.encBoundToDet_z = encBoundToDet_z
 
-        self.detBldr = self.get_builder('Detector')
+        self.placeDet = placeDetector
+        if self.placeDet:
+            self.detBldr  = self.get_builder('Detector')
 
 
 
@@ -39,16 +42,22 @@ class DetEncBuilder(gegede.builder.Builder):
 
 
         # Position detector in enclosure
-        det_lv = self.detBldr.get_volume('volDetector')
-        detDim = list(self.detBldr.detDim)
-        detPos = [ -0.5*self.detEncDim[0] + self.encBoundToDet[0] + 0.5*detDim[0], 
-                   -0.5*self.detEncDim[1] + self.encBoundToDet[1] + 0.5*detDim[1], 
-                   -0.5*self.detEncDim[2] + self.encBoundToDet[2] + 0.5*detDim[2]  ]
-        det_lv = self.detBldr.get_volume('volDET')
-        det_in_enc = geom.structure.Position('Det_in_Enc', detPos[0], detPos[1], detPos[2])
-        pD_in_E = geom.structure.Placement('placeDet_in_Enc',
-                                              volume = det_lv,
-                                              pos = det_in_enc)
-        detEnc_lv.placements.append(pD_in_E.name)
+        if self.placeDet:
+            det_lv      = self.detBldr.get_volume('volDetector')
+            self.detDim = list(self.detBldr.detDim)
 
+            self.encBoundToDet = [ 0.5*self.detEncDim[0] - 0.5*self.detDim[0], # x: center it for now
+                                   0*self.detDim[1],                           # y: sit detector on floor
+                                   self.encBoundToDet_z ]                      # z: configure
+
+            detPos = [ -0.5*self.detEncDim[0] + self.encBoundToDet[0] + 0.5*self.detDim[0], 
+                       -0.5*self.detEncDim[1] + self.encBoundToDet[1] + 0.5*self.detDim[1], 
+                       -0.5*self.detEncDim[2] + self.encBoundToDet[2] + 0.5*self.detDim[2]  ]
+            det_lv = self.detBldr.get_volume('volDetector')
+            det_in_enc = geom.structure.Position('Det_in_Enc', detPos[0], detPos[1], detPos[2])
+            pD_in_E = geom.structure.Placement('placeDet_in_Enc',
+                                               volume = det_lv,
+                                               pos = det_in_enc)
+            detEnc_lv.placements.append(pD_in_E.name)
+        
 
