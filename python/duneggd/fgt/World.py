@@ -127,12 +127,7 @@ class WorldBuilder(gegede.builder.Builder):
         ########################### Above is math, below is GGD ###########################
 
         self.define_materials(geom)
-
-        # These are commonly used throughout all builders (rot = 'r90aboutX')
-        r90aboutX = geom.structure.Rotation( 'r90aboutX', '90deg', '0deg',  '0deg' )
-        r90aboutY = geom.structure.Rotation( 'r90aboutY', '0deg',  '90deg', '0deg' )
-        r90aboutZ = geom.structure.Rotation( 'r90aboutZ', '0deg',  '0deg',  '90deg')
-
+        r90aboutX = geom.structure.Rotation('r90aboutX', '90deg', '0deg', '0deg')
 
         worldBox = geom.shapes.Box( self.name,               dx=0.5*self.worldDim[0], 
                                     dy=0.5*self.worldDim[1], dz=0.5*self.worldDim[2])
