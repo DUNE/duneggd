@@ -218,6 +218,7 @@ class WorldBuilder(gegede.builder.Builder):
         c  = g.matter.Element("carbon",     "C",  6,  "12.0107*g/mole")
         n  = g.matter.Element("nitrogen",   "N",  7,  "14.0671*g/mole")
         o  = g.matter.Element("oxygen",     "O",  8,  "15.999*g/mole" )
+        f  = g.matter.Element("fluorine",   "F",  9,  "18.9984*g/mole")
         na = g.matter.Element("sodium",     "Na", 11, "22.99*g/mole"  )
         mg = g.matter.Element("magnesium",  "Mg", 12, "24.305*g/mole" )
         al = g.matter.Element("aluminum",   "Al", 13, "26.9815*g/mole")
@@ -227,7 +228,12 @@ class WorldBuilder(gegede.builder.Builder):
         ar = g.matter.Element("argon",      "Ar", 18, "39.948*g/mole" )
         ca = g.matter.Element("calcium",    "Ca", 20, "40.078*g/mole" )
         ti = g.matter.Element("titanium",   "Ti", 22, "47.867*g/mole" )
+        cr = g.matter.Element("chromium",   "Cr", 24, "51.9961*g/mole")
         fe = g.matter.Element("iron",       "Fe", 26, "55.8450*g/mole")
+        ni = g.matter.Element("nickel",     "Ni", 28, "58.6934*g/mole")
+        xe = g.matter.Element("xenon",      "Xe", 58, "131.293*g/mole")
+
+
 
         # Molecules for Rock and fibrous_glass Mixtures 
         SiO2  = g.matter.Molecule("SiO2",  density="2.2*g/cc",   elements=(("silicon",1),("oxygen",2)))
@@ -276,15 +282,49 @@ class WorldBuilder(gegede.builder.Builder):
                                           ("Fe2O3",  0.001)
                                       ))
 
-        # Materials for the radiators 
+        # Materials for the radiators and st planes following
         # WARNING! densities not right!
-        Fabric = g.matter.Molecule("Fabric", density="0.1*g/cc",   elements=(("carbon",3), ("hydrogen",6)))
-        C3H6   = g.matter.Molecule("C3H6",   density="0.1*g/cc",   elements=(("carbon",16),("hydrogen",18),("oxygen",1)))
+        Fabric = g.matter.Molecule("Fabric", density="0.1*g/cc",   elements=(("carbon",16),("hydrogen",18),("oxygen",1)))
+        C3H6   = g.matter.Molecule("C3H6",   density="0.1*g/cc",   elements=(("carbon",3), ("hydrogen",6)))
+        stGas_Xe = g.matter.Mixture( "stGas_Xe", density = "0.1*g/cc", 
+                                      components = (
+                                          ("CO2",    0.3),
+                                          ("xenon",  0.7)
+                                      ))
 
-        # Materials for the targets
+        # Materials for the targets and st planes following
         H2O      = g.matter.Molecule("Water",       density="1.0*kg/l",   elements=(("oxygen",1),("hydrogen",2)))
         ArTarget = g.matter.Molecule("ArgonTarget", density="0.233*g/cc", elements=(("argon",1),))
         Aluminum = g.matter.Molecule("Aluminum",    density="2.70*g/cc",  elements=(("aluminum",1),))
+        stGas_Ar = g.matter.Mixture( "stGas_Ar", density = "0.1*g/cc", 
+                                      components = (
+                                          ("CO2",    0.3),
+                                          ("argon",  0.7)
+                                      ))
 
-    
-
+        Steel    = g.matter.Mixture( "Steel", density = "7.9300*g/cc", 
+                                     components = (
+                                         ("iron",     0.7298),
+                                         ("chromium", 0.1792),
+                                         ("nickel",   0.0900),
+                                         ("carbon",   0.0010)
+                                     ))
+        
+        
+        #   Materials for the RPCs
+        # tetraflouroethane:
+        CH2FCF3 = g.matter.Molecule( "CH2FCF3",  density="0.00425*g/cc",   
+                                     elements=( ("carbon",2), ("hydrogen",2), ("fluorine",4) ))
+        # isobutane:
+        C4H10   = g.matter.Molecule( "C4H10",    density="2.51*g/cc",   
+                                     elements=( ("carbon",4), ("hydrogen",10) ))
+        # sulphurhexaflouride:
+        SF6     = g.matter.Molecule( "SF6",      density="6.17*g/L",   
+                                     elements=( ("sulfur",4), ("fluorine",6)  ))
+        rpcGas   = g.matter.Mixture( "rpcGas", density = "7.9300*g/cc", 
+                                     components = (
+                                         ("argon",   0.75),
+                                         ("CH2FCF3", 0.20),
+                                         ("C4H10",   0.04),
+                                         ("SF6",     0.01)
+                                     ))

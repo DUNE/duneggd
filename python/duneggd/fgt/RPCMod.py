@@ -19,7 +19,7 @@ class RPCModBuilder(gegede.builder.Builder):
                   stripDim     = [ Q('0.765cm'), Q('0.75cm'), Q('0.35cm') ],
                   gas_thicknes =   Q('0.2cm'), 
                   rpcModMat='Air', resiplateMat='fib_glass', 
-                  gasMat='stGas_Ar', rpcReadoutMat='fib_glass', **kwds):
+                  gasMat='rpcGas', rpcReadoutMat='fib_glass', **kwds):
          self.rpcModMat     = rpcModMat
          self.rpcReadoutMat = rpcReadoutMat
          self.resiplateMat  = resiplateMat
