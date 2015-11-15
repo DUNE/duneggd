@@ -17,7 +17,7 @@ class RPCModBuilder(gegede.builder.Builder):
                   rpcModDim    = [ Q('200cm'),   Q('100cm'),  Q('1.5cm')  ], 
                   resiplateDim = [ Q('196cm'),   Q('96cm'),   Q('0.8cm')  ], 
                   stripDim     = [ Q('0.765cm'), Q('0.75cm'), Q('0.35cm') ],
-                  gas_thicknes =   Q('0.2cm'), 
+                  gas_gap      = Q('0.2cm'), 
                   rpcModMat='Air', resiplateMat='fib_glass', 
                   gasMat='rpcGas', rpcReadoutMat='fib_glass', **kwds):
          self.rpcModMat     = rpcModMat
@@ -27,7 +27,7 @@ class RPCModBuilder(gegede.builder.Builder):
          self.rpcModDim     = rpcModDim
          self.resiplateDim  = resiplateDim
          self.stripDim      = stripDim
-         self.gas_thickness = gas_thickness
+         self.gas_gap       = gas_gap
 
 
 
@@ -46,7 +46,7 @@ class RPCModBuilder(gegede.builder.Builder):
                                   dx = 0.5*self.resiplateDim[0],
                                   dy = 0.5*self.resiplateDim[1],
                                   dz = 0.5*self.rpcModDim[2])
-        rpcStrip_lv = geom.structure.Volume('volRPCStrip_'+self.name, material=self.rpcreadoutMat, shape=rpcStrip)
+        rpcStrip_lv = geom.structure.Volume('volRPCStrip_'+self.name, material=self.rpcReadoutMat, shape=rpcStrip)
         # define box and volume for resistive plate (maybe the same volume for anode and cathode?)
         resiplate = geom.shapes.Box('ResistivePlate_'+self.name,
                                     dx = 0.5*self.resiplateDim[0],
@@ -54,11 +54,11 @@ class RPCModBuilder(gegede.builder.Builder):
                                     dz = 0.5*self.resiplateDim[2])
         resiplate_lv = geom.structure.Volume('volResistivePlate_'+self.name, material=self.resiplateMat, shape=resiplate)
         # define box and volume for gas in rpc
-        rpcGas = geom.shape.Box('RPCGas_'+self.name,
+        rpcGas = geom.shapes.Box('RPCGas_'+self.name,
                                 dx = 0.5*self.resiplateDim[0],
                                 dy = 0.5*self.resiplateDim[0],
-                                dz = 0.5*gas_thickness)
-        rpcGas_lv = geom.structure.Volume('volRPCGas_'+self.name, material=self.self.gasMat, shape=rpcGas)
+                                dz = 0.5*self.gas_gap)
+        rpcGas_lv = geom.structure.Volume('volRPCGas_'+self.name, material=self.gasMat, shape=rpcGas)
 
         # position and place resistive plates in RPCMod
         pS_in_Module  = geom.structure.Placement( 'placeS_in_Module_'+self.name, volume = rpcStrip_lv )
@@ -77,7 +77,7 @@ class RPCModBuilder(gegede.builder.Builder):
         for i in range(nXStrips):
 
 
-                    xpos  = -0.5*self.rpcMod[0]+(i+0.5)*self.stripDim[0]
+                    xpos  = -0.5*self.rpcModDim[0]+(i+0.5)*self.stripDim[0]
                     ypos  = '0cm'
                     zpos  = 0.5*self.rpcModDim[2]-0.5*self.stripDim[2]
 
@@ -90,7 +90,7 @@ class RPCModBuilder(gegede.builder.Builder):
 
 
                     xpos  = '0cm'
-                    ypos  = -0.5*self.rpcMod[1]+(j+0.5)*self.stripDim[1]
+                    ypos  = -0.5*self.rpcModDim[1]+(j+0.5)*self.stripDim[1]
                     zpos  = -(0.5*self.rpcModDim[2]-0.5*self.stripDim[2])
                     yS_in_m  = geom.structure.Position( 'YStrip-'+str(j)+'_in_RPCModule_'+self.name,
                                                        xpos,  ypos,  zpos)
