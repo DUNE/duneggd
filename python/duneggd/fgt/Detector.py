@@ -13,7 +13,8 @@ class DetectorBuilder(gegede.builder.Builder):
 
     #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
     def configure(self, defMat = 'Air',
-                  magInDim=None, magThickness=Q('60cm'), **kwds):
+                  magInDim=None, magThickness=Q('60cm'), 
+                  downMuIDtoMagnet = Q('0.8m'), upMuIDtoMagnet = Q('1.15m'), **kwds):
         if magInDim is None:
             raise ValueError("No value given for magInDim")
 
@@ -33,13 +34,12 @@ class DetectorBuilder(gegede.builder.Builder):
 
         # set the inner and outer magnet dimensions
         self.magInDim  = magInDim
-        self.magOutDim = [  self.magInDim[0], 
-                            self.magInDim[0] + 2*magThickness, 
-                            self.magInDim[0] + 2*magThickness  ]
+        self.magOutDim = list(magInDim)
+        self.magOutDim[1] += 2*magThickness
+        self.magOutDim[2] += 2*magThickness
 
-        # Set inner MuID dimensions to outer magned dimensions
-        #self.muidBarBldr.muidInDim = list(self.ecalBarBldr.ecalOutDim)
-
+        self.upMuIDtoMagnet   = upMuIDtoMagnet
+        self.downMuIDtoMagnet = downMuIDtoMagnet
 
 
     #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
@@ -57,7 +57,7 @@ class DetectorBuilder(gegede.builder.Builder):
         self.add_volume(mag_lv)
 
         
-        # Get subsystem dimensions, give warnings concerning following assumptions
+        # Get subsystem dimensions, 
         sttDim      = list(self.sttBldr.sttDim)
         muidDownDim = list(self.muidDownBldr.muidDim)
         muidUpDim   = list(self.muidUpBldr.muidDim)
@@ -67,35 +67,73 @@ class DetectorBuilder(gegede.builder.Builder):
         #ecalDownDim = list(self.ecalDownBldr.ecalDim)
         #ecalUpDim   = list(self.ecalUpBldr.ecalDim)
         #ecalBarDim  = list(self.ecalBarBldr.ecalDim)
+
+
+        #########################################################################
+        ########################### Check Assumptions ###########################
+
         if( muidDownDim[2] == muidUpDim[2] ): 
-            print "DetEncBuilder: Up and Downstream MuIDs the same thickness in beam direction"
+            print "DetectorBuilder: Up and Downstream MuIDs the same thickness in beam direction"
+
+        # For the Boolean shapes, make sure the inner/outer dimensions match 
+        #  where they should -- barrel is a "tube" in z and magnet a "tube" in x
+        if( muidBarInDim[2] != muidBarOutDim[2] ): 
+            print "DetectorBuilder: MuID barrel not same length in z on inside and outside"
+            print "     inner barrel is "+str(muidBarInDim[2])+" and outer barrel is "+str(muidBarOutDim[2])+" in z"
+        if( self.magInDim[0] != self.magOutDim[0] ): 
+            print "DetectorBuilder: Magnet not same length in x on inside and outside"
+            print "     inner magnet is "+str(self.magInDim[0])+" and outer magnet is "+str(self.magOutDim[0])+" in x"
+
+        # The MuID barrel should tightly hug the magnet, 
+        #   and be the same dimension in z
+        if( muidBarInDim[0] != self.magOutDim[0] ):
+            print "DetectorBuilder: MuID barrel not touching magnet in x"
+            print "     inner barrel is "+str(muidBarInDim[0])+" and magnet is "+str(self.magOutDim[0])+" in x"
+        if( muidBarInDim[1] != self.magOutDim[1] ): 
+            print "DetectorBuilder: MuID barrel not touching magnet in y"
+            print "     inner barrel is "+str(muidBarInDim[1])+" and outer magnet is "+str(self.magOutDim[1])+" in y"
+        if( muidBarInDim[2] != self.magOutDim[2] ): 
+            print "DetectorBuilder: MuID barrel not same length in z as magnet"
+            print "     barrel is "+str(muidBarInDim[2])+" and outer magnet is "+str(self.magOutDim[2])+" in z"
+ 
         if(       muidDownDim[1] > muidBarDim[1] 
                or muidDownDim[2] > muidBarDim[2]
                or muidUpDim[1]   > muidBarDim[1]
                or muidUpDim[2]   > muidBarDim[2]  ): 
-            print "DetEncBuilder: MuID Ends have larger xy dimensions than Barrel"
+            print "DetectorBuilder: MuID Ends have larger xy dimensions than Barrel"
+
+        ############################ Finish Checking ############################
+        #########################################################################
+
 
 
         # vol is a bounding box ~ not corresponding to physical volume.
         #  assume Barrel biggest in x and y
-        #  assume no space between the z boundaries of Barrel and Ends
-        self.detDim = [ muidBarDim[0], muidBarDim[1], 
-                        muidUpDim[2] + muidBarDim[2] + muidDownDim[2] ]
+        self.detDim    = list(muidBarDim)
+        self.detDim[2] = ( muidUpDim[2] + self.upMuIDtoMagnet 
+                           + muidBarDim[2] 
+                           + self.downMuIDtoMagnet + muidDownDim[2] )
 
 
-        # Position MuID Barrel and ends.
-        # Since the MuID is the outermost part of the detector... assume Barrel 
-        #  is centered, with the z boundaries of the Barrel and ends touching
+        # Position MuID Barrel
+        # Since the MuID is the outermost part of the detector, 
+        #  assume Barrel is centered in xy
         muidBarPos  = [ Q('0cm'),Q('0cm'), 
-                        -0.5*self.detDim[2] + muidUpDim[2] + 0.5*muidBarDim[2] ]
-        muidDownPos = [ muidBarPos[0], muidBarPos[1], # add shift parameter if there is any xy shift rel to Barrel
-                        muidBarPos[2] + 0.5*muidBarDim[2] + 0.5*muidDownDim[2] ]
-        muidUpPos   = [ muidBarPos[0], muidBarPos[1],
-                        muidBarPos[2] - 0.5*muidBarDim[2] - 0.5*muidUpDim[2] ]
+                        -0.5*self.detDim[2] + muidUpDim[2] + self.upMuIDtoMagnet + 0.5*muidBarDim[2] ]
 
 
         # Position Magnet, assuming it is concentric with the MuID Barrel
         magPos      = list(muidBarPos) 
+
+
+        # Position MuID Ends around magnet
+        muidDownPos = [ muidBarPos[0], muidBarPos[1], # add shift parameter if there is any xy shift rel to Barrel
+                        magPos[2] + 0.5*self.magOutDim[2] + self.downMuIDtoMagnet + 0.5*muidDownDim[2] ]
+        muidUpPos   = [ muidBarPos[0], muidBarPos[1],
+                        muidBarPos[2] - 0.5*self.magOutDim[2] - self.upMuIDtoMagnet - 0.5*muidUpDim[2] ]
+
+
+
 
 
         # Position ECAL Barrel and Ends

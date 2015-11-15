@@ -13,15 +13,12 @@ class MuIDBarrelBuilder(gegede.builder.Builder):
     '''
 
     #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
-    def configure(self, muidInDim=None, muidOutDim=None, **kwds):
-        if muidOutDim is None:
-            raise ValueError("No value given for muidOutDim")
+    def configure(self, muidInDim=None, **kwds):
         if muidInDim is None:
             raise ValueError("No value given for muidInDim")
 
         self.defMat = "Steel"
         self.muidInDim  = muidInDim
-        self.muidOutDim = muidOutDim
 
         # Get RPC tray builders
         #self.RPCTraySmallBldr = self.get_builder('RPCTray_BarSmall')
@@ -37,12 +34,13 @@ class MuIDBarrelBuilder(gegede.builder.Builder):
 
         # Just like in the EndBuilder, calculate outer dimensions 
         #  using other configured parameters: number of planes, thicknesses...
-        # If calculated different from configured, reset and print out a warning.
+        # For now I'm using the CDR reported dimensions:
+        self.muidOutDim = list(self.muidInDim)
+        self.muidOutDim[0] = Q('6.7m')
+        self.muidOutDim[1] = Q('6.7m')
 
 
         # Define barrel as boolean, with hole to fit magnet inside
-        #muidBarBox = geom.shapes.Box( 'MuIDOut',                 dx=0.5*self.muidOutDim[0], 
-        #                               dy=0.5*self.muidOutDim[1], dz=0.5*self.muidOutDim[2]) 
         muidOut = geom.shapes.Box( 'MuIDOut',                 dx=0.5*self.muidOutDim[0], 
                                    dy=0.5*self.muidOutDim[1], dz=0.5*self.muidOutDim[2]) 
         muidIn = geom.shapes.Box(  'MuIDIn',                  dx=0.5*self.muidInDim[0], 

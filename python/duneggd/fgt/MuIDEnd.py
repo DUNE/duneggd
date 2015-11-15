@@ -30,7 +30,6 @@ class MuIDEndBuilder(gegede.builder.Builder):
         
         # Ccalculate the muidDim[2] (z dim) with other configured parameters: 
         #   number of planes, thicknesses...
-        # If calculated different from configured, reset and print out a warning.
 
 
 
