@@ -11,10 +11,10 @@ class SBPlaneBuilder(gegede.builder.Builder):
  
     # define builder data here
     #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
-    def configure(self, ScintBarDim[Q('3.2m'), Q('2.5cm'), Q('1cm')],
-                        SBPlaneMat = "epoxy_resin",
+    def configure(self, ScintBarDim = [Q('3.2m'), Q('2.5cm'), Q('1cm')],
+                        SBPlaneMat  = "epoxy_resin",
                         ScintBarMat = "Scintillator", **kwds):
-        self.material    = SBPlaneMat
+        self.SBPlaneMat  = SBPlaneMat
         self.ScintBarMat = ScintBarMat
         self.ScintBarDim = ScintBarDim
      
@@ -39,13 +39,12 @@ class SBPlaneBuilder(gegede.builder.Builder):
 	# This volume will be retrieved by ECAL*Builder
 
 
-    #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
-    # Place the bars in the plane
-    nScintBarsPerPlane = int(math.floor((self.SBPlaneDim[1]/self.ScintBarDim[1])))
-    for i in range(nScintBarsPerPlane):
-        xpos = -0.5*self.SBPlaneDim[0] + 0.5*(2*i+1)*self.ScintBarDim[1]
-
-    # Define positions and append placements
-    sb_in_sp      = geom.structure.Position( 'ScintBar-'+str(i)+'_in_SBPlane_', xpos, '0cm', '0cm')
-    psb_in_sp     = geom.structure.Placement( 'ScintBar-'+str(i)+'_in_SBPlane_', volume = ScintBar_lv, pos = sb_in_sp)
-    SBPlane_lv.placements.append(psb_in_sp.name)
+        # Place the bars in the plane
+        nScintBarsPerPlane = int(math.floor((self.SBPlaneDim[1]/self.ScintBarDim[1])))
+        for i in range(nScintBarsPerPlane):
+            xpos = -0.5*self.SBPlaneDim[0] + 0.5*(2*i+1)*self.ScintBarDim[1]
+            sb_in_sp      = geom.structure.Position( 'SB-'+str(i)+'_in_'+self.name, 
+                                                     xpos, '0cm', '0cm')
+            psb_in_sp     = geom.structure.Placement( 'placeSB-'+str(i)+'_in_'+self.name, 
+                                                      volume = ScintBar_lv, pos = sb_in_sp)
+            SBPlane_lv.placements.append(psb_in_sp.name)
