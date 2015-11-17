@@ -36,34 +36,34 @@ class RPCModBuilder(gegede.builder.Builder):
 
         # define box and volume for whole RPCMod,
         # to be retrieved by RPCTray*Builder
-        rpcMod = geom.shapes.Box('RPCModule_'+self.name,
-                                 dx = 0.5*self.rpcModDim[0],
-                                 dy = 0.5*self.rpcModDim[1],
-                                 dz = 0.5*self.rpcModDim[2])
+        rpcMod = geom.shapes.Box( self.name,
+                                  dx = 0.5*self.rpcModDim[0],
+                                  dy = 0.5*self.rpcModDim[1],
+                                  dz = 0.5*self.rpcModDim[2])
         rpcMod_lv = geom.structure.Volume('volRPCModule_'+self.name, material=self.rpcModMat, shape=rpcMod)
         # define box and volume for RPC strip
-        rpcStrip = geom.shapes.Box('RPCStrip_'+self.name,
-                                  dx = 0.5*self.resiplateDim[0],
-                                  dy = 0.5*self.resiplateDim[1],
-                                  dz = 0.5*self.rpcModDim[2])
-        rpcStrip_lv = geom.structure.Volume('volRPCStrip_'+self.name, material=self.rpcReadoutMat, shape=rpcStrip)
-        # define box and volume for resistive plate (maybe the same volume for anode and cathode?)
-        resiplate = geom.shapes.Box('ResistivePlate_'+self.name,
+        rpcStrip = geom.shapes.Box( 'RPCStrip',
                                     dx = 0.5*self.resiplateDim[0],
                                     dy = 0.5*self.resiplateDim[1],
-                                    dz = 0.5*self.resiplateDim[2])
-        resiplate_lv = geom.structure.Volume('volResistivePlate_'+self.name, material=self.resiplateMat, shape=resiplate)
+                                    dz = 0.5*self.rpcModDim[2])
+        rpcStrip_lv = geom.structure.Volume('volRPCStrip', material=self.rpcReadoutMat, shape=rpcStrip)
+        # define box and volume for resistive plate (maybe the same volume for anode and cathode?)
+        resiplate = geom.shapes.Box( 'ResistivePlate',
+                                     dx = 0.5*self.resiplateDim[0],
+                                     dy = 0.5*self.resiplateDim[1],
+                                     dz = 0.5*self.resiplateDim[2])
+        resiplate_lv = geom.structure.Volume('volResistivePlate', material=self.resiplateMat, shape=resiplate)
         # define box and volume for gas in rpc
-        rpcGas = geom.shapes.Box('RPCGas_'+self.name,
-                                dx = 0.5*self.resiplateDim[0],
-                                dy = 0.5*self.resiplateDim[0],
-                                dz = 0.5*self.gas_gap)
-        rpcGas_lv = geom.structure.Volume('volRPCGas_'+self.name, material=self.gasMat, shape=rpcGas)
+        rpcGas = geom.shapes.Box( 'RPCGas',
+                                  dx = 0.5*self.resiplateDim[0],
+                                  dy = 0.5*self.resiplateDim[0],
+                                  dz = 0.5*self.gas_gap)
+        rpcGas_lv = geom.structure.Volume('volRPCGas', material=self.gasMat, shape=rpcGas)
 
         # position and place resistive plates in RPCMod
-        pS_in_Module  = geom.structure.Placement( 'placeS_in_Module_'+self.name, volume = rpcStrip_lv )
-        pRP_in_Module = geom.structure.Placement( 'placeRP_in_Module_'+self.name, volume = resiplate_lv )
-        pG_in_Module  = geom.structure.Placement( 'placeG_in_Module_'+self.name, volume = rpcGas_lv )
+        pS_in_Module  = geom.structure.Placement( 'placeS_in_'+self.name, volume = rpcStrip_lv )
+        pRP_in_Module = geom.structure.Placement( 'placeRP_in_'+self.name, volume = resiplate_lv )
+        pG_in_Module  = geom.structure.Placement( 'placeG_in_'+self.name, volume = rpcGas_lv )
         rpcMod_lv.placements.append( pS_in_Module.name )
         rpcMod_lv.placements.append( pRP_in_Module.name )
         rpcMod_lv.placements.append( pG_in_Module.name )
@@ -76,28 +76,29 @@ class RPCModBuilder(gegede.builder.Builder):
         # for loop to position and place X strips in RPCMod
         for i in range(nXStrips):
 
-
                     xpos  = -0.5*self.rpcModDim[0]+(i+0.5)*self.stripDim[0]
                     ypos  = '0cm'
                     zpos  = 0.5*self.rpcModDim[2]-0.5*self.stripDim[2]
 
-                    xS_in_m  = geom.structure.Position( 'XStrip-'+str(i)+'_in_RPCModule_'+self.name,
-                                                       xpos,  ypos,  zpos)
-                    pxS_in_m = geom.structure.Placement( 'placeXStrip-'+str(i)+'_in_RPCModule_'+self.name,volume = rpcMod_lv,pos = xS_in_m,rot = "r90aboutX" )
+                    xS_in_m  = geom.structure.Position( 'XStrip-'+str(i)+'_in_'+self.name,
+                                                        xpos,  ypos,  zpos)
+                    pxS_in_m = geom.structure.Placement( 'placeXStrip-'+str(i)+'_in_'+self.name,
+                                                         volume = rpcMod_lv,pos = xS_in_m,rot = "r90aboutX" )
+
+
 
         # for loop to position and place Y strips in RPCMod
         for j in range(nYStrips):
 
-
                     xpos  = '0cm'
                     ypos  = -0.5*self.rpcModDim[1]+(j+0.5)*self.stripDim[1]
                     zpos  = -(0.5*self.rpcModDim[2]-0.5*self.stripDim[2])
-                    yS_in_m  = geom.structure.Position( 'YStrip-'+str(j)+'_in_RPCModule_'+self.name,
-                                                       xpos,  ypos,  zpos)
-                    pyS_in_m = geom.structure.Placement( 'placeYStrip-'+str(j)+'_in_RPCModule_'+self.name,volume = rpcMod_lv,pos = yS_in_m,rot = "r90aboutX")
+                    yS_in_m  = geom.structure.Position( 'YStrip-'+str(j)+'_in_'+self.name,
+                                                        xpos,  ypos,  zpos)
+                    pyS_in_m = geom.structure.Placement( 'placeYStrip-'+str(j)+'_in_'+self.name,
+                                                         volume = rpcMod_lv,pos = yS_in_m,rot = "r90aboutX")
+                    rpcMod_lv.placements.append( pxS_in_m.name )
+                    rpcMod_lv.placements.append( pyS_in_m.name )
 
-
-        rpcMod_lv.placements.append( pxS_in_m.name )
-        rpcMod_lv.placements.append( pyS_in_m.name )
 
         return

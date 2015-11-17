@@ -21,9 +21,10 @@ class MuIDBarrelBuilder(gegede.builder.Builder):
         self.muidInDim  = muidInDim
 
         # Get RPC tray builders
-        #self.RPCTraySmallBldr = self.get_builder('RPCTray_BarSmall')
-        #self.RPCTrayMidBldr   = self.get_builder('RPCTray_BarMid')
-        #self.RPCTrayBigBldr   = self.get_builder('RPCTray_BarBig')
+        self.RPCTraySmallBldr = self.get_builder('RPCTray_BarSmall')
+        self.RPCTrayMidBldr   = self.get_builder('RPCTray_BarMid')
+        self.RPCTrayMidBldr   = self.get_builder('RPCTray_BarMid')
+        self.RPCTrayBigBldr   = self.get_builder('RPCTray_BarBig')
 
 
 
