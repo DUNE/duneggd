@@ -47,7 +47,7 @@ class RPCTrayBuilder(gegede.builder.Builder):
 
         self.add_volume(rpcTray_lv)
 
-        '''
+        
         for i in range(self.nrpcRow):
             for j in range(self.nrpcCol):
                 xpos = -0.5*self.rpcTrayDim[0]+(self.nrpcCol*i+j+0.5)*rpcModDim[0]
@@ -65,6 +65,6 @@ class RPCTrayBuilder(gegede.builder.Builder):
                 prpcm_in_t = geom.structure.Placement( 'placeRPCMod-'+str(self.nrpcCol*i+j)+'_in_'+self.name,
                                                        volume = rpcTray_lv,pos = rpcm_in_t)
                 rpcTray_lv.placements.append( prpcm_in_t.name )
-        '''
+        
         
         return
