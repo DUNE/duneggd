@@ -221,6 +221,7 @@ class WorldBuilder(gegede.builder.Builder):
         n  = g.matter.Element("nitrogen",   "N",  7,  "14.0671*g/mole")
         o  = g.matter.Element("oxygen",     "O",  8,  "15.999*g/mole" )
         f  = g.matter.Element("fluorine",   "F",  9,  "18.9984*g/mole")
+        br = g.matter.Element("bromine",    "Br", 35, "79.904*g/mole" )
         na = g.matter.Element("sodium",     "Na", 11, "22.99*g/mole"  )
         mg = g.matter.Element("magnesium",  "Mg", 12, "24.305*g/mole" )
         al = g.matter.Element("aluminum",   "Al", 13, "26.9815*g/mole")
@@ -234,6 +235,7 @@ class WorldBuilder(gegede.builder.Builder):
         fe = g.matter.Element("iron",       "Fe", 26, "55.8450*g/mole")
         ni = g.matter.Element("nickel",     "Ni", 28, "58.6934*g/mole")
         xe = g.matter.Element("xenon",      "Xe", 58, "131.293*g/mole")
+        pb = g.matter.Element("lead",       "Pb", 82, "207.20*g/mole" )
 
 
 
@@ -329,4 +331,15 @@ class WorldBuilder(gegede.builder.Builder):
                                          ("CH2FCF3", 0.20),
                                          ("C4H10",   0.04),
                                          ("SF6",     0.01)
+
                                      ))
+
+        # Materials for the ECAL
+        # Epoxy Resin (Glue that will hold the scintillator bars and the lead sheets together):
+        epoxy_resin   = g.matter.Molecule("epoxy_resin",   density="1.1250*g/cc",   elements=(("carbon",38), ("hydrogen",40), ("oxygen",6), ("bromine",4) )
+        
+        # Scintillator:
+        Scintillator  = g.matter.Molecule("Scintillator",   density="1.05*g/cc",   elements=(("carbon",0.916), ("hydrogen",0.084)))
+          
+        # Lead:
+        Lead  = g.matter.Molecule("Lead",   density="11.342*g/cc",   elements=(("lead",1))
