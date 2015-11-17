@@ -61,6 +61,7 @@ class STPlaneBuilder(gegede.builder.Builder):
 
         
         nTubesPerPlane = int( math.floor((self.stPlaneDim[0] - 0.5*self.sTube_outerDia) / self.sTube_outerDia) )
+        print 'STPlaneBuilder: '+str(nTubesPerPlane)+' straw tubes per plane'
 
         for i in range(nTubesPerPlane):
 
