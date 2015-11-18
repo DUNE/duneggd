@@ -16,7 +16,8 @@ class MuIDEndBuilder(gegede.builder.Builder):
     def configure(self, 
                   muidDim = [ Q('600cm'), Q('600cm'), Q('107.5cm') ],
                   magDim = [ Q('600cm'), Q('600cm'), Q('20cm') ], 
-                  nTraysPerPlane = 3, nPlanes = 3,
+                  nTraysPerPlane = 3, 
+                  nPlanes = None,
                   muidMat = 'Steel', **kwds):
 
         self.muidMat        = muidMat
@@ -33,10 +34,10 @@ class MuIDEndBuilder(gegede.builder.Builder):
     def construct(self, geom):
 
         # Get the RPC tray volume and position
-        rpcTray_lv = self.RPCTrayBldr.get_volume('volRPCTray')
+        rpcTray_lv = self.RPCTrayBldr.get_volume('volRPCTray_End')
         rpcTrayDim = self.RPCTrayBldr.rpcTrayDim
         
-        # Ccalculate the muidDim[2] (z dim) with other configured parameters: 
+        # Calculate the muidDim[2] (z dim) with other configured parameters: 
         #   number of planes, thicknesses...
 
 
@@ -56,13 +57,15 @@ class MuIDEndBuilder(gegede.builder.Builder):
         for i in range(self.nPlanes):
             zpos = -0.5*self.muidDim[2]+(i+0.5)*rpcTrayDim[2]+i*self.magDim[2]
             for j in range(self.nTraysPerPlane):
-                xpos = '0cm'
+
+                xpos = Q('0cm')
                 ypos = -0.5*self.muidDim[1]+(j+0.5)*rpcTrayDim[1]
         
-                rpct_in_muid  = geom.structure.Position( 'RPCTray-'+str(self.nTraysPerPlane*i+j)+'_in_'+self.name,
+                rpct_in_muid  = geom.structure.Position( 'rpct-'+str(self.nTraysPerPlane*i+j)+'_in_'+self.name,
                                                          xpos,  ypos,  zpos)
-                prpct_in_muid = geom.structure.Placement( 'placeRPCTray-'+str(self.nTraysPerPlane*i+j)+'_in_'+self.name,
-                                                          volume = muid_lv, pos = rpct_in_muid,rot = "r90aboutX")
+                prpct_in_muid = geom.structure.Placement( 'prpct-'+str(self.nTraysPerPlane*i+j)+'_in_'+self.name,
+                                                          volume = rpcTray_lv, pos = rpct_in_muid )
+
                 muid_lv.placements.append( prpct_in_muid.name )
         
         

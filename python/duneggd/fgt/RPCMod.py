@@ -76,29 +76,29 @@ class RPCModBuilder(gegede.builder.Builder):
         # for loop to position and place X strips in RPCMod
         for i in range(nXStrips):
 
-                    xpos  = -0.5*self.rpcModDim[0]+(i+0.5)*self.stripDim[0]
-                    ypos  = '0cm'
-                    zpos  = 0.5*self.rpcModDim[2]-0.5*self.stripDim[2]
-
-                    xS_in_m  = geom.structure.Position( 'XStrip-'+str(i)+'_in_'+self.name,
-                                                        xpos,  ypos,  zpos)
-                    pxS_in_m = geom.structure.Placement( 'placeXStrip-'+str(i)+'_in_'+self.name,
-                                                         volume = rpcMod_lv,pos = xS_in_m,rot = "r90aboutX" )
-
+            xpos  = -0.5*self.rpcModDim[0]+(i+0.5)*self.stripDim[0]
+            ypos  = '0cm'
+            zpos  = 0.5*self.rpcModDim[2]-0.5*self.stripDim[2]
+            
+            xS_in_m  = geom.structure.Position( 'XStrip-'+str(i)+'_in_'+self.name,
+                                                xpos,  ypos,  zpos)
+            pxS_in_m = geom.structure.Placement( 'placeXStrip-'+str(i)+'_in_'+self.name,
+                                                 volume = rpcStrip_lv,pos = xS_in_m,rot = "r90aboutX" )
+            
 
 
         # for loop to position and place Y strips in RPCMod
         for j in range(nYStrips):
 
-                    xpos  = '0cm'
-                    ypos  = -0.5*self.rpcModDim[1]+(j+0.5)*self.stripDim[1]
-                    zpos  = -(0.5*self.rpcModDim[2]-0.5*self.stripDim[2])
-                    yS_in_m  = geom.structure.Position( 'YStrip-'+str(j)+'_in_'+self.name,
-                                                        xpos,  ypos,  zpos)
-                    pyS_in_m = geom.structure.Placement( 'placeYStrip-'+str(j)+'_in_'+self.name,
-                                                         volume = rpcMod_lv,pos = yS_in_m,rot = "r90aboutX")
-                    rpcMod_lv.placements.append( pxS_in_m.name )
-                    rpcMod_lv.placements.append( pyS_in_m.name )
-
+            xpos  = '0cm'
+            ypos  = -0.5*self.rpcModDim[1]+(j+0.5)*self.stripDim[1]
+            zpos  = -(0.5*self.rpcModDim[2]-0.5*self.stripDim[2])
+            yS_in_m  = geom.structure.Position( 'YStrip-'+str(j)+'_in_'+self.name,
+                                                xpos,  ypos,  zpos)
+            pyS_in_m = geom.structure.Placement( 'placeYStrip-'+str(j)+'_in_'+self.name,
+                                                 volume = rpcStrip_lv,pos = yS_in_m,rot = "r90aboutX")
+            rpcMod_lv.placements.append( pxS_in_m.name )
+            rpcMod_lv.placements.append( pyS_in_m.name )
+            
 
         return

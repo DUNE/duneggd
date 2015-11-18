@@ -65,7 +65,7 @@ class ECALEndBuilder(gegede.builder.Builder):
             rsbp_in_ecalend  = geom.structure.Position('SBPlane-'+str(i)+'_in_'+self.name, 
                                                        '0cm', '0cm', zpos)
             prsbp_in_ecalend = geom.structure.Placement('placeSBPlane-'+str(i)+'_in_'+self.name,
-                                                        volume = ecalEnd_lv, 
+                                                        volume = SBPlane_lv, 
                                                         pos = rsbp_in_ecalend, rot="r90aboutZ")
             ecalEnd_lv.placements.append( prsbp_in_ecalend.name )
         
