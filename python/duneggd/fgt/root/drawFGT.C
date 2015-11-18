@@ -36,6 +36,13 @@ drawFGT(TString volName="")
   gGeoManager->GetVolume("volMagnet")->SetVisibility(1);
   gGeoManager->GetVolume("volMagnet")->SetTransparency(20);
 
+  gGeoManager->GetVolume("volECALUpstream")->SetLineColor(kYellow-3);
+  gGeoManager->GetVolume("volECALUpstream")->SetVisibility(1);
+  gGeoManager->GetVolume("volECALUpstream")->SetTransparency(20);
+  gGeoManager->GetVolume("volECALDownstream")->SetLineColor(kYellow-3);
+  gGeoManager->GetVolume("volECALDownstream")->SetVisibility(1);
+  gGeoManager->GetVolume("volECALDownstream")->SetTransparency(20);
+
 
 
  //gGeoManager->GetTopNode();

@@ -53,11 +53,12 @@ class ECALEndBuilder(gegede.builder.Builder):
                                       dy=0.5*self.ecalEndDim[1],
                                       dz=0.5*self.ecalEndDim[2])
         ecalEnd_lv = geom.structure.Volume('vol'+self.name, material=self.ecalMat, shape=ecalEndBox)
-
+        self.add_volume(ecalEnd_lv)
   
 
         #Place the SB Planes in the ECAL
 
+        '''
         for i in range(self.nSBPlanes):
             zpos = -0.5*self.ecalEndDim[2]+ (i+0.5)*SBPlaneDim[2]+i*self.leadThickness
 
@@ -67,5 +68,6 @@ class ECALEndBuilder(gegede.builder.Builder):
                                                         volume = ecalEnd_lv, 
                                                         pos = rsbp_in_ecalend, rot="r90aboutZ")
             ecalEnd_lv.placements.append( prsbp_in_ecalend.name )
+        '''
 
         return

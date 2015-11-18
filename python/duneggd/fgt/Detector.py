@@ -25,8 +25,8 @@ class DetectorBuilder(gegede.builder.Builder):
 
         # Get all of the detector subsystems to position and place
         self.sttBldr      = self.get_builder('STT')
-        #self.ecalUpBldr   = self.get_builder('ECALUpstream')
-        #self.ecalDownBldr = self.get_builder('ECALDownstream')
+        self.ecalUpBldr   = self.get_builder('ECALUpstream')
+        self.ecalDownBldr = self.get_builder('ECALDownstream')
         #self.ecalBarBldr  = self.get_builder('ECALBarrel')
         self.muidUpBldr   = self.get_builder('MuIDUpstream')
         self.muidDownBldr = self.get_builder('MuIDDownstream')
@@ -46,8 +46,6 @@ class DetectorBuilder(gegede.builder.Builder):
     def construct(self, geom):
 
         # Define magnet as boolean, with hole to fit ECAL inside
-        #magBox = geom.shapes.Box( 'Magnet',                 dx=0.5*self.magOutDim[0], 
-        #                          dy=0.5*self.magOutDim[1], dz=0.5*self.magOutDim[2]) 
         magOut = geom.shapes.Box( 'MagOut',                 dx=0.5*self.magOutDim[0], 
                                   dy=0.5*self.magOutDim[1], dz=0.5*self.magOutDim[2]) 
         magIn = geom.shapes.Box(  'MagIn',                  dx=0.5*self.magInDim[0], 
@@ -64,46 +62,9 @@ class DetectorBuilder(gegede.builder.Builder):
         muidBarOutDim  = list(self.muidBarBldr.muidOutDim)
         muidBarInDim   = list(self.muidBarBldr.muidInDim)
         muidBarDim = muidBarOutDim
-        #ecalDownDim = list(self.ecalDownBldr.ecalDim)
-        #ecalUpDim   = list(self.ecalUpBldr.ecalDim)
+        ecalDownDim = list(self.ecalDownBldr.ecalEndDim)
+        ecalUpDim   = list(self.ecalUpBldr.ecalEndDim)
         #ecalBarDim  = list(self.ecalBarBldr.ecalDim)
-
-
-        #########################################################################
-        ########################### Check Assumptions ###########################
-
-        if( muidDownDim[2] == muidUpDim[2] ): 
-            print "DetectorBuilder: Up and Downstream MuIDs the same thickness in beam direction"
-
-        # For the Boolean shapes, make sure the inner/outer dimensions match 
-        #  where they should -- barrel is a "tube" in z and magnet a "tube" in x
-        if( muidBarInDim[2] != muidBarOutDim[2] ): 
-            print "DetectorBuilder: MuID barrel not same length in z on inside and outside"
-            print "     inner barrel is "+str(muidBarInDim[2])+" and outer barrel is "+str(muidBarOutDim[2])+" in z"
-        if( self.magInDim[0] != self.magOutDim[0] ): 
-            print "DetectorBuilder: Magnet not same length in x on inside and outside"
-            print "     inner magnet is "+str(self.magInDim[0])+" and outer magnet is "+str(self.magOutDim[0])+" in x"
-
-        # The MuID barrel should tightly hug the magnet, 
-        #   and be the same dimension in z
-        if( muidBarInDim[0] != self.magOutDim[0] ):
-            print "DetectorBuilder: MuID barrel not touching magnet in x"
-            print "     inner barrel is "+str(muidBarInDim[0])+" and magnet is "+str(self.magOutDim[0])+" in x"
-        if( muidBarInDim[1] != self.magOutDim[1] ): 
-            print "DetectorBuilder: MuID barrel not touching magnet in y"
-            print "     inner barrel is "+str(muidBarInDim[1])+" and outer magnet is "+str(self.magOutDim[1])+" in y"
-        if( muidBarInDim[2] != self.magOutDim[2] ): 
-            print "DetectorBuilder: MuID barrel not same length in z as magnet"
-            print "     barrel is "+str(muidBarInDim[2])+" and outer magnet is "+str(self.magOutDim[2])+" in z"
- 
-        if(       muidDownDim[1] > muidBarDim[1] 
-               or muidDownDim[2] > muidBarDim[2]
-               or muidUpDim[1]   > muidBarDim[1]
-               or muidUpDim[2]   > muidBarDim[2]  ): 
-            print "DetectorBuilder: MuID Ends have larger xy dimensions than Barrel"
-
-        ############################ Finish Checking ############################
-        #########################################################################
 
 
 
@@ -127,27 +88,82 @@ class DetectorBuilder(gegede.builder.Builder):
 
 
         # Position MuID Ends around magnet
-        muidDownPos = [ muidBarPos[0], muidBarPos[1], # add shift parameter if there is any xy shift rel to Barrel
+        muidDownPos = [ muidBarPos[0], muidBarPos[1], # assume centered in xy
                         magPos[2] + 0.5*self.magOutDim[2] + self.downMuIDtoMagnet + 0.5*muidDownDim[2] ]
         muidUpPos   = [ muidBarPos[0], muidBarPos[1],
                         muidBarPos[2] - 0.5*self.magOutDim[2] - self.upMuIDtoMagnet - 0.5*muidUpDim[2] ]
 
 
 
+        # Calculate bounding box dimensions of ECAL so that ECAL/STT unit can 
+        #  be centered in side of the Magnet, until spacings are better known.
+        #ecalBounds = [] # once we have barrel dimensions
+        ecalBound_z = ecalUpDim[2] + sttDim[2] + ecalDownDim[2]
 
 
-        # Position ECAL Barrel and Ends
-        ecalBarPos  = list(muidBarPos)
-        #ecalDownPos = [ ecalBarPos[0], ecalBarPos[1], # add shift parameter if there is any relative shift  
-        #                0.5*ecalBarPos[1] + 0.5*ecalBarDim[2] + 0.5*ecalDownDim[2] ]
-        #ecalUpPos   = [ ecalBarPos[0], ecalBarPos[1],
-        #                0.5*ecalBarPos[1] + 0.5*ecalBarDim[2] + 0.5*ecalUpDim[2] ]
+        # Position ECAL Barrel
+        ecalBarPos    = list(muidBarPos)
+        #ecalBarPos[2] = -0.5*ecalBound_z + ecalUpDim[2] + ecalBarDim[2]  
+
 
 
         # Position volSTT 
         sttPos = [ ecalBarPos[0], 
                    ecalBarPos[1],
-                   ecalBarPos[2]  ] # need to adjust z as soon as ECAL dimensions avaliable.
+                   ecalBarPos[2]  ]
+
+        # Position ECAL Ends
+        ecalDownPos = [ ecalBarPos[0], ecalBarPos[1], # assume centered in xy
+                        sttPos[2] + 0.5*sttDim[2] + 0.5*ecalDownDim[2] ]
+        ecalUpPos   = [ ecalBarPos[0], ecalBarPos[1],
+                        sttPos[2] - 0.5*sttDim[2] - 0.5*ecalUpDim[2] ]
+
+
+
+
+       #########################################################################
+       ########################### Check Assumptions ###########################
+        
+        if( muidDownDim[2] == muidUpDim[2] ): 
+            print "DetectorBuilder: Up and Downstream MuIDs the same thickness in beam direction"
+
+        # For the Boolean shapes, make sure the inner/outer dimensions match 
+        #  where they should -- barrel is a "tube" in z and magnet a "tube" in x
+        if( muidBarInDim[2] != muidBarOutDim[2] ):
+            print "DetectorBuilder: MuID barrel not same length in z on inside and outside"
+            print "     inner barrel is "+str(muidBarInDim[2])+" and outer barrel is "+str(muidBarOutDim[2])+" in z"
+        if( self.magInDim[0] != self.magOutDim[0] ):
+            print "DetectorBuilder: Magnet not same length in x on inside and outside"
+            print "     inner magnet is "+str(self.magInDim[0])+" and outer magnet is "+str(self.magOutDim[0])+" in x"
+
+        # The MuID barrel should tightly hug the magnet,
+        #   and be the same dimension in z
+        if( muidBarInDim[0] != self.magOutDim[0] ):
+            print "DetectorBuilder: MuID barrel not touching magnet in x"
+            print "     inner barrel is "+str(muidBarInDim[0])+" and magnet is "+str(self.magOutDim[0])+" in x"
+        if( muidBarInDim[1] != self.magOutDim[1] ): 
+            print "DetectorBuilder: MuID barrel not touching magnet in y"
+            print "     inner barrel is "+str(muidBarInDim[1])+" and outer magnet is "+str(self.magOutDim[1])+" in y"
+        if( muidBarInDim[2] != self.magOutDim[2] ): 
+            print "DetectorBuilder: MuID barrel not same length in z as magnet"
+            print "     barrel is "+str(muidBarInDim[2])+" and outer magnet is "+str(self.magOutDim[2])+" in z"
+
+        # Check that the ECAL, positioned tightly around the STT, fits
+        #   inside the inner dimensions of the magnet.
+        if( (ecalUpPos[2] - 0.5*ecalUpDim[2]) < (magPos[2] - 0.5*self.magInDim[2]) ):
+            print "DetectorBuilder: Upstream ECAL backmost z face ("+str(ecalUpPos[2] - 0.5*ecalUpDim[2])+" overlaps magnet."
+        if( (ecalDownPos[2] + 0.5*ecalDownDim[2]) < (magPos[2] + 0.5*self.magInDim[2]) ):
+            print "DetectorBuilder: Downstream ECAL backmost z face ("+str(ecalDownPos[2] + 0.5*ecalDownDim[2])+" overlaps magnet."
+ 
+        if(       muidDownDim[1] > muidBarDim[1] 
+               or muidDownDim[2] > muidBarDim[2]
+               or muidUpDim[1]   > muidBarDim[1]
+               or muidUpDim[2]   > muidBarDim[2]  ): 
+            print "DetectorBuilder: MuID Ends have larger xy dimensions than Barrel"
+
+        ############################ Finish Checking ############################
+        #########################################################################
+
 
 
 
@@ -191,3 +207,29 @@ class DetectorBuilder(gegede.builder.Builder):
                                               volume = mag_lv,
                                               pos = mag_in_det)
         det_lv.placements.append(pmag_in_D.name)
+
+
+        # Get volECALDownstream, volECALUpstream, volECALBarrel volumes and place in volDetector
+        ecalDown_lv = self.ecalDownBldr.get_volume('volECALDownstream')
+        ecalDown_in_det = geom.structure.Position('ECALDown_in_Det', ecalDownPos[0], ecalDownPos[1], ecalDownPos[2])
+        pecalDown_in_D = geom.structure.Placement('placeECALDown_in_Det',
+                                                  volume = ecalDown_lv,
+                                                  pos = ecalDown_in_det)
+        det_lv.placements.append(pecalDown_in_D.name)
+        ecalUp_lv = self.ecalUpBldr.get_volume('volECALUpstream')
+        ecalUp_in_det = geom.structure.Position('ECALUp_in_Det', ecalUpPos[0], ecalUpPos[1], ecalUpPos[2])
+        pecalUp_in_D = geom.structure.Placement('placeECALUp_in_Det',
+                                                volume = ecalUp_lv,
+                                                pos = ecalUp_in_det)
+        det_lv.placements.append(pecalUp_in_D.name)
+        '''
+        ecalBar_lv = self.ecalBarBldr.get_volume('volECALBarrel')
+        ecalBar_in_det = geom.structure.Position('ECALBar_in_Det', ecalBarPos[0], ecalBarPos[1], ecalBarPos[2])
+        pecalBar_in_D = geom.structure.Placement('placeECALBar_in_Det',
+                                                 volume = ecalBar_lv,
+                                                 pos = ecalBar_in_det)
+        det_lv.placements.append(pecalBar_in_D.name)
+        '''
+
+
+        return
