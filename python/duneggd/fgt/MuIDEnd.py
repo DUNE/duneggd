@@ -52,7 +52,7 @@ class MuIDEndBuilder(gegede.builder.Builder):
         # Steel Sheets: just leave the default material of volMuID* steel 
         #   and leave spaces instead of placing explicit volumes
 
-        '''
+        
         for i in range(self.nPlanes):
             zpos = -0.5*self.muidDim[2]+(i+0.5)*rpcTrayDim[2]+i*self.magDim[2]
             for j in range(self.nTraysPerPlane):
@@ -64,6 +64,6 @@ class MuIDEndBuilder(gegede.builder.Builder):
                 prpct_in_muid = geom.structure.Placement( 'placeRPCTray-'+str(self.nTraysPerPlane*i+j)+'_in_'+self.name,
                                                           volume = muid_lv, pos = rpct_in_muid,rot = "r90aboutX")
                 muid_lv.placements.append( prpct_in_muid.name )
-        '''
+        
         
         return
