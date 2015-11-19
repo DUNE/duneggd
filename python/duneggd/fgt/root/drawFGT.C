@@ -20,7 +20,8 @@ drawFGT(TString volName="")
   //char topVol[] ="volRPCMod";
   //char topVol[] ="volRPCTray_End";
 
-  char topVol[] ="volECALDownstream";
+  //char topVol[] ="volECALDownstream";
+  char topVol[] ="volECALUpstream";
   //char topVol[] ="volECALBarrel";
   //char topVol[] ="volSBPlane";
 
@@ -65,7 +66,7 @@ drawFGT(TString volName="")
     //cout << v->GetMaterial()->GetName() << endl;
     int lc, vi, tr, vd;
     if           (m == "Scintillator")             { 
-      lc = kGreen-7 ; vi = 1; tr = 20; vd = 1; 
+      lc = kGreen-7 ; vi = 1; tr = 0; vd = 1; 
       v->SetLineColor(lc);
       v->SetVisibility(vi);
       v->VisibleDaughters(vd);
