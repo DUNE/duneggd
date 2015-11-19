@@ -9,12 +9,25 @@ drawFGT(TString volName="")
   TGeoManager::Import("fgt.gdml");
   gGeoManager->DefaultColors();
 
-  TList* mat = gGeoManager->GetListOfMaterials();
-  TIter next(mat);
-  TObject *obj;
-  while (obj = next()) {
-    obj->Print();
-  }
+ 
+  
+  //char topVol[] ="volWorld";
+  //char topVol[] ="volDetEnclosure";
+  char topVol[] ="volDetector";
+
+  //char topVol[] ="volMuIDDownstream";
+  //char topVol[] ="volMuIDBarrel";
+  //char topVol[] ="volRPCMod";
+  //char topVol[] ="volRPCTray_End";
+
+  //char topVol[] ="volECALDownstream";
+  //char topVol[] ="volECALBarrel";
+  //char topVol[] ="volSBPlane";
+
+  //char topVol[] ="volSTT";
+  //char topVol[] ="volSTPlaneTarget";
+  //char topVol[] ="volSTPlaneRadiator";
+  //char topVol[] ="volTargetPlaneArgon";
 
 
   gGeoManager->GetVolume("volDetEnclosure")->SetLineColor(kGray);
@@ -48,13 +61,12 @@ drawFGT(TString volName="")
  //gGeoManager->GetTopNode();
  gGeoManager->CheckOverlaps(1e-5,"d");
  gGeoManager->PrintOverlaps();
+ //gGeoManager->FindVolumeFast(topVol)->CheckOverlaps(1e-5,"d");
+ //gGeoManager->FindVolumeFast(topVol)->GetNode(0)->PrintOverlaps();
  gGeoManager->SetMaxVisNodes(70000);
 
 
-  //gGeoManager->GetTopVolume()->Draw("ogl");
-  gGeoManager->FindVolumeFast("volDetEnclosure")->Draw("ogl");
-  //gGeoManager->FindVolumeFast("volWorld")->Draw("ogl");
-  //gGeoManager->FindVolumeFast("volWorld")->Draw("");
+ gGeoManager->FindVolumeFast(topVol)->Draw("ogl");
 
 
   TFile *tf = new TFile("drawFGT.root", "RECREATE");

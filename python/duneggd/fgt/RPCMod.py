@@ -40,7 +40,7 @@ class RPCModBuilder(gegede.builder.Builder):
                                   dx = 0.5*self.rpcModDim[0],
                                   dy = 0.5*self.rpcModDim[1],
                                   dz = 0.5*self.rpcModDim[2])
-        rpcMod_lv = geom.structure.Volume('volRPCModule_'+self.name, material=self.rpcModMat, shape=rpcMod)
+        rpcMod_lv = geom.structure.Volume('vol'+self.name, material=self.rpcModMat, shape=rpcMod)
         # define box and volume for RPC strip
         rpcStrip = geom.shapes.Box( 'RPCStrip',
                                     dx = 0.5*self.resiplateDim[0],
