@@ -58,16 +58,63 @@ class ECALEndBuilder(gegede.builder.Builder):
 
         #Place the SB Planes in the ECAL
 
-        
+        n1 = 0 
+        n2 = 0
         for i in range(self.nSBPlanes):
             zpos = -0.5*self.ecalEndDim[2]+ (i+0.5)*SBPlaneDim[2]+i*self.leadThickness
 
-            rsbp_in_ecalend  = geom.structure.Position('SBPlane-'+str(i)+'_in_'+self.name, 
+            if i%2==0:
+               rsbp_in_ecalend  = geom.structure.Position('SBPlane-'+str(i)+'_in_'+self.name, 
                                                        '0cm', '0cm', zpos)
-            prsbp_in_ecalend = geom.structure.Placement('placeSBPlane-'+str(i)+'_in_'+self.name,
+               prsbp_in_ecalend = geom.structure.Placement('placeSBPlane-'+str(i)+'_in_'+self.name,
+                                                        volume = SBPlane_lv, 
+                                                        pos = rsbp_in_ecalend)
+               ecalEnd_lv.placements.append( prsbp_in_ecalend.name )
+               n1=n1+1
+            else:
+                rsbp_in_ecalend  = geom.structure.Position('SBPlane-'+str(i)+'_in_'+self.name, 
+                                                       '0cm', '0cm', zpos)
+                prsbp_in_ecalend = geom.structure.Placement('placeSBPlane-'+str(i)+'_in_'+self.name,
                                                         volume = SBPlane_lv, 
                                                         pos = rsbp_in_ecalend, rot="r90aboutZ")
-            ecalEnd_lv.placements.append( prsbp_in_ecalend.name )
-        
-
+                ecalEnd_lv.placements.append( prsbp_in_ecalend.name )
+                n2=n2+1
+                
+        print 'ECALEndBuilder:',i+1 ,'SBPlanes', 'in '+str(self.name)
+        print n1, 'SBPlanes have scint. bars oriented along X direction and', n2, 'SBPlanes have scint. bars oriented along Y direction.' 
         return
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

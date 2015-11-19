@@ -11,12 +11,14 @@ class SBPlaneBuilder(gegede.builder.Builder):
  
     # define builder data here
     #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
-    def configure(self, ScintBarDim = [Q('3.2m'), Q('2.5cm'), Q('1cm')],
+    def configure(self, ScintBarDim = [Q('2.5cm'), Q('3.2m'), Q('1cm')],
                         SBPlaneMat  = "epoxy_resin",
+			nScintBars  = 128,
                         ScintBarMat = "Scintillator", **kwds):
         self.SBPlaneMat  = SBPlaneMat
         self.ScintBarMat = ScintBarMat
         self.ScintBarDim = ScintBarDim
+        self.nScintBars  = nScintBars
      
 
     #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
@@ -30,8 +32,8 @@ class SBPlaneBuilder(gegede.builder.Builder):
 
         # define material in World Builder
         # Make the scint bar plane, used for both orientations
-        self.SBPlaneDim = [Q('3.2m'), Q('3.2m'), Q('1cm')]
-        SBPlaneBox = geom.shapes.Box( 'SBPlaneBox',               dx=0.5*self.SBPlaneDim[0], 
+        self.SBPlaneDim = [ self.ScintBarDim[1], self.ScintBarDim[1], self.ScintBarDim[2] ]
+        SBPlaneBox = geom.shapes.Box( 'SBPlaneBox',              dx=0.5*self.SBPlaneDim[0], 
                                       dy=0.5*self.SBPlaneDim[1], dz=0.5*self.SBPlaneDim[2])
         SBPlane_lv = geom.structure.Volume('volSBPlane', material=self.SBPlaneMat, shape=SBPlaneBox)
         self.add_volume(SBPlane_lv)
@@ -40,9 +42,13 @@ class SBPlaneBuilder(gegede.builder.Builder):
 
 
         # Place the bars in the plane
-        nScintBarsPerPlane = int(math.floor((self.SBPlaneDim[1]/self.ScintBarDim[1])))
+        nScintBarsPerPlane = int(math.floor((self.SBPlaneDim[0]/self.ScintBarDim[0])))
+        print 'SBPlaneBuilder:',nScintBarsPerPlane,'scintillator bars per plane'        
+        if self.nScintBars != nScintBarsPerPlane:
+           print 'SBPlaneBuilder: The no. of scintillator bars per plane should be '+str(self.nScintBars), 'instead of',nScintBarsPerPlane
+  
         for i in range(nScintBarsPerPlane):
-            xpos = -0.5*self.SBPlaneDim[0] + 0.5*(2*i+1)*self.ScintBarDim[1]
+            xpos = -0.5*self.SBPlaneDim[0] + (i+0.5)*self.ScintBarDim[0]
             sb_in_sp      = geom.structure.Position( 'SB-'+str(i)+'_in_'+self.name, 
                                                      xpos, '0cm', '0cm')
             psb_in_sp     = geom.structure.Placement( 'placeSB-'+str(i)+'_in_'+self.name, 
