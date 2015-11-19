@@ -61,7 +61,7 @@ class ECALEndBuilder(gegede.builder.Builder):
         n1 = 0 
         n2 = 0
         for i in range(self.nSBPlanes):
-            zpos = -0.5*self.ecalEndDim[2]+ (i+0.5)*SBPlaneDim[2]+i*self.leadThickness
+            zpos = -0.5*self.ecalEndDim[2]+ (i+0.5)*SBPlaneDim[2]+(i+1)*self.leadThickness
 
             if i%2==0:
                rsbp_in_ecalend  = geom.structure.Position('SBPlane-'+str(i)+'_in_'+self.name, 
@@ -81,7 +81,7 @@ class ECALEndBuilder(gegede.builder.Builder):
                 n2=n2+1
                 
         print 'ECALEndBuilder:',i+1 ,'SBPlanes', 'in '+str(self.name)
-        print n1, 'SBPlanes have scint. bars oriented along X direction and', n2, 'SBPlanes have scint. bars oriented along Y direction.' 
+        print n1, 'SBPlanes have scint. bars oriented along X direction and', n2, 'SBPlanes have scint. bars oriented along Y direction for '+str(self.name) 
         return
 
 
