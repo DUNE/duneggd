@@ -13,14 +13,14 @@ drawFGT(TString volName="")
   
   //char topVol[] ="volWorld";
   //char topVol[] ="volDetEnclosure";
-  char topVol[] ="volDetector";
+  //char topVol[] ="volDetector";
 
   //char topVol[] ="volMuIDDownstream";
   //char topVol[] ="volMuIDBarrel";
   //char topVol[] ="volRPCMod";
   //char topVol[] ="volRPCTray_End";
 
-  //char topVol[] ="volECALDownstream";
+  char topVol[] ="volECALDownstream";
   //char topVol[] ="volECALBarrel";
   //char topVol[] ="volSBPlane";
 
@@ -49,14 +49,36 @@ drawFGT(TString volName="")
   gGeoManager->GetVolume("volMagnet")->SetVisibility(1);
   gGeoManager->GetVolume("volMagnet")->SetTransparency(20);
 
-  gGeoManager->GetVolume("volECALUpstream")->SetLineColor(kYellow-3);
-  gGeoManager->GetVolume("volECALUpstream")->SetVisibility(1);
-  gGeoManager->GetVolume("volECALUpstream")->SetTransparency(20);
-  gGeoManager->GetVolume("volECALDownstream")->SetLineColor(kYellow-3);
-  gGeoManager->GetVolume("volECALDownstream")->SetVisibility(1);
-  gGeoManager->GetVolume("volECALDownstream")->SetTransparency(20);
+  //gGeoManager->GetVolume("volECALUpstream")->SetLineColor(kYellow-3);
+  //gGeoManager->GetVolume("volECALUpstream")->SetVisibility(1);
+  //gGeoManager->GetVolume("volECALUpstream")->SetTransparency(20);
+  //gGeoManager->GetVolume("volECALDownstream")->SetLineColor(kYellow-3);
+  //gGeoManager->GetVolume("volECALDownstream")->SetVisibility(1);
+  //gGeoManager->GetVolume("volECALDownstream")->SetTransparency(20);
 
+  
+  TObjArray* va = gGeoManager->GetListOfVolumes();
+  int nv = va->GetEntries();
+  for (int i=0; i<nv; ++i) {
+    TGeoVolume* v = (TGeoVolume*)va->At(i);
+    std::string m(v->GetMaterial()->GetName());
+    //cout << v->GetMaterial()->GetName() << endl;
+    int lc, vi, tr, vd;
+    if           (m == "Scintillator")             { 
+      lc = kGreen-7 ; vi = 1; tr = 20; vd = 1; 
+      v->SetLineColor(lc);
+      v->SetVisibility(vi);
+      v->VisibleDaughters(vd);
+      v->SetTransparency(tr);
+    }
+    //else {
+    //  continue;
+      //std::cout << "'" << m << "' has no defaults" << std::endl;
+      //lc = kOrange; vi = 0; tr = 50; vd = 1; 
+    //}
 
+  }
+  
 
  //gGeoManager->GetTopNode();
  gGeoManager->CheckOverlaps(1e-5,"d");
