@@ -7,7 +7,7 @@ import gegede.builder
 from gegede import Quantity as Q
 import math
 
-class ECALEndBuilder(gegede.builder.Builder):
+class ECALModBuilder(gegede.builder.Builder):
     '''
     Piece together SBPlanes, worry about rotations in DetectorBuilder,
     assuring that lead layer on outside is closest to tracker
@@ -15,19 +15,19 @@ class ECALEndBuilder(gegede.builder.Builder):
 
     #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
     def configure(self, 
-                  ecal_z = None, 
+                  ecalThickness = None, 
                   leadThickness = None, 
                   nSBPlanes = None,
                   **kwds):
-        if ecal_z is None:
-            raise ValueError("No value given for ecal_z")
+        if ecalThickness is None:
+            raise ValueError("No value given for ecalThickness")
         if leadThickness is None:
             raise ValueError("No value given for leadThickness")
         if nSBPlanes is None:
             raise ValueError("No value given for nSBPlanes")
 
-        self.ecalMat        = "Lead"
-        self.ecal_z        = ecal_z
+        self.ecalMat       = "Lead"
+        self.ecalThickness = ecalThickness
         self.leadThickness = leadThickness
         self.nSBPlanes     = nSBPlanes  
         
@@ -45,7 +45,7 @@ class ECALEndBuilder(gegede.builder.Builder):
         # Calculate ECAL dimensions 
         self.ecalEndDim    = list(SBPlaneDim) # get the right x and y dimension
         self.ecalEndDim[2] = self.nSBPlanes*(self.leadThickness + SBPlaneDim[2])
-        print 'ECALEndBuilder: Configured value of ECAL z dimension is '+str(self.ecal_z)+', assigning calculated value: '+str(self.ecalEndDim[2])
+        print 'ECALEndBuilder: Configured value of ECAL z dimension is '+str(self.ecalThickness)+', assigning calculated value: '+str(self.ecalEndDim[2])
       
         # Make main shape/volume for this builder
         ecalEndBox = geom.shapes.Box( self.name,
