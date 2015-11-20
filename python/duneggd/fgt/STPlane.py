@@ -13,6 +13,7 @@ class STPlaneBuilder(gegede.builder.Builder):
     #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
     def configure(self, sTube_innerDia=Q('0.95cm'), sTube_outerDia=Q('0.9565cm'), 
                   sTube_length=Q('350cm'), sAnodeWire_Dia=('0.003cm'),
+                  nTubesPerPlane = 336,
                   stPlaneMat='Air', strawMat='fibrous_glass', stGas='stGas_Ar', **kwds):
         self.material   = stPlaneMat
         self.strawMat   = strawMat
@@ -21,6 +22,7 @@ class STPlaneBuilder(gegede.builder.Builder):
         self.sTube_outerDia = sTube_outerDia
         self.sTube_length = sTube_length
         self.sAnodeWire_Dia = sAnodeWire_Dia
+        self.nTubesPerPlane = nTubesPerPlane
 
 
     #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
@@ -51,7 +53,9 @@ class STPlaneBuilder(gegede.builder.Builder):
         self.add_volume(sTube_lv)
 
         # Make the double-layer of straw tubes, used for both orientations
-        self.stPlaneDim = [ self.sTube_length, 
+        #   note that it is not perfectly square in xy-- not quite as
+        #   wide as the sTubes are long
+        self.stPlaneDim = [ (self.nTubesPerPlane + 0.5)*self.sTube_outerDia, 
                             self.sTube_length, 
                             2*self.sTube_outerDia*( 1 + math.sin( math.radians(60) ) ) ]
         stPlaneBox = geom.shapes.Box( self.name,                 dx=0.5*self.stPlaneDim[0], 
@@ -59,11 +63,8 @@ class STPlaneBuilder(gegede.builder.Builder):
         stPlane_lv = geom.structure.Volume('vol'+self.name, material=self.material, shape=stPlaneBox)
         self.add_volume(stPlane_lv)
 
-        
-        nTubesPerPlane = int( math.floor((self.stPlaneDim[0] - 0.5*self.sTube_outerDia) / self.sTube_outerDia) )
-        print 'STPlaneBuilder: '+str(nTubesPerPlane)+' straw tubes per plane'
 
-        for i in range(nTubesPerPlane):
+        for i in range(self.nTubesPerPlane):
 
             #     <--- O O O O O O    ^      <--B_i+n    For each i, place ith A at (x,y,z) and
             #      +x   O O O O O O   | +z   <--A_i       place (i+n)th B at (x_next,y,-z),
@@ -78,14 +79,14 @@ class STPlaneBuilder(gegede.builder.Builder):
             # define positions, append placements
             st_in_p      = geom.structure.Position( 'Tube-'+str(i)+'_in_'+self.name, 
                                                     xpos,      ypos,  zpos)
-            stnext_in_p  = geom.structure.Position( 'Tube-'+str(i+nTubesPerPlane)+'_in_'+self.name, 
+            stnext_in_p  = geom.structure.Position( 'Tube-'+str(i+self.nTubesPerPlane)+'_in_'+self.name, 
                                                     xpos_next, ypos, -zpos)
 
             pst_in_p     = geom.structure.Placement( 'placeTube-'+str(i)+'_in_'+self.name,
                                                      volume = sTube_lv,
                                                      pos = st_in_p,
                                                      rot = "r90aboutX")
-            pstnext_in_p = geom.structure.Placement( 'placeTube-'+str(i+nTubesPerPlane)+'_in_'+self.name,
+            pstnext_in_p = geom.structure.Placement( 'placeTube-'+str(i+self.nTubesPerPlane)+'_in_'+self.name,
                                                      volume = sTube_lv,
                                                      pos = stnext_in_p,
                                                      rot = "r90aboutX")
