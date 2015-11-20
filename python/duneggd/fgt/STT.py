@@ -39,10 +39,11 @@ class STTBuilder(gegede.builder.Builder):
         # assume both types of planes have the same dimensions
         self.stPlaneRad_lv   = self.stPlaneRadBldr.get_volume('volSTPlaneRadiator')
 
+
         # Make STT volume -- imaginary box containing STPlanes, Targets, and Radiators
-        self.sttDim = list(self.stPlaneTarBldr.stPlaneDim) # get the right x and y dimensions
         self.targetMod_z = self.targetDim[2] + 2*self.stPlaneDim[2]
-        self.sttDim[2] = (  self.nRadiatorModules*self.radiatorMod_z + self.nTargetModules*self.targetMod_z )
+        self.sttDim      = [ self.stPlaneDim[1], self.stPlaneDim[1], # assume stPlane larger in y than x
+                             self.nRadiatorModules*self.radiatorMod_z + self.nTargetModules*self.targetMod_z ]
         print 'STTBuilder: set STT z dimension to '+str(self.sttDim[2])
         sttBox = geom.shapes.Box( self.name, 
                                   dx=0.5*self.sttDim[0], 
@@ -125,6 +126,7 @@ class STTBuilder(gegede.builder.Builder):
         z_down = downstream_z - self.radiatorDim[2] - 0.5*self.stPlaneDim[2]
         self.place_STPlanes_XXYY(g, 2*i, z_up, z_down, self.stPlaneRad_lv)
 
+
         # Place everything in the STT 
         pR0_in_STT = g.structure.Placement( 'placeRadiator-'+str(2*i)+'-0_in_STT',
                                             volume = self.radiator_lv, pos = R0_in_STT)
@@ -157,8 +159,8 @@ class STTBuilder(gegede.builder.Builder):
                                              '0cm', '0cm', 
                                              z_down)
         
-        print "plane "+str(j)+": "+str(z_up)
-        print "plane "+str(j+1)+": "+str(z_down)
+        #print "plane "+str(j)+": "+str(z_up)
+        #print "plane "+str(j+1)+": "+str(z_down)
 
         # stPlane defined with tubes vertical by default. 
         # Rotate X plany around z to get horizontal tubes

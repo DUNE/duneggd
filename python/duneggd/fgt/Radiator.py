@@ -14,7 +14,7 @@ class RadiatorBuilder(gegede.builder.Builder):
     '''
 
     #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
-    def configure( self, foilThickness=Q('0.004cm'), spacerThickness=Q('0.025cm'), 
+    def configure( self, foilThickness=Q('25um'), spacerThickness=Q('125um'), 
                    nFoilsPerRadiator=60, radFoilDim = None, spacerDim = None,
                    radFoilMat='C3H6', spacerMat='Fabric', **kwds):
 
