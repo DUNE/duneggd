@@ -13,7 +13,7 @@ drawFGT(TString volName="")
   
   //char topVol[] ="volWorld";
   //char topVol[] ="volDetEnclosure";
-  //char topVol[] ="volDetector";
+  char topVol[] ="volDetector";
 
   //char topVol[] ="volMuIDDownstream";
   //char topVol[] ="volMuIDBarrel";
@@ -21,7 +21,7 @@ drawFGT(TString volName="")
   //char topVol[] ="volRPCTray_End";
 
   //char topVol[] ="volECALDownstream";
-  char topVol[] ="volECALUpstream";
+  //char topVol[] ="volECALUpstream";
   //char topVol[] ="volECALBarrel";
   //char topVol[] ="volSBPlane";
 

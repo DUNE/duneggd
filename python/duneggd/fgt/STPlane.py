@@ -57,7 +57,7 @@ class STPlaneBuilder(gegede.builder.Builder):
         #   wide as the sTubes are long
         self.stPlaneDim = [ (self.nTubesPerPlane + 0.5)*self.sTube_outerDia, 
                             self.sTube_length, 
-                            2*self.sTube_outerDia*( 1 + math.sin( math.radians(60) ) ) ]
+                            self.sTube_outerDia*( 1 + math.sin( math.radians(60) ) ) ]
         stPlaneBox = geom.shapes.Box( self.name,                 dx=0.5*self.stPlaneDim[0], 
                                       dy=0.5*self.stPlaneDim[1], dz=0.5*self.stPlaneDim[2])
         stPlane_lv = geom.structure.Volume('vol'+self.name, material=self.material, shape=stPlaneBox)
@@ -73,7 +73,7 @@ class STPlaneBuilder(gegede.builder.Builder):
             xpos      = -0.5*self.stPlaneDim[0] + (i+0.5)*self.sTube_outerDia
             xpos_next =  xpos + 0.5*self.sTube_outerDia
             ypos      =  '0cm'
-            zpos      = -0.5*self.stPlaneDim[2] + self.sTube_outerDia
+            zpos      = -0.5*self.stPlaneDim[2] + 0.5*self.sTube_outerDia
 
 
             # define positions, append placements
