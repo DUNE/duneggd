@@ -58,7 +58,7 @@ class STTBuilder(gegede.builder.Builder):
         # For now arbitrarily order the module type, later do in cfg
         ModuleType = []
         for i in range(nModules):
-            if( i % 2 == 0 and 2*i<self.nTargetModules ): ModuleType.append('ArgonTarget')
+            if( i % 2 == 0 and 0.5*i<self.nTargetModules ): ModuleType.append('ArgonTarget')
             else: ModuleType.append('Radiator')
 
         zpos = -0.5*self.sttDim[2]
@@ -77,8 +77,6 @@ class STTBuilder(gegede.builder.Builder):
 
 
 
-
-
     #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
     def place_TargetModule(self, g, i, z, tarType):
 
@@ -94,23 +92,10 @@ class STTBuilder(gegede.builder.Builder):
 
         # Position the 2 stPlanes, 
         #   assume the downstream one is vertical (Y) and upstream horizontal (X)
-        stPX_in_STT   = g.structure.Position('stPlane-'+str(i)+'-X_in_STT', 
-                                             '0cm', '0cm', 
-                                             z + 0.5*self.targetMod_z - 1.5*self.stPlaneDim[2])
-        stPY_in_STT   = g.structure.Position('stPlane-'+str(i)+'-Y_in_STT', 
-                                             '0cm', '0cm', 
-                                             z + 0.5*self.targetMod_z - 0.5*self.stPlaneDim[2])
-        # stPlane defined with tubes vertical by default. 
-        # Rotate X plany around z to get horizontal tubes
-        p_stPX_in_STT = g.structure.Placement( 'place_stP-'+str(i)+'-X_in_STT',
-                                               volume = self.stPlaneTar_lv,
-                                               pos = stPX_in_STT, 
-                                               rot = "r90aboutZ")
-        p_stPY_in_STT = g.structure.Placement( 'place_stP-'+str(i)+'-Y_in_STT',
-                                               volume = self.stPlaneTar_lv,
-                                               pos = stPY_in_STT)
-        self.stt_lv.placements.append( p_stPX_in_STT.name )
-        self.stt_lv.placements.append( p_stPY_in_STT.name )
+
+        z_up   = z + 0.5*self.targetMod_z - 1.5*self.stPlaneDim[2]
+        z_down = z + 0.5*self.targetMod_z - 0.5*self.stPlaneDim[2]
+        self.place_STPlanes_XXYY(g, 2*i, z_up, z_down, self.stPlaneTar_lv)
 
 
 
@@ -121,55 +106,68 @@ class STTBuilder(gegede.builder.Builder):
         downstream_z = z + 0.5*self.radiatorMod_z
 
         # Position the 4 radiators around radiator module z center
-        R0_in_STT  = g.structure.Position('Radiator-'+str(i)+'-0_in_STT', 
-                                         '0cm', '0cm', 
+        R0_in_STT  = g.structure.Position('Radiator-'+str(2*i)+'-0_in_STT', 
+                                          '0cm', '0cm', 
                                           upstream_z + 0.5*self.radiatorDim[2] )
-        R1_in_STT  = g.structure.Position('Radiator-'+str(i)+'-1_in_STT', 
-                                         '0cm', '0cm', 
+        R1_in_STT  = g.structure.Position('Radiator-'+str(2*i)+'-1_in_STT', 
+                                          '0cm', '0cm', 
                                           upstream_z + 1.5*self.radiatorDim[2] + self.stPlaneDim[2] )
-        R2_in_STT  = g.structure.Position('Radiator-'+str(i)+'-2_in_STT', 
-                                         '0cm', '0cm', 
+        R2_in_STT  = g.structure.Position('Radiator-'+str(2*i+1)+'-2_in_STT', 
+                                          '0cm', '0cm', 
                                           downstream_z - 0.5*self.radiatorDim[2])
-        R3_in_STT  = g.structure.Position('Radiator-'+str(i)+'-3_in_STT', 
-                                         '0cm', '0cm', 
-                                         downstream_z - 1.5*self.radiatorDim[2] - self.stPlaneDim[2] )
-
-        # Position the 2 stPlanes, 
-        #   assume the downstream one is vertical (Y) and upstream horizontal (X)
-        stPX_in_STT   = g.structure.Position('stPlane-'+str(i)+'-X_in_STT', 
-                                             '0cm', '0cm', 
-                                             upstream_z + self.radiatorDim[2] + 0.5*self.stPlaneDim[2])
-        stPY_in_STT   = g.structure.Position('stPlane-'+str(i)+'-Y_in_STT', 
-                                             '0cm', '0cm', 
-                                             downstream_z - self.radiatorDim[2] - 0.5*self.stPlaneDim[2])
+        R3_in_STT  = g.structure.Position('Radiator-'+str(2*i+1)+'-3_in_STT', 
+                                          '0cm', '0cm', 
+                                          downstream_z - 1.5*self.radiatorDim[2] - self.stPlaneDim[2] )
 
 
+        # Position the X (up) and Y (down) st planes
+        z_up   = upstream_z   + self.radiatorDim[2] + 0.5*self.stPlaneDim[2]
+        z_down = downstream_z - self.radiatorDim[2] - 0.5*self.stPlaneDim[2]
+        self.place_STPlanes_XXYY(g, 2*i, z_up, z_down, self.stPlaneRad_lv)
 
         # Place everything in the STT 
-        pR0_in_STT = g.structure.Placement( 'placeRadiator-'+str(i)+'-0_in_STT',
-                                           volume = self.radiator_lv, pos = R0_in_STT)
+        pR0_in_STT = g.structure.Placement( 'placeRadiator-'+str(2*i)+'-0_in_STT',
+                                            volume = self.radiator_lv, pos = R0_in_STT)
 
-        pR1_in_STT = g.structure.Placement( 'placeRadiator-'+str(i)+'-1_in_STT',
-                                           volume = self.radiator_lv, pos = R1_in_STT)
+        pR1_in_STT = g.structure.Placement( 'placeRadiator-'+str(2*i)+'-1_in_STT',
+                                            volume = self.radiator_lv, pos = R1_in_STT)
+        
+        pR2_in_STT = g.structure.Placement( 'placeRadiator-'+str(2*i+1)+'-2_in_STT',
+                                            volume = self.radiator_lv, pos = R2_in_STT)
 
-        pR2_in_STT = g.structure.Placement( 'placeRadiator-'+str(i)+'-2_in_STT',
-                                           volume = self.radiator_lv, pos = R2_in_STT)
-
-        pR3_in_STT = g.structure.Placement( 'placeRadiator-'+str(i)+'-3_in_STT',
-                                           volume = self.radiator_lv, pos = R3_in_STT)
+        pR3_in_STT = g.structure.Placement( 'placeRadiator-'+str(2*i+1)+'-3_in_STT',
+                                            volume = self.radiator_lv, pos = R3_in_STT)
         self.stt_lv.placements.append( pR0_in_STT.name )
         self.stt_lv.placements.append( pR1_in_STT.name )
         self.stt_lv.placements.append( pR2_in_STT.name )
         self.stt_lv.placements.append( pR3_in_STT.name )
 
+
+
+
+    #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
+    def place_STPlanes_XXYY(self, g, j, z_up, z_down, stPlane_lv):
+
+        # Position the 2 stPlanes, 
+        #   assume the downstream one is vertical (Y) and upstream horizontal (X)
+        stPX_in_STT   = g.structure.Position('stPlane-'+str(j)+'-X_in_STT', 
+                                             '0cm', '0cm', 
+                                             z_up)
+        stPY_in_STT   = g.structure.Position('stPlane-'+str(j+1)+'-Y_in_STT', 
+                                             '0cm', '0cm', 
+                                             z_down)
+        
+        print "plane "+str(j)+": "+str(z_up)
+        print "plane "+str(j+1)+": "+str(z_down)
+
         # stPlane defined with tubes vertical by default. 
         # Rotate X plany around z to get horizontal tubes
-        p_stPX_in_STT = g.structure.Placement( 'place_stP-'+str(i)+'-X_in_STT',
-                                               volume = self.stPlaneRad_lv,
+        p_stPX_in_STT = g.structure.Placement( 'place_stP-'+str(j)+'-X_in_STT',
+                                               volume = stPlane_lv,
                                                pos = stPX_in_STT, 
                                                rot = "r90aboutZ")
-        p_stPY_in_STT = g.structure.Placement( 'place_stP-'+str(i)+'-Y_in_STT',
-                                               volume = self.stPlaneRad_lv,
+        p_stPY_in_STT = g.structure.Placement( 'place_stP-'+str(j+1)+'-Y_in_STT',
+                                               volume = stPlane_lv,
                                                pos = stPY_in_STT)
         self.stt_lv.placements.append( p_stPX_in_STT.name )
         self.stt_lv.placements.append( p_stPY_in_STT.name )

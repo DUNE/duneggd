@@ -76,16 +76,16 @@ class STPlaneBuilder(gegede.builder.Builder):
 
 
             # define positions, append placements
-            st_in_p      = geom.structure.Position( 'Tube-'+str(i)+'_in_STPlane_'+self.name, 
+            st_in_p      = geom.structure.Position( 'Tube-'+str(i)+'_in_'+self.name, 
                                                     xpos,      ypos,  zpos)
-            stnext_in_p  = geom.structure.Position( 'Tube-'+str(i+nTubesPerPlane)+'_in_STPlane_'+self.name, 
+            stnext_in_p  = geom.structure.Position( 'Tube-'+str(i+nTubesPerPlane)+'_in_'+self.name, 
                                                     xpos_next, ypos, -zpos)
 
-            pst_in_p     = geom.structure.Placement( 'placeTube-'+str(i)+'_in_STPlane_'+self.name,
+            pst_in_p     = geom.structure.Placement( 'placeTube-'+str(i)+'_in_'+self.name,
                                                      volume = sTube_lv,
                                                      pos = st_in_p,
                                                      rot = "r90aboutX")
-            pstnext_in_p = geom.structure.Placement( 'placeTube-'+str(i+nTubesPerPlane)+'_in_STPlane_'+self.name,
+            pstnext_in_p = geom.structure.Placement( 'placeTube-'+str(i+nTubesPerPlane)+'_in_'+self.name,
                                                      volume = sTube_lv,
                                                      pos = stnext_in_p,
                                                      rot = "r90aboutX")
