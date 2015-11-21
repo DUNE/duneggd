@@ -27,7 +27,7 @@ class DetectorBuilder(gegede.builder.Builder):
         self.sttBldr      = self.get_builder('STT')
         self.ecalUpBldr   = self.get_builder('ECALUpstream')
         self.ecalDownBldr = self.get_builder('ECALDownstream')
-        #self.ecalBarBldr  = self.get_builder('ECALBarrel')
+        self.ecalBarBldr  = self.get_builder('ECALBarrel')
         self.muidUpBldr   = self.get_builder('MuIDUpstream')
         self.muidDownBldr = self.get_builder('MuIDDownstream')
         self.muidBarBldr  = self.get_builder('MuIDBarrel')
@@ -52,10 +52,11 @@ class DetectorBuilder(gegede.builder.Builder):
         muidBarOutDim  = list(self.muidBarBldr.muidOutDim)
         muidBarInDim   = list(self.muidBarBldr.muidInDim)
         muidBarDim = muidBarOutDim
-        ecalDownDim = list(self.ecalDownBldr.ecalEndDim)
-        ecalUpDim   = list(self.ecalUpBldr.ecalEndDim)
-        #ecalBarDim  = list(self.ecalBarBldr.ecalDim)
-
+        ecalDownDim = list(self.ecalDownBldr.ecalModDim)
+        ecalUpDim   = list(self.ecalUpBldr.ecalModDim)
+        ecalBarOutDim  = list(self.ecalBarBldr.ecalOutDim)
+        ecalBarInDim   = list(self.ecalBarBldr.ecalInDim)
+        ecalBarDim  = ecalBarOutDim
 
 
         # vol is a bounding box ~ not corresponding to physical volume.
@@ -93,7 +94,7 @@ class DetectorBuilder(gegede.builder.Builder):
 
         # Position ECAL Barrel
         ecalBarPos    = list(muidBarPos)
-        #ecalBarPos[2] = -0.5*ecalBound_z + ecalUpDim[2] + ecalBarDim[2]  
+        ecalBarPos[2] = -0.5*ecalBound_z + ecalUpDim[2] + 0.5*ecalBarDim[2]  
 
 
 
@@ -224,14 +225,14 @@ class DetectorBuilder(gegede.builder.Builder):
                                                 volume = ecalUp_lv,
                                                 pos = ecalUp_in_det)
         det_lv.placements.append(pecalUp_in_D.name)
-        '''
+        
         ecalBar_lv = self.ecalBarBldr.get_volume('volECALBarrel')
         ecalBar_in_det = geom.structure.Position('ECALBar_in_Det', ecalBarPos[0], ecalBarPos[1], ecalBarPos[2])
         pecalBar_in_D = geom.structure.Placement('placeECALBar_in_Det',
                                                  volume = ecalBar_lv,
                                                  pos = ecalBar_in_det)
         det_lv.placements.append(pecalBar_in_D.name)
-        '''
+       
 
 
         return
