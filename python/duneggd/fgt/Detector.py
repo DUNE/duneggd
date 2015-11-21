@@ -44,16 +44,6 @@ class DetectorBuilder(gegede.builder.Builder):
 
     #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
     def construct(self, geom):
-
-        # Define magnet as boolean, with hole to fit ECAL inside
-        magOut = geom.shapes.Box( 'MagOut',                 dx=0.5*self.magOutDim[0], 
-                                  dy=0.5*self.magOutDim[1], dz=0.5*self.magOutDim[2]) 
-        magIn = geom.shapes.Box(  'MagIn',                  dx=0.5*self.magInDim[0], 
-                                  dy=0.5*self.magInDim[1],  dz=0.5*self.magInDim[2]) 
-        magBox = geom.shapes.Boolean( 'Magnet', type='subtraction', first=magOut, second=magIn ) 
-        mag_lv = geom.structure.Volume('volMagnet', material=self.magMat, shape=magBox)
-        self.add_volume(mag_lv)
-
         
         # Get subsystem dimensions, 
         sttDim      = list(self.sttBldr.sttDim)
@@ -183,7 +173,7 @@ class DetectorBuilder(gegede.builder.Builder):
 
 
         # Get volMuIDDownstream, volMuIDUpstream, volMuIDBarrel,
-        # and volMagnet volumes and place in volDetector
+        #   volumes and place in volDetector
         muidDown_lv = self.muidDownBldr.get_volume('volMuIDDownstream')
         muidDown_in_det = geom.structure.Position('MuIDDown_in_Det', muidDownPos[0], muidDownPos[1], muidDownPos[2])
         pmuidDown_in_D = geom.structure.Placement('placeMuIDDown_in_Det',
@@ -202,11 +192,23 @@ class DetectorBuilder(gegede.builder.Builder):
                                                  volume = muidBar_lv,
                                                  pos = muidBar_in_det)
         det_lv.placements.append(pmuidBar_in_D.name)
+
+
+
+        # Define magnet as boolean, with hole to fit ECAL inside, place it
+        magOut = geom.shapes.Box( 'MagOut',                 dx=0.5*self.magOutDim[0], 
+                                  dy=0.5*self.magOutDim[1], dz=0.5*self.magOutDim[2]) 
+        magIn = geom.shapes.Box(  'MagIn',                  dx=0.5*self.magInDim[0], 
+                                  dy=0.5*self.magInDim[1],  dz=0.5*self.magInDim[2]) 
+        magBox = geom.shapes.Boolean( 'Magnet', type='subtraction', first=magOut, second=magIn ) 
+        mag_lv = geom.structure.Volume('volMagnet', material=self.magMat, shape=magBox)
+        self.add_volume(mag_lv)
         mag_in_det = geom.structure.Position('Mag_in_Det', magPos[0], magPos[1], magPos[2])
         pmag_in_D  = geom.structure.Placement('placeMag_in_Det',
                                               volume = mag_lv,
                                               pos = mag_in_det)
         det_lv.placements.append(pmag_in_D.name)
+
 
 
         # Get volECALDownstream, volECALUpstream, volECALBarrel volumes and place in volDetector

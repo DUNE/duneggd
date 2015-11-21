@@ -19,7 +19,8 @@ class WorldBuilder(gegede.builder.Builder):
                   servBuildingDim =  [Q('45ft'),Q('37.5ft'),Q('135.5ft')], 
                   secondHallDim   =  [Q('47ft'),Q('11ft'),Q('19ft')], 
                   encBackWallToHall_z = Q('46.25ft'),
-                  overburden          = Q('155.94ft'), 
+                  overburden          = Q('155.94ft'),
+                  dirtDepth           = Q('50ft'),
                   primaryShaft_r      = Q('11ft'), 
                   secondaryShaft_r    = Q('8.5ft'),
                   shaftToEndBuilding  = Q('79ft'),
@@ -31,6 +32,7 @@ class WorldBuilder(gegede.builder.Builder):
 
         self.servBDim            = servBuildingDim
         self.overburden          = overburden
+        self.dirtDepth           = dirtDepth
         self.primaryShaft_r      = primaryShaft_r
         self.secondaryShaft_r    = secondaryShaft_r
         self.secondHallDim       = secondHallDim
@@ -123,6 +125,11 @@ class WorldBuilder(gegede.builder.Builder):
                           0.5*self.worldDim[1] - 0.5*skyDim[1],
                           Q('0cm') ]
 
+        # Put dirt layer around shafts
+        dirtLayerPos  = [ Q('0cm'),
+                          detEncPos[1] + 0.5*detEncDim[1] + self.overburden - 0.5*self.dirtDepth,
+                          Q('0cm') ]
+
 
         ########################### Above is math, below is GGD ###########################
 
@@ -184,6 +191,26 @@ class WorldBuilder(gegede.builder.Builder):
 
 
 
+        # Dirt layer
+        DirtLayerBox = geom.shapes.Box(     'DirtLayerBox',          dx=0.5*self.worldDim[0], 
+                                            dy=0.5*self.dirtDepth,   dz=0.5*self.worldDim[2])
+        pShaft_in_dLayer = geom.structure.Position('pShaft_in_dLayer', primShaftPos[0], Q('0cm'), primShaftPos[2])
+        sShaft_in_dLayer = geom.structure.Position('sShaft_in_dLayer', secShaftPos[0],  Q('0cm'), secShaftPos[2] )
+        DirtLayer1   = geom.shapes.Boolean( 'DirtLayer1', type='subtraction', 
+                                            first=DirtLayerBox, second=pShaftTube,
+                                            pos = pShaft_in_dLayer, rot='r90aboutX') 
+        DirtLayer    = geom.shapes.Boolean( 'DirtLayer',  type='subtraction', 
+                                            first=DirtLayer1, second=sShaftTube,
+                                            pos = sShaft_in_dLayer, rot='r90aboutX') 
+        dirtLayer_lv = geom.structure.Volume('volDirtLayer', material='Dirt', shape=DirtLayer)
+        dLayer_in_world = geom.structure.Position('dLayer_in_World', dirtLayerPos[0], dirtLayerPos[1], dirtLayerPos[2])
+        pdl_in_W = geom.structure.Placement('placeDLayer_in_World',
+                                            volume = dirtLayer_lv,
+                                            pos = dLayer_in_world )
+        world_lv.placements.append(pdl_in_W.name)
+
+
+
         # Sky with building
         skyBox = geom.shapes.Box( 'Sky',            dx=0.5*skyDim[0], 
                                   dy=0.5*skyDim[1], dz=0.5*skyDim[2])
@@ -221,7 +248,6 @@ class WorldBuilder(gegede.builder.Builder):
         n  = g.matter.Element("nitrogen",   "N",  7,  "14.0671*g/mole")
         o  = g.matter.Element("oxygen",     "O",  8,  "15.999*g/mole" )
         f  = g.matter.Element("fluorine",   "F",  9,  "18.9984*g/mole")
-        br = g.matter.Element("bromine",    "Br", 35, "79.904*g/mole" )
         na = g.matter.Element("sodium",     "Na", 11, "22.99*g/mole"  )
         mg = g.matter.Element("magnesium",  "Mg", 12, "24.305*g/mole" )
         al = g.matter.Element("aluminum",   "Al", 13, "26.9815*g/mole")
@@ -229,11 +255,13 @@ class WorldBuilder(gegede.builder.Builder):
         p  = g.matter.Element("phosphorus", "P",  15, "30.973*g/mole" )
         s  = g.matter.Element("sulfur",     "S",  16, "32.065*g/mole" )
         ar = g.matter.Element("argon",      "Ar", 18, "39.948*g/mole" )
+        ar = g.matter.Element("potassium",  "K",  19, "39.0983*g/mole")
         ca = g.matter.Element("calcium",    "Ca", 20, "40.078*g/mole" )
         ti = g.matter.Element("titanium",   "Ti", 22, "47.867*g/mole" )
         cr = g.matter.Element("chromium",   "Cr", 24, "51.9961*g/mole")
         fe = g.matter.Element("iron",       "Fe", 26, "55.8450*g/mole")
         ni = g.matter.Element("nickel",     "Ni", 28, "58.6934*g/mole")
+        br = g.matter.Element("bromine",    "Br", 35, "79.904*g/mole" )
         xe = g.matter.Element("xenon",      "Xe", 58, "131.293*g/mole")
         pb = g.matter.Element("lead",       "Pb", 82, "207.20*g/mole" )
 
@@ -266,6 +294,16 @@ class WorldBuilder(gegede.builder.Builder):
                                      ("P2O5",   0.0007),
                                  ))
 
+
+        dirt  = g.matter.Mixture( "Dirt", density = "1.7*g/cc", 
+                                 components = (
+                                     ("oxygen",    0.438),
+                                     ("silicon",   0.257),
+                                     ("sodium",    0.222),
+                                     ("aluminum",  0.049),
+                                     ("iron",      0.019),
+                                     ("potassium", 0.015),
+                                 ))
 
         air   = g.matter.Mixture( "Air", density = "1.290*mg/cc", 
                                  components = (

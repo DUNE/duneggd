@@ -33,6 +33,10 @@ drawSite(TString volName="")
   gGeoManager->GetVolume("volSky")->SetTransparency(20);
 
 
+  gGeoManager->GetVolume("volDirtLayer")->SetLineColor(kOrange+3);
+  gGeoManager->GetVolume("volDirtLayer")->SetVisibility(1);
+  gGeoManager->GetVolume("volDirtLayer")->SetTransparency(20);
+
 
  //gGeoManager->GetTopNode();
  gGeoManager->CheckOverlaps(1e-5,"d");
