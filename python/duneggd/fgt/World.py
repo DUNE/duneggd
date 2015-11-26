@@ -319,6 +319,21 @@ class WorldBuilder(gegede.builder.Builder):
                                           ("Fe2O3",  0.001)
                                       ))
 
+
+        bakelite = g.matter.Mixture( "Bakelite", density = "1.25*g/cc", 
+                                      components = (
+                                          ("hydrogen", 0.057441),
+                                          ("carbon",   0.774591),
+                                          ("oxygen",   0.167968)
+                                      ))
+
+
+        honeycomb = g.matter.Mixture( "Honeycomb", density = "0.94*g/cc", 
+                                      components = (
+                                          ("hydrogen", 0.143711),
+                                          ("carbon",   0.856289)
+                                      ))
+
         # Materials for the radiators and st planes following
         # WARNING! densities not right!
         Fabric = g.matter.Molecule("Fabric", density="0.1*g/cc",   elements=(("carbon",16),("hydrogen",18),("oxygen",1)))
