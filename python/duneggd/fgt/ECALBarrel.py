@@ -42,10 +42,63 @@ class ECALBarrelBuilder(gegede.builder.Builder):
         self.add_volume(ecalBar_lv)
 
 
-        # Get the ECAL Module volumes
-        #ecalMod_lv = self.ECALModBldr.get_volume('volecalMod')
-
+        # Get the ECAL Barrel  Module volumes
+        ecalMod_lv = self.ECALBarModBldr.get_volume('ECALBarMod')
                 
         # Place the ECAL Modules, being mindful of rotation
-
+        rtopup_in_ecalbarrel   = geom.structure.Position('ECALTopUp_in_'+self.name, 
+                                                         '0m', '1.858m', '-1.6m') # y: (3.5m + 21.6cm)/2 z: -(3.2m)/2 
+        prtopup_in_ecalbarrel  = geom.structure.Placement('placeECALTopUp_in_'+self.name,
+                                                          volume = ecalMod_lv, 
+                                                          pos = rtopup_in_ecalbarrel, rot='r90aboutX')
+        ecalBar_lv.placements.append( prtopup_in_ecalbarrel.name )
+ 
+        rtopdown_in_ecalbarrel   = geom.structure.Position('ECALTopDown_in_'+self.name, 
+                                                           '0m', '1.858m', '1.6m')
+        prtopdown_in_ecalbarrel  = geom.structure.Placement('placeECALTopDown_in_'+self.name,
+                                                            volume = ecalMod_lv, 
+                                                            pos = rtopdown_in_ecalbarrel, rot='r90aboutX')
+        ecalBar_lv.placements.append( prtopdown_in_ecalbarrel.name )
+        
+        rleftup_in_ecalbarrel   = geom.structure.Position('ECALLeftUp_in_'+self.name, 
+                                                          '-1.858m', '0m', '-1.6m')
+        prleftup_in_ecalbarrel  = geom.structure.Placement('placeECALLeftUp_in_'+self.name,
+                                                          volume = ecalMod_lv, 
+                                                          pos = rleftup_in_ecalbarrel, rot='r90aboutY')
+        ecalBar_lv.placements.append( prleftup_in_ecalbarrel.name )
+ 
+        rleftdown_in_ecalbarrel   = geom.structure.Position('ECALLeftDown_in_'+self.name, 
+                                                            '-1.858m', '0m', '1.6m')
+        prleftdown_in_ecalbarrel  = geom.structure.Placement('placeECALLeftDown_in_'+self.name,
+                                                            volume = ecalMod_lv, 
+                                                            pos = rleftdown_in_ecalbarrel, rot='r90aboutY')
+        ecalBar_lv.placements.append( prleftdown_in_ecalbarrel.name )
+        
+        rdownup_in_ecalbarrel   = geom.structure.Position('ECALDownUp_in_'+self.name, 
+                                                         '0m', '-1.858m', '-1.6m')
+        prdownup_in_ecalbarrel  = geom.structure.Placement('placeECALDownUp_in_'+self.name,
+                                                          volume = ecalMod_lv, 
+                                                          pos = rdownup_in_ecalbarrel, rot='rminus90aboutX')
+        ecalBar_lv.placements.append( prdownup_in_ecalbarrel.name )
+ 
+        rdowndown_in_ecalbarrel   = geom.structure.Position('ECALDownDown_in_'+self.name, 
+                                                           '0m', '-1.858m', '1.6m')
+        prdowndown_in_ecalbarrel  = geom.structure.Placement('placeECALDownDown_in_'+self.name,
+                                                            volume = ecalMod_lv, 
+                                                            pos = rdowndown_in_ecalbarrel, rot='rminus90aboutX')
+        ecalBar_lv.placements.append( prdowndown_in_ecalbarrel.name )
+        
+        rrightup_in_ecalbarrel   = geom.structure.Position('ECALRightUp_in_'+self.name, 
+                                                          '1.858m', '0m', '-1.6m')
+        prrightup_in_ecalbarrel  = geom.structure.Placement('placeECALRightUp_in_'+self.name,
+                                                          volume = ecalMod_lv, 
+                                                          pos = rrightup_in_ecalbarrel, rot='rminus90aboutY')
+        ecalBar_lv.placements.append( prrightup_in_ecalbarrel.name )
+ 
+        rrightdown_in_ecalbarrel   = geom.structure.Position('ECALRightDown_in_'+self.name, 
+                                                            '1.858m', '0m', '1.6m')
+        prrightdown_in_ecalbarrel  = geom.structure.Placement('placeECALRightDown_in_'+self.name,
+                                                            volume = ecalMod_lv, 
+                                                            pos = rrightdown_in_ecalbarrel, rot='rminus90aboutY')
+        ecalBar_lv.placements.append( prrightdown_in_ecalbarrel.name )
         return
