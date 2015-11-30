@@ -24,7 +24,6 @@ class WorldBuilder(gegede.builder.Builder):
                   primaryShaft_r      = Q('11ft'), 
                   secondaryShaft_r    = Q('8.5ft'),
                   shaftToEndBuilding  = Q('79ft'),
-                  placeDetector       = True,
                   worldMat='Rock', **kwds):
         self.worldDim = worldDim
         self.material   = worldMat
@@ -38,7 +37,6 @@ class WorldBuilder(gegede.builder.Builder):
         self.secondHallDim       = secondHallDim
         self.encBackWallToHall_z = encBackWallToHall_z
         self.shaftToEndBuilding  = shaftToEndBuilding
-        self.placeDet            = placeDetector
 
         self.secHallMat = 'Air'
         self.servBMat   = 'Air'
@@ -51,13 +49,10 @@ class WorldBuilder(gegede.builder.Builder):
         # Get relevant dimensions
         detEncDim     = list(self.detEncBldr.detEncDim)
         secShaft_y    = self.overburden + detEncDim[1] - self.secondHallDim[1]
-        if self.placeDet:
-            encBoundToDet = list(self.detEncBldr.encBoundToDet)
-            detDim        = list(self.detEncBldr.detDim)
-        else:
-            encBoundToDet = [ Q('0cm'), Q('0cm'), Q('0cm') ]
-            detDim        = list(encBoundToDet)
 
+        encBoundToDet = list(self.detEncBldr.encBoundToDet)
+        detDim        = list(self.detEncBldr.detDim)
+        
 
         ########################### SET THE ORIGIN  #############################
         #                                                                       #
@@ -324,6 +319,21 @@ class WorldBuilder(gegede.builder.Builder):
                                           ("TiO2",   0.013),
                                           ("Na2O",   0.010),
                                           ("Fe2O3",  0.001)
+                                      ))
+
+
+        bakelite = g.matter.Mixture( "Bakelite", density = "1.25*g/cc", 
+                                      components = (
+                                          ("hydrogen", 0.057441),
+                                          ("carbon",   0.774591),
+                                          ("oxygen",   0.167968)
+                                      ))
+
+
+        honeycomb = g.matter.Mixture( "Honeycomb", density = "0.94*g/cc", 
+                                      components = (
+                                          ("hydrogen", 0.143711),
+                                          ("carbon",   0.856289)
                                       ))
 
         # Materials for the radiators and st planes following

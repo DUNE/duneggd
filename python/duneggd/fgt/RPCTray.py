@@ -45,22 +45,24 @@ class RPCTrayBuilder(gegede.builder.Builder):
         
         # position and place RPCMods
         for i in range(self.nrpcRow):
+            if (self.rpcTrayDim[1] < self.nrpcRow*rpcModDim[1]):
+                ypos = (1-i)*(-0.5*self.rpcTrayDim[1]+0.5*rpcModDim[1])
+                if i==1:
+                      zpos = 0.25*self.rpcTrayDim[2]
+                else:                   
+                    zpos = -0.25*self.rpcTrayDim[2]
+            else:
+                 ypos = -0.5*self.rpcTrayDim[1]+(i+0.5)*rpcModDim[1]
+                 zpos = '0cm'
             for j in range(self.nrpcCol):
-                xpos = -0.5*self.rpcTrayDim[0]+(self.nrpcCol*i+j+0.5)*rpcModDim[0]
-                ypos = -0.5*self.rpcTrayDim[1]+(i+0.5)*rpcModDim[1]
-                if (self.rpcTrayDim[1] < self.nrpcRow*rpcModDim[1]):
-                    if i==1:
-                        zpos = 0.5*self.rpcTrayDim[2]
-                    else:
-                        zpos = Q('0cm')
-                else:
-                    zpos = Q('0cm')
+                xpos = -0.5*self.rpcTrayDim[0]+(j+0.5)*rpcModDim[0]
 
                 rpcm_in_t  = geom.structure.Position( 'RPCMod-'+str(self.nrpcCol*i+j)+'_in_'+self.name,
                                                       xpos,  ypos,  zpos)
                 prpcm_in_t = geom.structure.Placement( 'placeRPCMod-'+str(self.nrpcCol*i+j)+'_in_'+self.name,
                                                        volume = rpcMod_lv, pos = rpcm_in_t)
                 rpcTray_lv.placements.append( prpcm_in_t.name )
+                #print 'rpctray : '+str(i)+' '+str(j)+' RPCTray- xpos: '+str(xpos)+' ypos: '+str(ypos)+' zpos: '+str(zpos)
         
         
         return
