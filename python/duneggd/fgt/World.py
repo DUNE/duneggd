@@ -134,6 +134,7 @@ class WorldBuilder(gegede.builder.Builder):
         r90aboutY      = geom.structure.Rotation( 'r90aboutY',      '0deg',   '90deg', '0deg'  )
         rminus90aboutY = geom.structure.Rotation( 'rminus90aboutY', '0deg', '-90deg',  '0deg'  )
         r90aboutZ      = geom.structure.Rotation( 'r90aboutZ',      '0deg',   '0deg',  '90deg' )
+        r90aboutXZ = geom.structure.Rotation( 'r90aboutXZ', '90deg',  '0deg', '90deg'  )
 
         worldBox = geom.shapes.Box( self.name,               dx=0.5*self.worldDim[0], 
                                     dy=0.5*self.worldDim[1], dz=0.5*self.worldDim[2])
