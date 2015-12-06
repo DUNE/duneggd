@@ -35,10 +35,10 @@ class RPCTrayBuilder(gegede.builder.Builder):
         # define box and volume for RPC tray,
         # to be retrieved by MuID*Builder.
         # size will depend on configuration
-        rpcTray = geom.shapes.Box(self.name,
-                                 dx = 0.5*self.rpcTrayDim[0],
-                                 dy = 0.5*self.rpcTrayDim[1],
-                                 dz = 0.5*self.rpcTrayDim[2])
+        rpcTray = geom.shapes.Box( self.name,
+                                   dx = 0.5*self.rpcTrayDim[0],
+                                   dy = 0.5*self.rpcTrayDim[1],
+                                   dz = 0.5*self.rpcTrayDim[2])
         rpcTray_lv = geom.structure.Volume('vol'+self.name, material=self.rpcTrayMat, shape=rpcTray)
         self.add_volume(rpcTray_lv)
         

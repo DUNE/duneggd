@@ -48,7 +48,7 @@ class STTBuilder(gegede.builder.Builder):
         self.targetMod_z = self.targetDim[2] + self.xxyyMod_z
         self.sttDim      = [ self.stPlaneDim[1], self.stPlaneDim[1], # assume stPlane larger in y than x
                              self.nRadiatorModules*self.radiatorMod_z + self.nTargetModules*self.targetMod_z ]
-        print 'STTBuilder: set STT z dimension to '+str(self.sttDim[2])+' (was configured as '+str(self.stt_z)+')'
+        print 'STTBuilder: set STT z dimension to '+str(self.sttDim[2])+' (configured as '+str(self.stt_z)+')'
         sttBox = geom.shapes.Box( self.name, 
                                   dx=0.5*self.sttDim[0], 
                                   dy=0.5*self.sttDim[1], 
