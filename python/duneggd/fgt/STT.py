@@ -10,7 +10,8 @@ class STTBuilder(gegede.builder.Builder):
 
     #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
     def configure( self, nRadiatorModules=46, nTargetModules=36, 
-                   radiatorMod_z=Q("76mm"), sttMat='Air', **kwds):
+                   radiatorMod_z=Q('76mm'), stt_z=Q('6.4m'), xxyyMod_z=Q('62mm'),
+                   sttMat='Air', **kwds):
         self.sttMat          = sttMat
         self.stPlaneTarBldr  = self.get_builder('STPlaneTarget')
         self.stPlaneRadBldr  = self.get_builder('STPlaneRadiator')
@@ -18,9 +19,12 @@ class STTBuilder(gegede.builder.Builder):
         self.radiatorBldr    = self.get_builder('Radiator')
 
         self.nTargetModules    = nTargetModules
+           # 1 target plane and 2 st planes per target module
         self.nRadiatorModules  = nRadiatorModules
-        # There are 4 radiators and 2 st planes per mod
+           # 4 radiators and 2 st planes per radiator module
         self.radiatorMod_z     = radiatorMod_z
+        self.xxyyMod_z         = xxyyMod_z
+        self.stt_z             = stt_z
 
         self.printZpos = False
 
@@ -41,10 +45,10 @@ class STTBuilder(gegede.builder.Builder):
 
 
         # Make STT volume -- imaginary box containing STPlanes, Targets, and Radiators
-        self.targetMod_z = self.targetDim[2] + 2*self.stPlaneDim[2]
+        self.targetMod_z = self.targetDim[2] + self.xxyyMod_z
         self.sttDim      = [ self.stPlaneDim[1], self.stPlaneDim[1], # assume stPlane larger in y than x
                              self.nRadiatorModules*self.radiatorMod_z + self.nTargetModules*self.targetMod_z ]
-        print 'STTBuilder: set STT z dimension to '+str(self.sttDim[2])
+        print 'STTBuilder: set STT z dimension to '+str(self.sttDim[2])+' (was configured as '+str(self.stt_z)+')'
         sttBox = geom.shapes.Box( self.name, 
                                   dx=0.5*self.sttDim[0], 
                                   dy=0.5*self.sttDim[1], 
@@ -53,20 +57,17 @@ class STTBuilder(gegede.builder.Builder):
         self.add_volume(self.stt_lv)
 
 
-        # Place all of the STPlanes, Targets, and Radiators
-        nModules = self.nRadiatorModules + self.nTargetModules
-
         # For now arbitrarily order the module type, later do in cfg
+        nModules = self.nRadiatorModules + self.nTargetModules
         ModuleType = []
         for i in range(nModules):
             if( i % 2 == 0 and 0.5*i<self.nTargetModules ): ModuleType.append('ArgonTarget')
             else: ModuleType.append('Radiator')
 
+
+        # Place all of the STPlanes, Targets, and Radiators
         zpos = -0.5*self.sttDim[2]
         for i in range(nModules):
-
-            #if(self.printZpos): print "Module "+str(i)+": "+ModuleType[i]
-
             if  ( ModuleType[i]=='ArgonTarget' ): 
                 zpos += 0.5*self.targetMod_z
                 self.place_TargetModule(geom, i, zpos, 'Argon')
@@ -75,6 +76,8 @@ class STTBuilder(gegede.builder.Builder):
                 zpos += 0.5*self.radiatorMod_z
                 self.place_RadiatorModule(geom, i, zpos)
                 zpos += 0.5*self.radiatorMod_z
+
+        return
 
 
 
@@ -94,10 +97,20 @@ class STTBuilder(gegede.builder.Builder):
         # Position the 2 stPlanes, 
         #   assume the downstream one is vertical (Y) and upstream horizontal (X)
 
-        z_up   = z + 0.5*self.targetMod_z - 1.5*self.stPlaneDim[2]
-        z_down = z + 0.5*self.targetMod_z - 0.5*self.stPlaneDim[2]
+        # each x and y plane has some amount of supporting material on both sides
+        #  | |XX| || |YY| |
+        #  | |XX| || |YY| |
+        #  | |XX| || |YY| |
+        #  | |XX| || |YY| |
+        #   ^    ^  ^    ^  -- space (extra material)
+        #      ^       ^    -- STPlanes
+        space = 0.25*(self.xxyyMod_z - 2*self.stPlaneDim[2])
+
+        z_up   = z + 0.5*self.targetMod_z - 1.5*self.stPlaneDim[2] - 3*space
+        z_down = z + 0.5*self.targetMod_z - 0.5*self.stPlaneDim[2] - 1*space
         self.place_STPlanes_XXYY(g, 2*i, z_up, z_down, self.stPlaneTar_lv)
 
+        return
 
 
     #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
@@ -144,7 +157,7 @@ class STTBuilder(gegede.builder.Builder):
         self.stt_lv.placements.append( pR2_in_STT.name )
         self.stt_lv.placements.append( pR3_in_STT.name )
 
-
+        return
 
 
     #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
@@ -173,3 +186,5 @@ class STTBuilder(gegede.builder.Builder):
                                                pos = stPY_in_STT)
         self.stt_lv.placements.append( p_stPX_in_STT.name )
         self.stt_lv.placements.append( p_stPY_in_STT.name )
+        
+        return
