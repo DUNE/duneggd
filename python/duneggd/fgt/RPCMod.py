@@ -77,8 +77,8 @@ class RPCModBuilder(gegede.builder.Builder):
         nXStrips = int(self.resiplateDim[0]/self.stripxDim[0])
         nYStrips = int(self.resiplateDim[1]/self.stripyDim[1])
 
-        print 'RPCModBuilder: '+ str(nXStrips) +' X-Strips per RPC '
-        print 'RPCModBuilder: '+ str(nYStrips) +' Y-Strips per RPC '
+        #print 'RPCModBuilder: '+ str(nXStrips) +' X-Strips per RPC '
+        #print 'RPCModBuilder: '+ str(nYStrips) +' Y-Strips per RPC '
 
         # for loop to position and place X strips in RPCMod
         for i in range(nXStrips):
