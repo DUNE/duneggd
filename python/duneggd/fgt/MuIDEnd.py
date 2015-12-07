@@ -15,14 +15,14 @@ class MuIDEndBuilder(gegede.builder.Builder):
     #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
     def configure(self, 
                   muidDim = [ Q('600cm'), Q('600cm'), Q('107.5cm') ],
-                  magDim = [ Q('600cm'), Q('600cm'), Q('20cm') ], 
+                  steelPlateDim = [ Q('600cm'), Q('600cm'), Q('20cm') ], 
                   nTraysPerPlane = 3, 
                   nPlanes = None,
                   muidMat = 'Steel', **kwds):
 
         self.muidMat        = muidMat
         self.muidDim        = muidDim
-        self.magDim         = magDim
+        self.steelPlateDim  = steelPlateDim
         self.nTraysPerPlane = nTraysPerPlane
         self.nPlanes        = nPlanes
         
@@ -55,7 +55,7 @@ class MuIDEndBuilder(gegede.builder.Builder):
 
         
         for i in range(self.nPlanes):
-            zpos = -0.5*self.muidDim[2]+(i+0.5)*rpcTrayDim[2]+i*self.magDim[2]
+            zpos = -0.5*self.muidDim[2]+(i+0.5)*rpcTrayDim[2]+i*self.steelPlateDim[2]
             for j in range(self.nTraysPerPlane):
 
                 xpos = Q('0cm')
