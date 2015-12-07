@@ -13,7 +13,7 @@ class MuIDBarrelBuilder(gegede.builder.Builder):
     '''
 
     #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
-    def configure(self, muidInDim=None, magInDim=None, magThickness=Q('60cm'), steelPlateThickness=Q('30cm'), **kwds):
+    def configure(self, muidInDim=None, magInDim=None, magThickness=Q('60cm'), steelPlateThickness=Q('10cm'), **kwds):
         if muidInDim is None:
             raise ValueError("No value given for muidInDim")
 

@@ -69,13 +69,13 @@ class RadiatorBuilder(gegede.builder.Builder):
             radiator_lv.placements.append( pF_in_R.name )
             
             # the spacer
-            zpos += 0.5*self.spacerDim[2]
+            zpos += 0.5*(self.radFoilDim[2]+self.spacerDim[2])
             spacer_in_rad = geom.structure.Position('spacer-'+str(i)+'_in_Rad', '0cm', '0cm', zpos)
             pS_in_R = geom.structure.Placement( 'placeSpacer-'+str(i)+'_in_Rad',
                                                 volume = spacer_lv,
                                                 pos = spacer_in_rad)
             radiator_lv.placements.append( pS_in_R.name )
-
+            zpos += 0.5*self.spacerDim[2]
 
         # add all of the volumes to this RadiatorBuilder
         self.add_volume(radFoil_lv, spacer_lv, radiator_lv)
