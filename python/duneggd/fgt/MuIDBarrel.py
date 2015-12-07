@@ -13,7 +13,7 @@ class MuIDBarrelBuilder(gegede.builder.Builder):
     '''
 
     #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
-    def configure(self, muidInDim=None, magInDim=None, magThickness=Q('60cm'), **kwds):
+    def configure(self, muidInDim=None, magInDim=None, magThickness=Q('60cm'), steelPlateThickness=Q('30cm'), **kwds):
         if muidInDim is None:
             raise ValueError("No value given for muidInDim")
 
@@ -21,6 +21,7 @@ class MuIDBarrelBuilder(gegede.builder.Builder):
         self.muidInDim  = muidInDim
         self.magInDim   = magInDim
         self.magThickness = magThickness
+        self.steelPlateThickness = steelPlateThickness
 
         # Get RPC tray builders
         self.RPCTraySmallBldr = self.get_builder('RPCTray_BarSmall')
@@ -31,24 +32,6 @@ class MuIDBarrelBuilder(gegede.builder.Builder):
 
     #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
     def construct(self, geom):
-
-
-        # Just like in the EndBuilder, calculate outer dimensions 
-        #  using other configured parameters: number of planes, thicknesses...
-        # For now I'm using the CDR reported dimensions:
-        self.muidOutDim = list(self.muidInDim)
-        self.muidOutDim[0] = Q('6.54m')#9.6m')
-        self.muidOutDim[1] = Q('6.8m')#4.5m')
-
-
-        # Define barrel as boolean, with hole to fit magnet inside
-        muidOut = geom.shapes.Box( 'MuIDOut',                 dx=0.5*self.muidOutDim[0], 
-                                   dy=0.5*self.muidOutDim[1], dz=0.5*self.muidOutDim[2]) 
-        muidIn = geom.shapes.Box(  'MuIDIn',                  dx=0.5*self.muidInDim[0], 
-                                   dy=0.5*self.muidInDim[1],  dz=0.5*self.muidInDim[2]) 
-        muidBarBox = geom.shapes.Boolean( self.name, type='subtraction', first=muidOut, second=muidIn )
-        muidBar_lv = geom.structure.Volume('vol'+self.name, material=self.defMat, shape=muidBarBox)
-        self.add_volume(muidBar_lv)
 
 
         # Get the RPC tray volumes and dimensions
@@ -62,45 +45,64 @@ class MuIDBarrelBuilder(gegede.builder.Builder):
         rpcTrayDim_big = self.RPCTrayBigBldr.rpcTrayDim
 
 
+        # Just like in the EndBuilder, calculate outer dimensions 
+        #  using other configured parameters: number of planes, thicknesses...
+        # For now I'm using the CDR reported dimensions:
+        self.muidOutDim = list(self.muidInDim)
+        self.muidOutDim[0] = self.muidInDim[0] + 2*(4*self.steelPlateThickness+3*rpcTrayDim_big[2])
+        self.muidOutDim[1] = self.muidInDim[1] + 2*4*self.steelPlateThickness
+
+
+        # Define barrel as boolean, with hole to fit magnet inside
+        muidOut = geom.shapes.Box( 'MuIDOut',                 dx=0.5*self.muidOutDim[0], 
+                                   dy=0.5*self.muidOutDim[1], dz=0.5*self.muidOutDim[2]) 
+        muidIn = geom.shapes.Box(  'MuIDIn',                  dx=0.5*self.muidInDim[0], 
+                                   dy=0.5*self.muidInDim[1],  dz=0.5*self.muidInDim[2]) 
+        muidBarBox = geom.shapes.Boolean( self.name, type='subtraction', first=muidOut, second=muidIn )
+        muidBar_lv = geom.structure.Volume('vol'+self.name, material=self.defMat, shape=muidBarBox)
+        self.add_volume(muidBar_lv)
+
+
         # Place the RPC trays and steel sheets between, being mindful of rotation
         # Steel Sheets: just leave the default material of volMuID* steel 
         #   and leave spaces instead of placing explicit volumes
         # Placement of rpcTrays in vertical MuIDBarrel
         for i in range(4):
 
-           xpos      = -0.5*self.muidOutDim[0]+0.5*self.magThickness+0.5*rpcTrayDim_big[2]
-           xpos_mids = -0.5*self.muidOutDim[0]+1.0*self.magThickness+1.5*rpcTrayDim_big[2]
-           xpos_midf = -0.5*self.muidOutDim[0]+1.5*self.magThickness+2.5*rpcTrayDim_big[2]
+           xpos      = -0.5*self.muidOutDim[0]+1*self.steelPlateThickness+0.5*rpcTrayDim_big[2]
+           xpos_mids = -0.5*self.muidOutDim[0]+2*self.steelPlateThickness+1.5*rpcTrayDim_big[2]
+           xpos_midf = -0.5*self.muidOutDim[0]+3*self.steelPlateThickness+2.5*rpcTrayDim_big[2]
            if (i>1):
                    xpos = -xpos
                    xpos_mids = -xpos_mids
                    xpos_midf = -xpos_midf
            if (i%2==0):
-                     l=0
+                     l=-1
            else:
                l=1
-           zpos = -0.5*self.muidOutDim[2]+(l+0.5)*rpcTrayDim_big[0]
+           zpos = l*0.5*rpcTrayDim_big[0]
+           #loop over up & down layers
            for j in range(2):
-
-                ypos      = -0.5*self.muidOutDim[1]+0.5*self.magThickness+(j+0.5)*rpcTrayDim_big[1]
-                ypos_mids = -0.5*self.muidOutDim[1]+1.0*self.magThickness+(j+0.5)*rpcTrayDim_mids[1]
-                ypos_midf = -0.5*self.muidOutDim[1]+1.5*self.magThickness+(j+0.5)*rpcTrayDim_midf[1]
+                if (j==0):
+                        k=-1
+                else:
+                    k=1
+                ypos      = k*0.5*rpcTrayDim_big[1]
+                ypos_mids = k*0.5*rpcTrayDim_mids[1]
+                ypos_midf = k*0.5*rpcTrayDim_midf[1]
 
                 brpct_in_muid  = geom.structure.Position( 'brpct-'+str(i*2+j)+'_in_'+self.name,
                                                          xpos,  ypos,  zpos)
                 pbrpct_in_muid = geom.structure.Placement( 'pbrpct-'+str(i*2+j)+'_in_'+self.name,
                                                          volume = bigTray_lv, pos = brpct_in_muid, rot= "r90aboutY" )
-                #print 'vbmuidbar: '+str(i)+' xpos:     '+str(xpos)+' ypos: '+str(ypos)+' zpos: '+str(zpos)
                 smrpct_in_muid  = geom.structure.Position( 'smrpct-'+str(i*2+j)+'_in_'+self.name,
                                                          xpos_mids,  ypos_mids,  zpos)
                 psmrpct_in_muid = geom.structure.Placement( 'psmrpct-'+str(i*2+j)+'_in_'+self.name,
                                                           volume = smidTray_lv, pos = smrpct_in_muid, rot= "r90aboutY" )
-                #print 'vmsmuidbar: '+str(i)+' xpos_mids:  '+str(xpos_mids)+' ypos_mids: '+str(ypos_mids)+' zpos: '+str(zpos)
                 fmrpct_in_muid  = geom.structure.Position( 'fmrpct-'+str(i*2+j)+'_in_'+self.name,
                                                          xpos_midf,  ypos_midf,  zpos)
                 pfmrpct_in_muid = geom.structure.Placement( 'pfmrpct-'+str(i*2+j)+'_in_'+self.name,
                                                           volume = fmidTray_lv, pos = fmrpct_in_muid, rot= "r90aboutY" )
-                #print 'vmfmuidbar: '+str(i)+' xpos_midf: '+str(xpos_midf)+' ypos_midf: '+str(ypos_midf)+' zpos: '+str(zpos)
                 muidBar_lv.placements.append( pbrpct_in_muid.name )
                 muidBar_lv.placements.append( psmrpct_in_muid.name )
                 muidBar_lv.placements.append( pfmrpct_in_muid.name )
@@ -108,25 +110,25 @@ class MuIDBarrelBuilder(gegede.builder.Builder):
         # Placement of rpcTrays in Horizontal MuIDBarrel
         for i in range(4):
 
-            xpos_mids  = -0.5*self.muidOutDim[0]+0.5*self.magThickness+1*rpcTrayDim_mids[2]+0.5*rpcTrayDim_mids[1]
-            xpos_midf  = -0.5*self.muidOutDim[0]+1.0*self.magThickness+2*rpcTrayDim_mids[2]+0.5*rpcTrayDim_midf[1]
-            xpos_small = -0.5*self.muidOutDim[0]+1.5*self.magThickness+3*rpcTrayDim_mids[2]+0.5*rpcTrayDim_small[1]
+            xpos_mids  = -0.5*self.muidOutDim[0]+1*self.steelPlateThickness+1*rpcTrayDim_mids[2]+0.5*rpcTrayDim_mids[1]
+            xpos_midf  = -0.5*self.muidOutDim[0]+2*self.steelPlateThickness+2*rpcTrayDim_mids[2]+0.5*rpcTrayDim_midf[1]
+            xpos_small = -0.5*self.muidOutDim[0]+3*self.steelPlateThickness+3*rpcTrayDim_mids[2]+0.5*rpcTrayDim_small[1]
             if (i>1):
                    xpos_mids = -xpos_mids
                    xpos_midf = -xpos_midf
                    xpos_small = -xpos_small
 
             if (i%2==0):
-                    l=0
+                    l=-1
             else:
                 l=1
-            zpos = -0.5*self.muidOutDim[2]+(l+0.5)*rpcTrayDim_mids[0]
+            zpos = l*0.5*rpcTrayDim_mids[0]
             #loop over up & down layers
             for j in range(2):
 
-                ypos_mids = -0.5*self.muidOutDim[1]+0.5*self.magThickness+(0.5)*rpcTrayDim_mids[2]
-                ypos_midf = -0.5*self.muidOutDim[1]+1.0*self.magThickness+(-1+0.5)*rpcTrayDim_mids[2]
-                ypos_small= -0.5*self.muidOutDim[1]+1.5*self.magThickness+(-2+0.5)*rpcTrayDim_mids[2]
+                ypos_mids = 0.5*self.muidInDim[1]+3*self.steelPlateThickness+(-0.5)*rpcTrayDim_mids[2]
+                ypos_midf = 0.5*self.muidInDim[1]+2*self.steelPlateThickness+(-0.5)*rpcTrayDim_mids[2]
+                ypos_small= 0.5*self.muidInDim[1]+1*self.steelPlateThickness+(-0.5)*rpcTrayDim_mids[2]
                 if (j==1):
                         ypos_mids = -ypos_mids
                         ypos_midf = -ypos_midf
@@ -148,7 +150,4 @@ class MuIDBarrelBuilder(gegede.builder.Builder):
                 muidBar_lv.placements.append( psmvrpct_in_muid.name )
                 muidBar_lv.placements.append( pfmvrpct_in_muid.name )
                 muidBar_lv.placements.append( psvrpct_in_muid.name )
-                #print 'hmsmuidbar: '+str(i)+' xpos_mids:     '+str(xpos_mids)+' ypos_mids: '+str(ypos_mids)+' zpos: '+str(zpos)
-                #print 'hmfmuidbar: '+str(i)+' xpos_midf:     '+str(xpos_midf)+' ypos_midf: '+str(ypos_midf)+' zpos: '+str(zpos)
-                #print 'hsmuidbar: '+str(i)+' xpos_small:     '+str(xpos_small)+' ypos_small: '+str(ypos_small)+' zpos: '+str(zpos)
         return
