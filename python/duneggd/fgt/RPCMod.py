@@ -15,7 +15,7 @@ class RPCModBuilder(gegede.builder.Builder):
     #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
     def configure(self, 
                   rpcModDim    = [ Q('200cm'),   Q('100cm'),  Q('1.5cm')  ], 
-                  resiplateDim = [ Q('196cm'),   Q('96cm'),   Q('0.8cm')  ], 
+                  resiplateDim = [ Q('196cm'),   Q('96cm'),   Q('0.3cm')  ], 
                   stripxDim    = [ Q('0.765cm'), Q('96cm'), Q('0.35cm') ],
                   stripyDim    = [ Q('196cm'), Q('0.75cm'), Q('0.35cm') ],
                   gas_gap      = Q('0.2cm'),
@@ -67,9 +67,9 @@ class RPCModBuilder(gegede.builder.Builder):
         rpcGas_lv = geom.structure.Volume('volRPCGas', material=self.gasMat, shape=rpcGas)
 
         # position and place resistive plates in RPCMod
-        pRP_in_Module = geom.structure.Placement( 'placeRP_in_'+self.name, volume = resiplate_lv )
+        #pRP_in_Module = geom.structure.Placement( 'placeRP_in_'+self.name, volume = resiplate_lv )
         pG_in_Module  = geom.structure.Placement( 'placeG_in_'+self.name, volume = rpcGas_lv )
-        rpcMod_lv.placements.append( pRP_in_Module.name )
+        #rpcMod_lv.placements.append( pRP_in_Module.name )
         rpcMod_lv.placements.append( pG_in_Module.name )
         self.add_volume(rpcMod_lv)
 
@@ -107,6 +107,20 @@ class RPCModBuilder(gegede.builder.Builder):
                                                  volume = rpcStripy_lv,pos = yS_in_m)#,rot = "r90aboutX")
             rpcMod_lv.placements.append( pyS_in_m.name )
             #print str(j)+' y-strip pos: '+str(xpos)+str(ypos)+str(zpos)
+
+
+        for k in range(2):
+
+            xpos = '0cm'
+            ypos = '0cm'
+            zpos = -(0.5*self.gas_gap+0.5*self.resiplateDim[2])
+            if (k==1):
+                    zpos = -zpos
+            RP_in_m  = geom.structure.Position( 'RP-'+str(k)+'_in_'+self.name,
+                                                xpos,  ypos,  zpos)
+            pRP_in_m = geom.structure.Placement( 'placeRP-'+str(k)+'_in_'+self.name,
+                                                 volume = resiplate_lv,pos = RP_in_m)
+            rpcMod_lv.placements.append( pRP_in_m.name )
 
 
         return
