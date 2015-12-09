@@ -387,7 +387,13 @@ class WorldBuilder(gegede.builder.Builder):
 
         # Materials for the ECAL
         # Epoxy Resin (Glue that will hold the scintillator bars and the lead sheets together):
-        epoxy_resin   = g.matter.Molecule("epoxy_resin",   density="1.1250*g/cc",   elements=(("carbon",38), ("hydrogen",40), ("oxygen",6), ("bromine",4) ))
+        epoxy_resin   = g.matter.Molecule("epoxy_resin",   density="1.1250*g/cc",   
+                                          elements=(
+                                              ("carbon",38), 
+                                              ("hydrogen",40), 
+                                              ("oxygen",6) 
+                                              #("bromine",4) GENIE having trouble with Br 
+                                              ))
         
         # Scintillator:
         Scintillator  = g.matter.Mixture("Scintillator",   density="1.05*g/cc",   
