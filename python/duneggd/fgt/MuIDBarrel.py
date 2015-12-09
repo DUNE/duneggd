@@ -53,6 +53,7 @@ class MuIDBarrelBuilder(gegede.builder.Builder):
         self.muidOutDim = list(self.muidInDim)
         self.muidOutDim[0] = self.muidInDim[0] + 2*(6*self.steelPlateThickness+3*rpcTrayDim_big[2]+2*self.air_gap)
         self.muidOutDim[1] = self.muidInDim[1] + 2*(6*self.steelPlateThickness+3*rpcTrayDim_big[2]+2*self.air_gap)
+        self.muidOutDim[2] = self.muidInDim[2] + self.gap_tworpctrays
 
 
         # Define barrel as boolean, with hole to fit magnet inside
@@ -86,13 +87,14 @@ class MuIDBarrelBuilder(gegede.builder.Builder):
            zpos = l*0.5*(self.gap_tworpctrays+rpcTrayDim_big[0])
            #loop over up & down layers
            for j in range(2):
-                if (j==0):
-                        k=-1
-                else:
-                    k=1
-                ypos      = k*0.5*(self.gap_tworpctrays+rpcTrayDim_big[1])
-                ypos_mids = k*0.5*(self.gap_tworpctrays+rpcTrayDim_mids[1])
-                ypos_midf = k*0.5*(self.gap_tworpctrays+rpcTrayDim_midf[1])
+
+                ypos      = -0.5*(self.gap_tworpctrays+rpcTrayDim_big[1])
+                ypos_mids = -0.5*(self.gap_tworpctrays+rpcTrayDim_mids[1])
+                ypos_midf = -0.5*(self.gap_tworpctrays+rpcTrayDim_midf[1])
+                if (j==1):
+					    ypos = -ypos
+					    ypos_mids = -ypos_mids
+					    ypos_midf = -ypos_midf
 
                 brpct_in_muid  = geom.structure.Position( 'brpct-'+str(i*2+j)+'_in_'+self.name,
                                                          xpos,  ypos,  zpos)
@@ -109,6 +111,7 @@ class MuIDBarrelBuilder(gegede.builder.Builder):
                 muidBar_lv.placements.append( pbrpct_in_muid.name )
                 muidBar_lv.placements.append( psmrpct_in_muid.name )
                 muidBar_lv.placements.append( pfmrpct_in_muid.name )
+
 
         # Placement of rpcTrays in Horizontal MuIDBarrel
         for i in range(4):
@@ -129,9 +132,9 @@ class MuIDBarrelBuilder(gegede.builder.Builder):
             #loop over up & down layers
             for j in range(2):
 
-                ypos_mids  = -0.5*self.muidOutDim[1]+1*self.steelPlateThickness+0.5*rpcTrayDim_mids[2]
-                ypos_midf  = -0.5*self.muidOutDim[1]+3*self.steelPlateThickness+1*self.air_gap+1.5*rpcTrayDim_mids[2]
-                ypos_small = -0.5*self.muidOutDim[1]+5*self.steelPlateThickness+2*self.air_gap+2.5*rpcTrayDim_mids[2]
+                ypos_mids  = -(0.5*self.gap_tworpctrays+rpcTrayDim_big[1]+0.5*rpcTrayDim_big[2])
+                ypos_midf  = -(0.5*self.gap_tworpctrays+rpcTrayDim_mids[1]+0.5*rpcTrayDim_big[2])
+                ypos_small = -(0.5*self.gap_tworpctrays+rpcTrayDim_midf[1]+0.5*rpcTrayDim_big[2])
                 if (j==1):
                         ypos_mids  = -ypos_mids
                         ypos_midf  = -ypos_midf
@@ -153,4 +156,5 @@ class MuIDBarrelBuilder(gegede.builder.Builder):
                 muidBar_lv.placements.append( psmvrpct_in_muid.name )
                 muidBar_lv.placements.append( pfmvrpct_in_muid.name )
                 muidBar_lv.placements.append( psvrpct_in_muid.name )
+
         return
