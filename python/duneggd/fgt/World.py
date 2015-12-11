@@ -341,6 +341,11 @@ class WorldBuilder(gegede.builder.Builder):
         # WARNING! densities not right!
         Fabric = g.matter.Molecule("Fabric", density="0.1*g/cc",   elements=(("carbon",16),("hydrogen",18),("oxygen",1)))
         C3H6   = g.matter.Molecule("C3H6",   density="0.1*g/cc",   elements=(("carbon",3), ("hydrogen",6)))
+        RadBlend = g.matter.Mixture( "RadiatorBlend", density = "0.1*g/cc", 
+                                     components = (
+                                         ("Fabric",  0.5), # WARNING! need to calculate these fractional components
+                                         ("C3H6",    0.5)
+                                     ))
         stGas_Xe = g.matter.Mixture( "stGas_Xe", density = "0.1*g/cc", 
                                       components = (
                                           ("CO2",    0.3),
