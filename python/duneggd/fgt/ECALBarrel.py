@@ -16,7 +16,7 @@ class ECALBarrelBuilder(gegede.builder.Builder):
 
         self.defMat    = "Air"
         self.ecalInDim  = ecalInDim
-        self.ECALBarModBldr = self.get_builder('ECALBarMod')
+        self.ECALBarModBldr = self.get_builder('ECALBarrelMod')
 
 
     #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
@@ -43,7 +43,7 @@ class ECALBarrelBuilder(gegede.builder.Builder):
 
 
         # Get the ECAL Barrel  Module volumes
-        ecalMod_lv = self.ECALBarModBldr.get_volume('ECALBarMod')
+        ecalMod_lv = self.ECALBarModBldr.get_volume('ECALBarrelMod')
                 
         # Place the ECAL Modules, being mindful of rotation
         rtopup_in_ecalbarrel   = geom.structure.Position('ECALTopUp_in_'+self.name, 
