@@ -87,15 +87,16 @@ class DetectorBuilder(gegede.builder.Builder):
 
 
         # Calculate bounding box dimensions of ECAL so that ECAL/STT unit can 
-        #  be centered in side of the Magnet, until spacings are better known.
-        #ecalBounds = [] # once we have barrel dimensions
-        ecalBound_z = ecalUpDim[2] + sttDim[2] + ecalDownDim[2]
+        #  be centered inside of the Magnet, until spacings are better known.
+        # Assume barrel is larger in x,y, while z dim is sum of stt and ECAL ends
+        ecalBounds = [ ecalBarDim[0], 
+                       ecalBarDim[1], 
+                       ecalUpDim[2] + sttDim[2] + ecalDownDim[2] ]
 
 
         # Position ECAL Barrel
         ecalBarPos    = list(muidBarPos)
-        ecalBarPos[2] = -0.5*ecalBound_z + ecalUpDim[2] + 0.5*ecalBarDim[2]  
-
+        ecalBarPos[2] = -0.5*ecalBounds[2] + ecalUpDim[2] + 0.5*sttDim[2]
 
 
         # Position volSTT 
@@ -142,9 +143,13 @@ class DetectorBuilder(gegede.builder.Builder):
         # Check that the ECAL, positioned tightly around the STT, fits
         #   inside the inner dimensions of the magnet.
         if( (ecalUpPos[2] - 0.5*ecalUpDim[2]) < (magPos[2] - 0.5*self.magInDim[2]) ):
-            print "DetectorBuilder: Upstream ECAL backmost z face ("+str(ecalUpPos[2] - 0.5*ecalUpDim[2])+" overlaps magnet."
+            print "DetectorBuilder: Upstream ECAL backmost z face ("+str(ecalUpPos[2] - 0.5*ecalUpDim[2])+") overlaps magnet."
         if( (ecalDownPos[2] + 0.5*ecalDownDim[2]) < (magPos[2] + 0.5*self.magInDim[2]) ):
-            print "DetectorBuilder: Downstream ECAL backmost z face ("+str(ecalDownPos[2] + 0.5*ecalDownDim[2])+" overlaps magnet."
+            print "DetectorBuilder: Downstream ECAL backmost z face ("+str(ecalDownPos[2] + 0.5*ecalDownDim[2])+") overlaps magnet."
+
+        if( self.magInDim[2] < ecalUpDim[2] + sttDim[2] + ecalDownDim[2] ):
+            print "DetectorBuilder: STT+ECAL ends ("+str(ecalUpDim[2] + sttDim[2] + ecalDownDim[2])+") do not fit inside magnet ("+str(self.magInDim[2])+")"
+            
  
         if(       muidDownDim[1] > muidBarDim[1] 
                or muidDownDim[2] > muidBarDim[2]
@@ -223,7 +228,8 @@ class DetectorBuilder(gegede.builder.Builder):
         ecalUp_in_det = geom.structure.Position('ECALUp_in_Det', ecalUpPos[0], ecalUpPos[1], ecalUpPos[2])
         pecalUp_in_D = geom.structure.Placement('placeECALUp_in_Det',
                                                 volume = ecalUp_lv,
-                                                pos = ecalUp_in_det)
+                                                pos = ecalUp_in_det,
+                                                rot='r180aboutY')
         det_lv.placements.append(pecalUp_in_D.name)
         
         ecalBar_lv = self.ecalBarBldr.get_volume('volECALBarrel')
