@@ -263,7 +263,7 @@ class WorldBuilder(gegede.builder.Builder):
         fe = g.matter.Element("iron",       "Fe", 26, "55.8450*g/mole")
         ni = g.matter.Element("nickel",     "Ni", 28, "58.6934*g/mole")
         br = g.matter.Element("bromine",    "Br", 35, "79.904*g/mole" )
-        xe = g.matter.Element("xenon",      "Xe", 58, "131.293*g/mole")
+        xe = g.matter.Element("xenon",      "Xe", 54, "131.293*g/mole")
         pb = g.matter.Element("lead",       "Pb", 82, "207.20*g/mole" )
 
 
@@ -352,7 +352,8 @@ class WorldBuilder(gegede.builder.Builder):
         stGas_Xe = g.matter.Mixture( "stGas_Xe", density = "0.1*g/cc", 
                                       components = (
                                           ("CO2",    0.3),
-                                          ("xenon",  0.7)
+                                          ("argon",  0.7)
+                                          #("xenon",  0.7)   #GENIE XSec spline having trouble with xenon 
                                       ))
 
         # Materials for the targets and st planes following
