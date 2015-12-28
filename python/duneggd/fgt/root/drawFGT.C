@@ -22,7 +22,7 @@ drawFGT(TString volName="")
 
   //char topVol[] ="volECALDownstream";
   //char topVol[] ="volECALUpstream";
-  //char topVol[] ="volECALBarrel";
+  //char topVol[] ="volBarrelECAL";
   //char topVol[] ="volSBPlane";
 
   //char topVol[] ="volSTT";
