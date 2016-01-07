@@ -360,6 +360,7 @@ class WorldBuilder(gegede.builder.Builder):
         H2O      = g.matter.Molecule("Water",       density="1.0*kg/l",   elements=(("oxygen",1),("hydrogen",2)))
         ArTarget = g.matter.Molecule("ArgonTarget", density="0.233*g/cc", elements=(("argon",1),))
         #Aluminum = g.matter.Molecule("Aluminum",    density="2.70*g/cc",  elements=(("aluminum",1),))
+        CarFiber = g.matter.Molecule("CarbonFiber", density="1.6*g/cc",  elements=(("carbon",1),))
         stGas_Ar = g.matter.Mixture( "stGas_Ar", density = "0.1*g/cc", 
                                       components = (
                                           ("CO2",    0.3),

@@ -22,7 +22,7 @@ class TargetPlaneBuilder(gegede.builder.Builder):
 
         self.targetMat   = targetMat
         self.defaultMat  = 'Air'
-        self.tubeMat     = 'Aluminum'
+        self.tubeMat     = 'CarbonFiber'
 
         self.tTube_innerDia  = tTube_innerDia
         self.tTube_outerDia  = tTube_outerDia
