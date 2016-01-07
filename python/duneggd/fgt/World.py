@@ -359,12 +359,16 @@ class WorldBuilder(gegede.builder.Builder):
         # Materials for the targets and st planes following
         H2O      = g.matter.Molecule("Water",       density="1.0*kg/l",   elements=(("oxygen",1),("hydrogen",2)))
         ArTarget = g.matter.Molecule("ArgonTarget", density="0.233*g/cc", elements=(("argon",1),))
-        Aluminum = g.matter.Molecule("Aluminum",    density="2.70*g/cc",  elements=(("aluminum",1),))
+        #Aluminum = g.matter.Molecule("Aluminum",    density="2.70*g/cc",  elements=(("aluminum",1),))
         stGas_Ar = g.matter.Mixture( "stGas_Ar", density = "0.1*g/cc", 
                                       components = (
                                           ("CO2",    0.3),
                                           ("argon",  0.7)
                                       ))
+
+        Iron     = g.matter.Molecule("Iron",     density="7.874*g/cc", elements=(("iron",1),))
+        Graphite = g.matter.Molecule("Graphite", density="2.23*g/cc",  elements=(("carbon",1),))
+        Calcium  = g.matter.Molecule("Calcium",  density="1.55*g/cc",  elements=(("calcium",1),))
 
         Steel    = g.matter.Mixture( "Steel", density = "7.9300*g/cc", 
                                      components = (
