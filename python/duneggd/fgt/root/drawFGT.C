@@ -9,11 +9,11 @@ drawFGT(TString volName="")
   TGeoManager::Import("fgt.gdml");
   gGeoManager->DefaultColors();
 
- 
+  bool allSolid=true;
   
-  //char topVol[] ="volWorld";
+  char topVol[] ="volWorld";
   //char topVol[] ="volDetEnclosure";
-  char topVol[] ="volDetector";
+  //char topVol[] ="volDetector";
 
   //char topVol[] ="volMuIDDownstream";
   //char topVol[] ="volMuIDBarrel";
@@ -35,6 +35,7 @@ drawFGT(TString volName="")
   gGeoManager->GetVolume("volDetEnclosure")->SetVisibility(1);
   gGeoManager->GetVolume("volDetEnclosure")->SetTransparency(20);
 
+  gGeoManager->GetVolume("volDirtLayer")->SetTransparency(20);
 
   gGeoManager->GetVolume("volServiceBuilding")->SetLineColor(kGray);
   gGeoManager->GetVolume("volServiceBuilding")->SetVisibility(1);
@@ -48,15 +49,24 @@ drawFGT(TString volName="")
 
   gGeoManager->GetVolume("volMagnet")->SetLineColor(kGreen-1);
   gGeoManager->GetVolume("volMagnet")->SetVisibility(1);
-  gGeoManager->GetVolume("volMagnet")->SetTransparency(20);
+  if(!allSolid) gGeoManager->GetVolume("volMagnet")->SetTransparency(10);
 
-  //gGeoManager->GetVolume("volECALUpstream")->SetLineColor(kYellow-3);
-  //gGeoManager->GetVolume("volECALUpstream")->SetVisibility(1);
-  //gGeoManager->GetVolume("volECALUpstream")->SetTransparency(20);
-  //gGeoManager->GetVolume("volECALDownstream")->SetLineColor(kYellow-3);
-  //gGeoManager->GetVolume("volECALDownstream")->SetVisibility(1);
-  //gGeoManager->GetVolume("volECALDownstream")->SetTransparency(20);
 
+  gGeoManager->GetVolume("volECALBarrelMod")->SetLineColor(kRed);
+  gGeoManager->GetVolume("volECALBarrelMod")->SetVisibility(1);
+  if(!allSolid) gGeoManager->GetVolume("volECALBarrelMod")->SetTransparency(75);
+  
+  gGeoManager->GetVolume("volSBPlane")->SetLineColor(kRed-3);
+  gGeoManager->GetVolume("volSBPlane")->SetVisibility(1);
+  if(!allSolid) gGeoManager->GetVolume("volSBPlane")->SetTransparency(80);
+  /*
+  gGeoManager->GetVolume("volECALUpstream")->SetLineColor(kYellow-3);
+  gGeoManager->GetVolume("volECALUpstream")->SetVisibility(1);
+  gGeoManager->GetVolume("volECALUpstream")->SetTransparency(20);
+  gGeoManager->GetVolume("volECALDownstream")->SetLineColor(kYellow-3);
+  gGeoManager->GetVolume("volECALDownstream")->SetVisibility(1);
+  gGeoManager->GetVolume("volECALDownstream")->SetTransparency(20);
+  */
   
   TObjArray* va = gGeoManager->GetListOfVolumes();
   int nv = va->GetEntries();

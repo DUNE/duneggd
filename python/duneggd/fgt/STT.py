@@ -72,7 +72,7 @@ class STTBuilder(gegede.builder.Builder):
                          self.targetFeMod_z
                          + self.targetArMod_z 
                          + self.targetCaMod_z
-                         + self.targetCMod_z
+                         + 2*self.targetCMod_z
                          + self.nRadiatorModules*self.radiatorMod_z ]
 
         print 'STTBuilder: set STT z dimension to '+str(self.sttDim[2])+' (configured as '+str(self.stt_z)+')'
@@ -94,7 +94,7 @@ class STTBuilder(gegede.builder.Builder):
         # Fe target and subsequent XXYY planes
         zpos += 0.5*self.targetFeMod_z
         self.place_TargetModule(geom, mod_i, zpos, 'Iron')
-        zpos += 2*self.stPlaneDim[2]
+        zpos += 0.5*self.targetFeMod_z
         mod_i+=1
         
         # Ar target
@@ -104,16 +104,16 @@ class STTBuilder(gegede.builder.Builder):
         mod_i+=1
 
         # Ca target and subsequent XXYY planes
-        zpos += 0.5*self.CaTar_z
+        zpos += 0.5*self.targetCaMod_z
         self.place_TargetModule(geom, mod_i, zpos, 'Calcium')
-        zpos += 2*self.stPlaneDim[2]
+        zpos += 0.5*self.targetCaMod_z
         mod_i+=1
 
         # 2 graphite targets and subsequent XXYY planes
         for i in range(2):
-            zpos += 0.5*self.CTar_z
+            zpos += 0.5*self.targetCMod_z
             self.place_TargetModule(geom, mod_i, zpos, 'Carbon')
-            zpos += 2*self.stPlaneDim[2]
+            zpos += 0.5*self.targetCMod_z
             mod_i+=1
 
 
@@ -234,9 +234,10 @@ class STTBuilder(gegede.builder.Builder):
         stPY_in_STT   = g.structure.Position('stPlane-'+str(j+1)+'-Y_in_STT', 
                                              '0cm', '0cm', 
                                              z_down)
-        
-        #print "plane "+str(j)+": "+str(z_up)
-        #print "plane "+str(j+1)+": "+str(z_down)
+
+        if(self.printZpos):
+            print "plane "+str(j)+": "+str(z_up)
+            print "plane "+str(j+1)+": "+str(z_down)
 
         # stPlane defined with tubes vertical by default. 
         # Rotate X plany around z to get horizontal tubes
