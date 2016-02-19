@@ -16,18 +16,17 @@ class CryostatBuilder(gegede.builder.Builder):
     #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
     def configure(self, 
                   membraneThickness   = Q('0.5in'),  # <-- just default values,
-                  readPlaneToCryoWall = Q('10cm'),   #     they really come from 
-                  cageToCryoWall_y    = Q('10cm'),   #     the cfg file
-                  cageToCryoWall_z    = Q('10cm'), 
-                  cathodeThickness    = Q('0.016cm'), 
+                  readPlaneToModWall  = Q('10cm'),   #     they really come from 
+                  G10Thickness        = Q('2mm'),    #     the cfg file 
+                  cathodeThickness    = Q('0.016cm'),
+                  nModules            = [2,1,3],
                   **kwds):
 
         self.membraneThickness    = membraneThickness
         self.cathodeThickness     = cathodeThickness
-        self.readPlaneToCryoWall  = readPlaneToCryoWall
-        self.cageToCryoWall_y     = cageToCryoWall_y
-        self.cageToCryoWall_z     = cageToCryoWall_z
-
+        self.G10Thickness         = G10Thickness
+        self.readPlaneToModWall   = readPlaneToModWall
+        self.nModules             = nModules
 
         self.tpcBldr = self.get_builder('TPC')
 
@@ -36,20 +35,27 @@ class CryostatBuilder(gegede.builder.Builder):
     def construct(self, geom):
 
 
-        # get the volTPC dimensions and use them to define volCryostat dimensions
+        # Using volTPC dimensions, calculate module dimensions
         tpcDim = list(self.tpcBldr.tpcDim)
-        self.cryoDim = [ 2*tpcDim[0] + 2*self.readPlaneToCryoWall 
-                                     + self.cathodeThickness
-                                     + 2*self.membraneThickness, 
-                         tpcDim[1] + 2*self.cageToCryoWall_y
-                                   + 2*self.membraneThickness,
-                         tpcDim[2] + 2*self.cageToCryoWall_z
-                                   + 2*self.membraneThickness  ]
+        modDim = [ 2*tpcDim[0] + 2*self.readPlaneToModWall 
+                               + self.cathodeThickness
+                               + 2*self.G10Thickness, 
+                   tpcDim[1] + 2*self.G10Thickness,
+                   tpcDim[2] + 2*self.G10Thickness  ]
+        g10CageOutDim = list(modDim)
+        g10CageInDim  = [ g10CageOutDim[0] - 2*self.G10Thickness, 
+                          g10CageOutDim[1] - 2*self.G10Thickness,
+                          g10CageOutDim[2] - 2*self.G10Thickness]
 
-        membraneOutDim = list(self.cryoDim)
-        membraneInDim  = [ membraneOutDim[0] - 2*self.membraneThickness, 
-                           membraneOutDim[1] - 2*self.membraneThickness,
-                           membraneOutDim[2] - 2*self.membraneThickness]
+        # Using module dimensions, calculate cryostat dimensions
+        allModsDim      = [ self.nModules[0]*modDim[0], 
+                            self.nModules[1]*modDim[1],
+                            self.nModules[2]*modDim[2]  ]
+        membraneInDim   = list(allModsDim)
+        membraneOutDim  = [ membraneInDim[0] + 2*self.membraneThickness, 
+                            membraneInDim[1] + 2*self.membraneThickness,
+                            membraneInDim[2] + 2*self.membraneThickness]
+        self.cryoDim    = list(membraneOutDim) 
 
 
         # define cryostat shape and volume, will be placed by a builder owning this builder
@@ -59,27 +65,78 @@ class CryostatBuilder(gegede.builder.Builder):
         self.add_volume(cryo_lv)
 
 
+        # define the g10 module cage volume
+        g10CageOut = geom.shapes.Box( 'G10CageOut',                 dx=0.5*g10CageOutDim[0], 
+                                  dy=0.5*g10CageOutDim[1], dz=0.5*g10CageOutDim[2]) 
+        g10CageIn = geom.shapes.Box(  'G10CageIn',                  dx=0.5*g10CageInDim[0], 
+                                  dy=0.5*g10CageInDim[1],  dz=0.5*g10CageInDim[2]) 
+        g10CageBox = geom.shapes.Boolean( 'G10Cage', type='subtraction', first=g10CageOut, second=g10CageIn ) 
+        g10Cage_lv = geom.structure.Volume('volG10Cage', material='Steel', shape=g10CageBox)
+
+
+        # define the cathode volume 
+        # TODO -- material?
+        cathodeBox = geom.shapes.Box( 'Cathode',               dx=0.5*self.cathodeThickness, 
+                                      dy=0.5*g10CageInDim[1],  dz=0.5*g10CageInDim[2]  )
+        cathode_lv = geom.structure.Volume('volCathode', material='Steel', shape=cathodeBox)
+        self.add_volume(cathode_lv)
+
+
         # Get the TPC volume from its builder so we can position and place it
         tpc_lv = self.tpcBldr.get_volume('volTPC')
 
 
-        # Calculate volTPC positions assuming cathode is centered in x
-        # Also assume TPC is centered in y and z for now.
-        tpc0Pos = [ -0.5*self.cathodeThickness - 0.5*tpcDim[0], '0cm', '0cm' ]
-        tpc1Pos = [  0.5*self.cathodeThickness + 0.5*tpcDim[0], '0cm', '0cm' ]
-        tpc0_in_cryo = geom.structure.Position('TPC0_in_Cryo', tpc0Pos[0], tpc0Pos[1], tpc0Pos[2])
-        tpc1_in_cryo = geom.structure.Position('TPC1_in_Cryo', tpc1Pos[0], tpc1Pos[1], tpc1Pos[2])
+        # Position both TPCs, G10 cage, and cathode for each module
+        moduleNum = 0
+        for x_i in range(self.nModules[0]):
+            for y_i in range(self.nModules[1]):
+                for z_i in range(self.nModules[2]):
 
-        # place each TPC in the cryostat, making sure to rotate the right one
-        pTPC0_in_C = geom.structure.Placement('placeTPC0_in_Cryo',
-                                              volume = tpc_lv,
-                                              pos = tpc0_in_cryo)
-        pTPC1_in_C = geom.structure.Placement('placeTPC1_in_Cryo',
-                                              volume = tpc_lv,
-                                              pos = tpc1_in_cryo,
-                                              rot = 'r180aboutY')
-        cryo_lv.placements.append(pTPC0_in_C.name)
-        cryo_lv.placements.append(pTPC1_in_C.name)
+                    # Calculate module positions
+                    xpos = - 0.5*allModsDim[0] + (x_i+0.5)*modDim[0]
+                    ypos = - 0.5*allModsDim[1] + (y_i+0.5)*modDim[1]
+                    zpos = - 0.5*allModsDim[2] + (z_i+0.5)*modDim[2]
+
+
+                    modCenter = geom.structure.Position('Module-'+str(moduleNum)+'_in_Cryo', 
+                                                        xpos,ypos,zpos )
+                    
+                    
+                    # Calculate volTPC positions around module center
+                    tpc0Pos = [ xpos - 0.5*self.cathodeThickness - 0.5*tpcDim[0], ypos, zpos ]
+                    tpc1Pos = [ xpos + 0.5*self.cathodeThickness + 0.5*tpcDim[0], ypos, zpos ]
+                    pos0Name = 'Mod-'+str(moduleNum)+'_TPC-0_in_Cryo'
+                    pos1Name = 'Mod-'+str(moduleNum)+'_TPC-1_in_Cryo'
+                    tpc0_in_cryo = geom.structure.Position(pos0Name, tpc0Pos[0], tpc0Pos[1], tpc0Pos[2])
+                    tpc1_in_cryo = geom.structure.Position(pos1Name, tpc1Pos[0], tpc1Pos[1], tpc1Pos[2])
+
+                    # Place the TPCs, making sure to rotate the right one
+                    pTPC0_in_C = geom.structure.Placement('place'+pos0Name,
+                                                          volume = tpc_lv,
+                                                          pos = tpc0_in_cryo)
+                    pTPC1_in_C = geom.structure.Placement('place'+pos1Name,
+                                                          volume = tpc_lv,
+                                                          pos = tpc1_in_cryo,
+                                                          rot = 'r180aboutY')
+                    cryo_lv.placements.append(pTPC0_in_C.name)
+                    cryo_lv.placements.append(pTPC1_in_C.name)
+
+
+                    # place the G10 cage and cathode, both centered at module center
+                    pG10Cage_in_C  = geom.structure.Placement('placeG10Cage-'+str(moduleNum)+'_in_Cryo',
+                                                              volume = g10Cage_lv,
+                                                              pos = modCenter)
+                    pCathode_in_C  = geom.structure.Placement('placeCathode-'+str(moduleNum)+'_in_Cryo',
+                                                              volume = cathode_lv,
+                                                              pos = modCenter)
+                    cryo_lv.placements.append(pG10Cage_in_C.name)
+                    cryo_lv.placements.append(pCathode_in_C.name)
+
+
+                    moduleNum += 1
+        
+
+        print "Cryostat: Built "+str(self.nModules[0])+" wide by "+str(self.nModules[1])+" high by "+str(self.nModules[2])+" long modules."
 
 
 

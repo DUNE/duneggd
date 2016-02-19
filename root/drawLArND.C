@@ -7,6 +7,7 @@ drawLArND(TString volName="")
   gSystem->Load("libGdml");
 
   TGeoManager::Import("larnd_nowires.gdml");
+  //TGeoManager::Import("larnd.gdml");
   gGeoManager->DefaultColors();
 
   
@@ -27,10 +28,6 @@ drawLArND(TString volName="")
   gGeoManager->GetVolume("volServiceBuilding")->SetLineColor(kGray);
   gGeoManager->GetVolume("volServiceBuilding")->SetVisibility(1);
   gGeoManager->GetVolume("volServiceBuilding")->SetTransparency(20);
-
-  
-  gGeoManager->GetVolume("volMagnet")->SetLineColor(kGreen-1);
-  gGeoManager->GetVolume("volMagnet")->SetVisibility(1);
 
 
   gGeoManager->GetVolume("volMembrane")->SetLineColor(kGray);
