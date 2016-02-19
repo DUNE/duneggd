@@ -9,7 +9,7 @@ setup(name = 'duneggd',
       license = 'GPLv2',
       url = 'https://github.com/tyleralion/duneggd',
       package_dir = {'':'python'},
-      packages = ['duneggd', 'duneggd.fgt'],
+      packages = ['duneggd', 'duneggd.fgt', 'duneggd.larnd'],
       install_requires = [l for l in open("requirements.txt").readlines() if l.strip()],
       # implicitly depends on ROOT
               
