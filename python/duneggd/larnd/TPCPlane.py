@@ -20,6 +20,7 @@ class TPCPlaneBuilder(gegede.builder.Builder):
                   wireLength          = Q('2.5m'),  #     the cfg file 
                   readPlaneDim  = [Q('150um'), Q('3m'), Q('2m')], 
                   nWires              = 399,
+                  nowires             = False,
                   **kwds):
 
         self.wireDiam           = wireDiam
@@ -27,6 +28,7 @@ class TPCPlaneBuilder(gegede.builder.Builder):
         self.wireLength         = wireLength
         self.readPlaneDim       = readPlaneDim
         self.nWires             = nWires
+        self.nowires            = nowires
 
 
     #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
@@ -51,18 +53,18 @@ class TPCPlaneBuilder(gegede.builder.Builder):
         readPlane_lv = geom.structure.Volume('volTPCPlane', material='LAr', shape=readPlaneBox)
         self.add_volume(readPlane_lv)
 
-
-        wireSpan_z = self.nWires * self.wirePitch # center to center
-        for i in range(self.nWires):
-
-            zpos = -0.5 * wireSpan_z + i*self.wirePitch
-
-            posName = 'Wire-'+str(i)+'_in_Plane'
-            wire_in_plane = geom.structure.Position(posName, 
-                                                    '0cm','0cm',zpos)
-
-            pWire_in_Plane = geom.structure.Placement('place'+posName,
-                                                      volume = wire_lv,
-                                                      pos = wire_in_plane,
-                                                      rot = "r90aboutX")
-            readPlane_lv.placements.append(pWire_in_Plane.name)
+        if not self.nowires:
+            wireSpan_z = self.nWires * self.wirePitch # center to center
+            for i in range(self.nWires):
+                
+                zpos = -0.5 * wireSpan_z + i*self.wirePitch
+                
+                posName = 'Wire-'+str(i)+'_in_Plane'
+                wire_in_plane = geom.structure.Position(posName, 
+                                                        '0cm','0cm',zpos)
+                
+                pWire_in_Plane = geom.structure.Placement('place'+posName,
+                                                          volume = wire_lv,
+                                                          pos = wire_in_plane,
+                                                          rot = "r90aboutX")
+                readPlane_lv.placements.append(pWire_in_Plane.name)

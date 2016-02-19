@@ -6,7 +6,7 @@ drawLArND(TString volName="")
   gSystem->Load("libGeom");
   gSystem->Load("libGdml");
 
-  TGeoManager::Import("larnd.gdml");
+  TGeoManager::Import("larnd_nowires.gdml");
   gGeoManager->DefaultColors();
 
   
