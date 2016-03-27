@@ -3,44 +3,44 @@
   <define>
     <position name="readPlane_in_TPC" unit="cm" x="-50.0" y="0" z="0"/>
     <position name="tpcActive_in_TPC" unit="cm" x="0.0075" y="0" z="0"/>
-    <position name="Module-0_in_Cryo" unit="cm" x="-330.669" y="0.0" z="-200.4"/>
-    <position name="Mod-0_TPC-0_in_Cryo" unit="cm" x="-380.6845" y="0.0" z="-200.4"/>
-    <position name="Mod-0_TPC-1_in_Cryo" unit="cm" x="-280.6535" y="0.0" z="-200.4"/>
-    <position name="Module-1_in_Cryo" unit="cm" x="-330.669" y="0.0" z="0.0"/>
-    <position name="Mod-1_TPC-0_in_Cryo" unit="cm" x="-380.6845" y="0.0" z="0.0"/>
-    <position name="Mod-1_TPC-1_in_Cryo" unit="cm" x="-280.6535" y="0.0" z="0.0"/>
-    <position name="Module-2_in_Cryo" unit="cm" x="-330.669" y="0.0" z="200.4"/>
-    <position name="Mod-2_TPC-0_in_Cryo" unit="cm" x="-380.6845" y="0.0" z="200.4"/>
-    <position name="Mod-2_TPC-1_in_Cryo" unit="cm" x="-280.6535" y="0.0" z="200.4"/>
-    <position name="Module-3_in_Cryo" unit="cm" x="-110.223" y="0.0" z="-200.4"/>
-    <position name="Mod-3_TPC-0_in_Cryo" unit="cm" x="-160.2385" y="0.0" z="-200.4"/>
-    <position name="Mod-3_TPC-1_in_Cryo" unit="cm" x="-60.2075" y="0.0" z="-200.4"/>
-    <position name="Module-4_in_Cryo" unit="cm" x="-110.223" y="0.0" z="0.0"/>
-    <position name="Mod-4_TPC-0_in_Cryo" unit="cm" x="-160.2385" y="0.0" z="0.0"/>
-    <position name="Mod-4_TPC-1_in_Cryo" unit="cm" x="-60.2075" y="0.0" z="0.0"/>
-    <position name="Module-5_in_Cryo" unit="cm" x="-110.223" y="0.0" z="200.4"/>
-    <position name="Mod-5_TPC-0_in_Cryo" unit="cm" x="-160.2385" y="0.0" z="200.4"/>
-    <position name="Mod-5_TPC-1_in_Cryo" unit="cm" x="-60.2075" y="0.0" z="200.4"/>
-    <position name="Module-6_in_Cryo" unit="cm" x="110.223" y="0.0" z="-200.4"/>
-    <position name="Mod-6_TPC-0_in_Cryo" unit="cm" x="60.2075" y="0.0" z="-200.4"/>
-    <position name="Mod-6_TPC-1_in_Cryo" unit="cm" x="160.2385" y="0.0" z="-200.4"/>
-    <position name="Module-7_in_Cryo" unit="cm" x="110.223" y="0.0" z="0.0"/>
-    <position name="Mod-7_TPC-0_in_Cryo" unit="cm" x="60.2075" y="0.0" z="0.0"/>
-    <position name="Mod-7_TPC-1_in_Cryo" unit="cm" x="160.2385" y="0.0" z="0.0"/>
-    <position name="Module-8_in_Cryo" unit="cm" x="110.223" y="0.0" z="200.4"/>
-    <position name="Mod-8_TPC-0_in_Cryo" unit="cm" x="60.2075" y="0.0" z="200.4"/>
-    <position name="Mod-8_TPC-1_in_Cryo" unit="cm" x="160.2385" y="0.0" z="200.4"/>
-    <position name="Module-9_in_Cryo" unit="cm" x="330.669" y="0.0" z="-200.4"/>
-    <position name="Mod-9_TPC-0_in_Cryo" unit="cm" x="280.6535" y="0.0" z="-200.4"/>
-    <position name="Mod-9_TPC-1_in_Cryo" unit="cm" x="380.6845" y="0.0" z="-200.4"/>
-    <position name="Module-10_in_Cryo" unit="cm" x="330.669" y="0.0" z="0.0"/>
-    <position name="Mod-10_TPC-0_in_Cryo" unit="cm" x="280.6535" y="0.0" z="0.0"/>
-    <position name="Mod-10_TPC-1_in_Cryo" unit="cm" x="380.6845" y="0.0" z="0.0"/>
-    <position name="Module-11_in_Cryo" unit="cm" x="330.669" y="0.0" z="200.4"/>
-    <position name="Mod-11_TPC-0_in_Cryo" unit="cm" x="280.6535" y="0.0" z="200.4"/>
-    <position name="Mod-11_TPC-1_in_Cryo" unit="cm" x="380.6845" y="0.0" z="200.4"/>
+    <position name="Module-0_in_Cryo" unit="cm" x="-220.446" y="0.0" z="-300.6"/>
+    <position name="Mod-0_TPC-0_in_Cryo" unit="cm" x="-270.4615" y="0.0" z="-300.6"/>
+    <position name="Mod-0_TPC-1_in_Cryo" unit="cm" x="-170.4305" y="0.0" z="-300.6"/>
+    <position name="Module-1_in_Cryo" unit="cm" x="-220.446" y="0.0" z="-100.2"/>
+    <position name="Mod-1_TPC-0_in_Cryo" unit="cm" x="-270.4615" y="0.0" z="-100.2"/>
+    <position name="Mod-1_TPC-1_in_Cryo" unit="cm" x="-170.4305" y="0.0" z="-100.2"/>
+    <position name="Module-2_in_Cryo" unit="cm" x="-220.446" y="0.0" z="100.2"/>
+    <position name="Mod-2_TPC-0_in_Cryo" unit="cm" x="-270.4615" y="0.0" z="100.2"/>
+    <position name="Mod-2_TPC-1_in_Cryo" unit="cm" x="-170.4305" y="0.0" z="100.2"/>
+    <position name="Module-3_in_Cryo" unit="cm" x="-220.446" y="0.0" z="300.6"/>
+    <position name="Mod-3_TPC-0_in_Cryo" unit="cm" x="-270.4615" y="0.0" z="300.6"/>
+    <position name="Mod-3_TPC-1_in_Cryo" unit="cm" x="-170.4305" y="0.0" z="300.6"/>
+    <position name="Module-4_in_Cryo" unit="cm" x="0.0" y="0.0" z="-300.6"/>
+    <position name="Mod-4_TPC-0_in_Cryo" unit="cm" x="-50.0155" y="0.0" z="-300.6"/>
+    <position name="Mod-4_TPC-1_in_Cryo" unit="cm" x="50.0155" y="0.0" z="-300.6"/>
+    <position name="Module-5_in_Cryo" unit="cm" x="0.0" y="0.0" z="-100.2"/>
+    <position name="Mod-5_TPC-0_in_Cryo" unit="cm" x="-50.0155" y="0.0" z="-100.2"/>
+    <position name="Mod-5_TPC-1_in_Cryo" unit="cm" x="50.0155" y="0.0" z="-100.2"/>
+    <position name="Module-6_in_Cryo" unit="cm" x="0.0" y="0.0" z="100.2"/>
+    <position name="Mod-6_TPC-0_in_Cryo" unit="cm" x="-50.0155" y="0.0" z="100.2"/>
+    <position name="Mod-6_TPC-1_in_Cryo" unit="cm" x="50.0155" y="0.0" z="100.2"/>
+    <position name="Module-7_in_Cryo" unit="cm" x="0.0" y="0.0" z="300.6"/>
+    <position name="Mod-7_TPC-0_in_Cryo" unit="cm" x="-50.0155" y="0.0" z="300.6"/>
+    <position name="Mod-7_TPC-1_in_Cryo" unit="cm" x="50.0155" y="0.0" z="300.6"/>
+    <position name="Module-8_in_Cryo" unit="cm" x="220.446" y="0.0" z="-300.6"/>
+    <position name="Mod-8_TPC-0_in_Cryo" unit="cm" x="170.4305" y="0.0" z="-300.6"/>
+    <position name="Mod-8_TPC-1_in_Cryo" unit="cm" x="270.4615" y="0.0" z="-300.6"/>
+    <position name="Module-9_in_Cryo" unit="cm" x="220.446" y="0.0" z="-100.2"/>
+    <position name="Mod-9_TPC-0_in_Cryo" unit="cm" x="170.4305" y="0.0" z="-100.2"/>
+    <position name="Mod-9_TPC-1_in_Cryo" unit="cm" x="270.4615" y="0.0" z="-100.2"/>
+    <position name="Module-10_in_Cryo" unit="cm" x="220.446" y="0.0" z="100.2"/>
+    <position name="Mod-10_TPC-0_in_Cryo" unit="cm" x="170.4305" y="0.0" z="100.2"/>
+    <position name="Mod-10_TPC-1_in_Cryo" unit="cm" x="270.4615" y="0.0" z="100.2"/>
+    <position name="Module-11_in_Cryo" unit="cm" x="220.446" y="0.0" z="300.6"/>
+    <position name="Mod-11_TPC-0_in_Cryo" unit="cm" x="170.4305" y="0.0" z="300.6"/>
+    <position name="Mod-11_TPC-1_in_Cryo" unit="cm" x="270.4615" y="0.0" z="300.6"/>
     <position name="Membrane_in_Cryo" unit="cm" x="0" y="0" z="0"/>
-    <position name="Cryo_in_Enc" unit="cm" x="0.0" y="-616.626" z="-437.74625"/>
+    <position name="Cryo_in_Enc" unit="cm" x="5.41433564649e-14" y="-616.626" z="-337.54625"/>
     <rotation name="r90aboutX" unit="degree" x="90" y="0" z="0"/>
     <rotation name="rminus90aboutX" unit="degree" x="-90" y="0" z="0"/>
     <rotation name="r90aboutY" unit="degree" x="0" y="90" z="0"/>
@@ -48,11 +48,11 @@
     <rotation name="rminus90aboutY" unit="degree" x="0" y="-90" z="0"/>
     <rotation name="r90aboutZ" unit="degree" x="0" y="0" z="90"/>
     <rotation name="r90aboutXZ" unit="degree" x="90" y="0" z="90"/>
-    <position name="DetEnc_in_World" unit="cm" x="0.0" y="616.626" z="739.61625"/>
+    <position name="DetEnc_in_World" unit="cm" x="-5.41433564649e-14" y="616.626" z="739.61625"/>
     <position name="secHall_in_World" unit="cm" x="-1615.44" y="16.17" z="937.26"/>
-    <position name="pShaft_in_World" unit="cm" x="0.0" y="3761.2476" z="-426.72"/>
+    <position name="pShaft_in_World" unit="cm" x="-5.41433564649e-14" y="3761.2476" z="-426.72"/>
     <position name="sShaft_in_World" unit="cm" x="-2072.64" y="3160.7916" z="937.26"/>
-    <position name="pShaft_in_dLayer" unit="cm" x="0.0" y="0" z="-426.72"/>
+    <position name="pShaft_in_dLayer" unit="cm" x="-5.41433564649e-14" y="0" z="-426.72"/>
     <position name="sShaft_in_dLayer" unit="cm" x="-2072.64" y="0" z="937.26"/>
     <position name="dLayer_in_World" unit="cm" x="0" y="5375.7732" z="0"/>
     <position name="sky_in_World" unit="cm" x="0" y="8068.8866" z="0"/>
@@ -327,7 +327,7 @@
     <box lunit="cm" name="TPCPlane" x="0.015" y="250.0" z="200.0"/>
     <box lunit="cm" name="TPCActive" x="100.0" y="300.0" z="200.0"/>
     <box lunit="cm" name="TPC" x="100.015" y="300.0" z="200.0"/>
-    <box lunit="cm" name="Cryostat" x="884.324" y="302.94" z="603.74"/>
+    <box lunit="cm" name="Cryostat" x="663.878" y="302.94" z="804.14"/>
     <box lunit="cm" name="G10CageOut" x="220.446" y="300.4" z="200.4"/>
     <box lunit="cm" name="G10CageIn" x="220.046" y="300.0" z="200.0"/>
     <subtraction name="G10Cage">
@@ -337,8 +337,8 @@
       <rotationref ref="identity"/>
     </subtraction>
     <box lunit="cm" name="Cathode" x="0.016" y="300.0" z="200.0"/>
-    <box lunit="cm" name="MembraneOut" x="884.324" y="302.94" z="603.74"/>
-    <box lunit="cm" name="MembraneIn" x="881.784" y="300.4" z="601.2"/>
+    <box lunit="cm" name="MembraneOut" x="663.878" y="302.94" z="804.14"/>
+    <box lunit="cm" name="MembraneIn" x="661.338" y="300.4" z="801.6"/>
     <subtraction name="Membrane">
       <first ref="MembraneOut"/>
       <second ref="MembraneIn"/>

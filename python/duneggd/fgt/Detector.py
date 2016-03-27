@@ -184,7 +184,8 @@ class DetectorBuilder(gegede.builder.Builder):
         muidDown_in_det = geom.structure.Position('MuIDDown_in_Det', muidDownPos[0], muidDownPos[1], muidDownPos[2])
         pmuidDown_in_D = geom.structure.Placement('placeMuIDDown_in_Det',
                                                   volume = muidDown_lv,
-                                                  pos = muidDown_in_det)
+                                                  pos = muidDown_in_det,
+                                                  rot = "r180aboutY")
         det_lv.placements.append(pmuidDown_in_D.name)
         muidUp_lv = self.muidUpBldr.get_volume('volMuIDUpstream')
         muidUp_in_det = geom.structure.Position('MuIDUp_in_Det', muidUpPos[0], muidUpPos[1], muidUpPos[2])
