@@ -97,24 +97,24 @@ class DetectorBuilder(gegede.builder.Builder):
 
         # Calculate bounding box dimensions of ECAL so that ECAL/STT unit can 
         #  be centered inside of the Magnet, until spacings are better known.
-        # Assume barrel is larger in x,y, while z dim is sum of stt and ECAL ends
+        # Assume barrel is larger in x,y, while z dim is sum of stt and ECAL ends, with gap
+        sttToEcal = self.ecalBarBldr.sTubeEndsToLead
         ecalBounds = [ ecalBarDim[0], 
                        ecalBarDim[1], 
-                       ecalUpDim[2] + sttDim[2] + ecalDownDim[2] ]
+                       ecalUpDim[2] + sttDim[2] + ecalDownDim[2] + 2*sttToEcal ]
+
+
+        # Position volSTT
+        sttPos = [ magPos[0], 
+                   magPos[1],
+                   magPos[2] - 0.5*ecalBounds[2] + ecalUpDim[2] + sttToEcal + 0.5*sttDim[2] ]
 
 
         # Position ECAL Barrel
-        ecalBarPos    = list(muidBarPos)
-        ecalBarPos[2] = -0.5*ecalBounds[2] + ecalUpDim[2] + 0.5*sttDim[2]
+        ecalBarPos    = list(sttPos)
 
-
-        # Position volSTT 
-        sttPos = [ ecalBarPos[0], 
-                   ecalBarPos[1],
-                   ecalBarPos[2]  ]
 
         # Position ECAL Ends
-        sttToEcal = self.ecalBarBldr.sTubeEndsToLead
         ecalDownPos = [ ecalBarPos[0], ecalBarPos[1], # assume centered in xy
                         sttPos[2] + 0.5*sttDim[2] + sttToEcal + 0.5*ecalDownDim[2] ]
         ecalUpPos   = [ ecalBarPos[0], ecalBarPos[1],
@@ -153,9 +153,11 @@ class DetectorBuilder(gegede.builder.Builder):
         # Check that the ECAL, positioned tightly around the STT, fits
         #   inside the inner dimensions of the magnet.
         if( (ecalUpPos[2] - 0.5*ecalUpDim[2]) < (magPos[2] - 0.5*self.magInDim[2]) ):
-            print "DetectorBuilder: Upstream ECAL upstream z face ("+str(ecalUpPos[2] - 0.5*ecalUpDim[2])+") overlaps magnet."
+            print "DetectorBuilder: Upstream ECAL upstream z face ("+str(ecalUpPos[2] - 0.5*ecalUpDim[2])+") overlaps magnet ("+str(magPos[2] - 0.5*self.magInDim[2])+")"
+            print "      ... downstream ECAL downstream face is "+str(magPos[2] + 0.5*self.magInDim[2] - (ecalDownPos[2] + 0.5*ecalDownDim[2]))+" away from magnet"
         if( (ecalDownPos[2] + 0.5*ecalDownDim[2]) > (magPos[2] + 0.5*self.magInDim[2]) ):
-            print "DetectorBuilder: Downstream ECAL downstream z face ("+str(ecalDownPos[2] + 0.5*ecalDownDim[2])+") overlaps magnet."
+            print "DetectorBuilder: Downstream ECAL downstream z face ("+str(ecalDownPos[2] + 0.5*ecalDownDim[2])+") overlaps magnet ("+str(magPos[2] + 0.5*self.magInDim[2])+")"
+            print "      ... upstream ECAL upstream face is "+str(ecalUpPos[2] - 0.5*ecalUpDim[2] - (magPos[2] - 0.5*self.magInDim[2]))+" away from magnet"
         if( self.magInDim[2] < ecalUpDim[2] + sttDim[2] + ecalDownDim[2] ):
             print "DetectorBuilder: STT+ECAL ends ("+str(ecalUpDim[2] + sttDim[2] + ecalDownDim[2])+") do not fit inside magnet ("+str(self.magInDim[2])+")"
  
@@ -206,7 +208,6 @@ class DetectorBuilder(gegede.builder.Builder):
                                                  volume = muidBar_lv,
                                                  pos = muidBar_in_det)
         det_lv.placements.append(pmuidBar_in_D.name)
-
 
 
 
