@@ -114,10 +114,11 @@ class DetectorBuilder(gegede.builder.Builder):
                    ecalBarPos[2]  ]
 
         # Position ECAL Ends
+        sttToEcal = self.ecalBarBldr.sTubeEndsToLead
         ecalDownPos = [ ecalBarPos[0], ecalBarPos[1], # assume centered in xy
-                        sttPos[2] + 0.5*sttDim[2] + 0.5*ecalDownDim[2] ]
+                        sttPos[2] + 0.5*sttDim[2] + sttToEcal + 0.5*ecalDownDim[2] ]
         ecalUpPos   = [ ecalBarPos[0], ecalBarPos[1],
-                        sttPos[2] - 0.5*sttDim[2] - 0.5*ecalUpDim[2] ]
+                        sttPos[2] - 0.5*sttDim[2] - sttToEcal - 0.5*ecalUpDim[2] ]
 
 
 
@@ -125,7 +126,7 @@ class DetectorBuilder(gegede.builder.Builder):
        #########################################################################
        ########################### Check Assumptions ###########################
         
-        if( muidDownDim[2] == muidUpDim[2] ): 
+        if( muidDownDim[2] == muidUpDim[2] ):
             print "DetectorBuilder: Up and Downstream MuIDs the same thickness in beam direction"
 
         # For the Boolean shapes, make sure the inner/outer dimensions match 
@@ -142,7 +143,7 @@ class DetectorBuilder(gegede.builder.Builder):
         if( muidBarInDim[0] != self.magOutDim[0] ):
             print "DetectorBuilder: MuID barrel not touching magnet in x"
             print "     inner barrel is "+str(muidBarInDim[0])+" and magnet is "+str(self.magOutDim[0])+" in x"
-        if( muidBarInDim[1] != self.magOutDim[1] ): 
+        if( muidBarInDim[1] != self.magOutDim[1] ):
             print "DetectorBuilder: MuID barrel not touching magnet in y"
             print "     inner barrel is "+str(muidBarInDim[1])+" and outer magnet is "+str(self.magOutDim[1])+" in y"
         if( muidBarInDim[2] != self.magOutDim[2] ):
@@ -161,7 +162,7 @@ class DetectorBuilder(gegede.builder.Builder):
         if(       muidDownDim[1] > muidBarDim[1] 
                or muidDownDim[2] > muidBarDim[2]
                or muidUpDim[1]   > muidBarDim[1]
-               or muidUpDim[2]   > muidBarDim[2]  ): 
+               or muidUpDim[2]   > muidBarDim[2]  ):
             print "DetectorBuilder: MuID Ends have larger xy dimensions than Barrel"
 
         ############################ Finish Checking ############################
@@ -205,6 +206,7 @@ class DetectorBuilder(gegede.builder.Builder):
                                                  volume = muidBar_lv,
                                                  pos = muidBar_in_det)
         det_lv.placements.append(pmuidBar_in_D.name)
+
 
 
 

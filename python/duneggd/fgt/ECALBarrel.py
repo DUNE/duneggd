@@ -74,7 +74,7 @@ class ECALBarrelBuilder(gegede.builder.Builder):
         rleftup_in_ecalbarrel   = geom.structure.Position('ECALLeftUp_in_'+self.name, 
                                                           -0.5*sttDim[0] - 0.5*ecalModThick - self.sTubeEndsToLead, 
                                                           '0m', 
-                                                          0.5*ecalModWide)
+                                                          -0.5*ecalModWide)
         prleftup_in_ecalbarrel  = geom.structure.Placement('placeECALLeftUp_in_'+self.name,
                                                            volume = ecalMod_lv, 
                                                            pos = rleftup_in_ecalbarrel, 
@@ -129,7 +129,6 @@ class ECALBarrelBuilder(gegede.builder.Builder):
                                                               volume = ecalMod_lv, 
                                                               pos = rrightdown_in_ecalbarrel, 
                                                               rot='rminus90aboutY')
-
 
 
         ecalBar_lv.placements.append( prtopup_in_ecalbarrel.name )
