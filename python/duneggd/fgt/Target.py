@@ -70,7 +70,8 @@ class TargetPlaneBuilder(gegede.builder.Builder):
             print "TargetBuilder: "+str(self.nTubesPerTarget)+" target tubes at a "+str(self.tTube_interval)+" interval don't fit in Target Plane"
             self.tTube_interval = ( self.targetPlaneDim[0] - self.tTube_outerDia )/(self.nTubesPerTarget-1)
             print "TargetBuilder: Reset interval to "+str(self.tTube_interval)
-            if( self.tTube_interval < self.tTube_outerDia ): print " WARNING: expect overlaps!"
+            if( self.tTube_interval < self.tTube_outerDia ):
+                print " WARNING: target tube interval "+str(self.tTube_interval)+", diameter "+str(self.tTube_outerDia);
 
 
 

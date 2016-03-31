@@ -53,7 +53,7 @@ class MuIDBarrelBuilder(gegede.builder.Builder):
         self.muidOutDim = list(self.muidInDim)
         self.muidOutDim[0] = self.muidInDim[0] + 2*(6*self.steelPlateThickness+3*rpcTrayDim_big[2]+2*self.air_gap)
         self.muidOutDim[1] = self.muidInDim[1] + 2*(6*self.steelPlateThickness+3*rpcTrayDim_big[2]+2*self.air_gap)
-        self.muidOutDim[2] = self.muidInDim[2] + self.gap_tworpctrays
+        self.muidOutDim[2] = self.muidInDim[2]
 
 
         # Define barrel as boolean, with hole to fit magnet inside
