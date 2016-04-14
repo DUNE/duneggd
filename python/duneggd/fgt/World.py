@@ -306,24 +306,12 @@ class WorldBuilder(gegede.builder.Builder):
                                      ("potassium", 0.015),
                                  ))
 
-        air   = g.matter.Mixture( "Air", density = "1.290*mg/cc", 
+        air   = g.matter.Mixture( "Air", density = "0.001225*g/cc", 
                                  components = (
                                      ("nitrogen", 0.781154), 
                                      ("oxygen",   0.209476),
                                      ("argon",    0.00934)
                                  ))
-
-
-        fib_glass = g.matter.Mixture( "fibrous_glass", density = "0.1*g/cc", 
-                                      components = (
-                                          ("SiO2",   0.600),
-                                          ("CaO",    0.224),
-                                          ("Al2O3",  0.118),
-                                          ("MgO",    0.034),
-                                          ("TiO2",   0.013),
-                                          ("Na2O",   0.010),
-                                          ("Fe2O3",  0.001)
-                                      ))
 
 
         bakelite = g.matter.Mixture( "Bakelite", density = "1.25*g/cc", 
@@ -342,30 +330,62 @@ class WorldBuilder(gegede.builder.Builder):
 
         # Materials for the radiators and st planes following
         # WARNING! densities not right!
-        Fabric = g.matter.Molecule("Fabric", density="0.1*g/cc",   elements=(("carbon",16),("hydrogen",18),("oxygen",1)))
-        C3H6   = g.matter.Molecule("C3H6",   density="0.1*g/cc",   elements=(("carbon",3), ("hydrogen",6)))
-        RadBlend = g.matter.Mixture( "RadiatorBlend", density = "0.1*g/cc", 
+        #Fabric = g.matter.Molecule("Fabric", density="0.1*g/cc",   elements=(("carbon",16),("hydrogen",18),("oxygen",1)))
+        C3H6   = g.matter.Molecule("C3H6",   density="0.946*g/cc",   elements=(("carbon",3), ("hydrogen",6)))
+        fracC3H6 = 25.0/150 # TODO get from spacing in RadiatorBldr cfg
+        #densRad = fracC3H6*0.946 + (1-fracC3H6)*0.001225
+        #dRad = str(densRad)+"*g/cc"
+        dRad = "0.1586875*g/cc"
+        print "Radiator dens: " + dRad
+        RadBlend = g.matter.Mixture( "RadiatorBlend", density = dRad, 
                                      components = (
-                                         ("Fabric",  0.5), # WARNING! need to calculate these fractional components
-                                         ("C3H6",    0.5)
+                                         ("Air",  1-fracC3H6),
+                                         ("C3H6", fracC3H6)
                                      ))
-        stGas_Xe = g.matter.Mixture( "stGas_Xe", density = "0.1*g/cc", 
+        densCO2 = 44.01/22.4*0.001 # molar mass / STP molar volume * conversion to g/cm3 from L
+        densAr  = 39.95/22.4*0.001
+        densXe  = 131.3/22.4*0.001
+        fracCO2 = .3
+        densArCO2 = fracCO2 * densCO2 + (1-fracCO2) * densAr
+        densXeCO2 = fracCO2 * densCO2 + (1-fracCO2) * densXe
+        dArCO2 = str(densArCO2)+"*g/cc"
+        dXeCO2 = str(densXeCO2)+"*g/cc"
+
+        print "ArC02 dens: " + dArCO2
+        print "XeC02 dens: " + dXeCO2
+
+        stGas_Xe = g.matter.Mixture( "stGas_Xe", density = dXeCO2, 
                                       components = (
-                                          ("CO2",    0.3),
-                                          ("argon",  0.7)
-                                          #("xenon",  0.7)   #GENIE XSec spline having trouble with xenon 
+                                          ("CO2",    fracCO2),
+                                          ("argon",  1-fracCO2)
+                                          #("xenon",  1-fracCO2)   #GENIE XSec spline having trouble with xenon 
                                       ))
 
         # Materials for the targets and st planes following
         H2O      = g.matter.Molecule("Water",       density="1.0*kg/l",   elements=(("oxygen",1),("hydrogen",2)))
-        ArTarget = g.matter.Molecule("ArgonTarget", density="0.233*g/cc", elements=(("argon",1),))
+        ArTarget = g.matter.Molecule("ArgonTarget", density="0.2297*g/cc", elements=(("argon",1),))
+        #ArTarget = g.matter.Molecule("ArgonTarget", density="10.2297*g/cc", elements=(("argon",1),))
         #Aluminum = g.matter.Molecule("Aluminum",    density="2.70*g/cc",  elements=(("aluminum",1),))
         CarFiber = g.matter.Molecule("CarbonFiber", density="1.6*g/cc",  elements=(("carbon",1),))
-        stGas_Ar = g.matter.Mixture( "stGas_Ar", density = "0.1*g/cc", 
+        stGas_Ar = g.matter.Mixture( "stGas_Ar", density = dArCO2, 
                                       components = (
-                                          ("CO2",    0.3),
-                                          ("argon",  0.7)
+                                          ("CO2",    fracCO2),
+                                          ("argon",  1-fracCO2)
                                       ))
+
+        # for the straws -- density??
+        fib_glass = g.matter.Mixture( "fibrous_glass", density = "1.0*g/cc", 
+                                      components = (
+                                          ("SiO2",   0.600),
+                                          ("CaO",    0.224),
+                                          ("Al2O3",  0.118),
+                                          ("MgO",    0.034),
+                                          ("TiO2",   0.013),
+                                          ("Na2O",   0.010),
+                                          ("Fe2O3",  0.001)
+                                      ))
+
+
 
         Iron     = g.matter.Molecule("Iron",     density="7.874*g/cc", elements=(("iron",1),))
         Graphite = g.matter.Molecule("Graphite", density="2.23*g/cc",  elements=(("carbon",1),))
@@ -378,7 +398,12 @@ class WorldBuilder(gegede.builder.Builder):
                                          ("nickel",   0.0900),
                                          ("carbon",   0.0010)
                                      ))
-        
+
+        AirSteel = g.matter.Mixture( "AirSteel", density = dRad, 
+                                     components = (
+                                         ("Air",  1-fracC3H6),
+                                         ("Steel", fracC3H6)
+                                     ))        
         
         #   Materials for the RPCs
         # tetraflouroethane:
@@ -417,3 +442,7 @@ class WorldBuilder(gegede.builder.Builder):
                                          ))          
         # Lead:
         Lead  = g.matter.Molecule("Lead",   density="11.342*g/cc",   elements=(("lead",1),))
+
+
+        # for LAr otion using this world:
+        ArTarget = g.matter.Molecule("LAr", density="1.4*g/cc", elements=(("argon",1),))

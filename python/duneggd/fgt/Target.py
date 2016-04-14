@@ -42,13 +42,13 @@ class TargetPlaneBuilder(gegede.builder.Builder):
                                          rmax = 0.5*self.tTube_outerDia, 
                                          dz   = 0.5*self.tTube_length)
         targetTube_lv = geom.structure.Volume('vol'+self.name+'Tube', material=self.targetMat, shape=targetTube)
-        alumTube      = geom.shapes.Tubs(self.name+'AlumTube', 
+        cFiberTube      = geom.shapes.Tubs(self.name+'CarbFiberTube', 
                                          rmin = 0.5*self.tTube_innerDia, 
                                          rmax = 0.5*self.tTube_outerDia, 
                                          dz   = 0.5*self.tTube_length)
-        alumTube_lv   = geom.structure.Volume('vol'+self.name+'AlumTube', material=self.tubeMat, shape=targetTube)
-        pAlum_in_Tube = geom.structure.Placement( 'placeAlum_in_Tube', volume = alumTube_lv )
-        targetTube_lv.placements.append( pAlum_in_Tube.name )
+        cFiberTube_lv   = geom.structure.Volume('vol'+self.name+'CarbFiberTube', material=self.tubeMat, shape=targetTube)
+        pCFiber_in_Tube = geom.structure.Placement( 'placeCFiber_in_Tube', volume = cFiberTube_lv )
+        targetTube_lv.placements.append( pCFiber_in_Tube.name )
         self.add_volume(targetTube_lv)
 
 

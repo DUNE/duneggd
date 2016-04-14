@@ -199,20 +199,10 @@
       <fraction n="0.015" ref="potassium"/>
     </material>
     <material formula="" name="Air">
-      <D value="0.00129"/>
+      <D value="0.001225"/>
       <fraction n="0.781154" ref="nitrogen"/>
       <fraction n="0.209476" ref="oxygen"/>
       <fraction n="0.00934" ref="argon"/>
-    </material>
-    <material formula="" name="fibrous_glass">
-      <D value="0.1"/>
-      <fraction n="0.6" ref="SiO2"/>
-      <fraction n="0.224" ref="CaO"/>
-      <fraction n="0.118" ref="Al2O3"/>
-      <fraction n="0.034" ref="MgO"/>
-      <fraction n="0.013" ref="TiO2"/>
-      <fraction n="0.01" ref="Na2O"/>
-      <fraction n="0.001" ref="Fe2O3"/>
     </material>
     <material formula="" name="Bakelite">
       <D value="1.25"/>
@@ -225,24 +215,18 @@
       <fraction n="0.143711" ref="hydrogen"/>
       <fraction n="0.856289" ref="carbon"/>
     </material>
-    <material formula="" name="Fabric">
-      <D value="0.1"/>
-      <composite n="16" ref="carbon"/>
-      <composite n="18" ref="hydrogen"/>
-      <composite n="1" ref="oxygen"/>
-    </material>
     <material formula="" name="C3H6">
-      <D value="0.1"/>
+      <D value="0.946"/>
       <composite n="3" ref="carbon"/>
       <composite n="6" ref="hydrogen"/>
     </material>
     <material formula="" name="RadiatorBlend">
-      <D value="0.1"/>
-      <fraction n="0.5" ref="Fabric"/>
-      <fraction n="0.5" ref="C3H6"/>
+      <D value="0.1586875"/>
+      <fraction n="0.833333333333" ref="Air"/>
+      <fraction n="0.166666666667" ref="C3H6"/>
     </material>
     <material formula="" name="stGas_Xe">
-      <D value="0.1"/>
+      <D value="0.00469254464286"/>
       <fraction n="0.3" ref="CO2"/>
       <fraction n="0.7" ref="argon"/>
     </material>
@@ -252,7 +236,7 @@
       <composite n="2" ref="hydrogen"/>
     </material>
     <material formula="" name="ArgonTarget">
-      <D value="0.233"/>
+      <D value="0.2297"/>
       <composite n="1" ref="argon"/>
     </material>
     <material formula="" name="CarbonFiber">
@@ -260,9 +244,19 @@
       <composite n="1" ref="carbon"/>
     </material>
     <material formula="" name="stGas_Ar">
-      <D value="0.1"/>
+      <D value="0.00183785714286"/>
       <fraction n="0.3" ref="CO2"/>
       <fraction n="0.7" ref="argon"/>
+    </material>
+    <material formula="" name="fibrous_glass">
+      <D value="1.0"/>
+      <fraction n="0.6" ref="SiO2"/>
+      <fraction n="0.224" ref="CaO"/>
+      <fraction n="0.118" ref="Al2O3"/>
+      <fraction n="0.034" ref="MgO"/>
+      <fraction n="0.013" ref="TiO2"/>
+      <fraction n="0.01" ref="Na2O"/>
+      <fraction n="0.001" ref="Fe2O3"/>
     </material>
     <material formula="" name="Iron">
       <D value="7.874"/>
@@ -282,6 +276,11 @@
       <fraction n="0.1792" ref="chromium"/>
       <fraction n="0.09" ref="nickel"/>
       <fraction n="0.001" ref="carbon"/>
+    </material>
+    <material formula="" name="AirSteel">
+      <D value="0.1586875"/>
+      <fraction n="0.833333333333" ref="Air"/>
+      <fraction n="0.166666666667" ref="Steel"/>
     </material>
     <material formula="" name="CH2FCF3">
       <D value="0.00425"/>
@@ -320,6 +319,10 @@
     <material formula="" name="Lead">
       <D value="11.342"/>
       <composite n="1" ref="lead"/>
+    </material>
+    <material formula="" name="LAr">
+      <D value="1.4"/>
+      <composite n="1" ref="argon"/>
     </material>
   </materials>
   <solids>

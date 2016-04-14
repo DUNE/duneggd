@@ -9,6 +9,13 @@ drawFGT(TString volName="")
   TGeoManager::Import("fgt.gdml");
   gGeoManager->DefaultColors();
 
+
+  double g = 1000*gGeoManager->FindVolumeFast("volSTT")->Weight();
+  double cm3  = 320*320*605;
+
+  std::cout << "STT density: " << g/cm3 << " g/cm3" << std::endl;
+  
+
   bool allSolid=true;
   
   //char topVol[] ="volWorld";
