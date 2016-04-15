@@ -399,23 +399,28 @@ class WorldBuilder(gegede.builder.Builder):
                                          ("carbon",   0.0010)
                                      ))
 
-        AirSteel = g.matter.Mixture( "AirSteel", density = dRad, 
+        # make up a dumb but not crazy density for the STT framing just inside of the ECAL
+        densAirSteel = 0.5*7.93 + 0.5*0.001225
+        dAirSteel = str(densAirSteel)+"*g/cc"
+        AirSteel = g.matter.Mixture( "AirSteel", density = dAirSteel, 
                                      components = (
-                                         ("Air",  1-fracC3H6),
-                                         ("Steel", fracC3H6)
-                                     ))        
+                                         ("Air",   0.5),
+                                         ("Steel", 0.5)
+                                     ))
         
         #   Materials for the RPCs
         # tetraflouroethane:
         CH2FCF3 = g.matter.Molecule( "CH2FCF3",  density="0.00425*g/cc",   
                                      elements=( ("carbon",2), ("hydrogen",2), ("fluorine",4) ))
         # isobutane:
-        C4H10   = g.matter.Molecule( "C4H10",    density="2.51*g/cc",   
+        C4H10   = g.matter.Molecule( "C4H10",    density="0.00251*g/cc",   
                                      elements=( ("carbon",4), ("hydrogen",10) ))
         # sulphurhexaflouride:
         SF6     = g.matter.Molecule( "SF6",      density="6.17*g/L",   
                                      elements=( ("sulfur",4), ("fluorine",6)  ))
-        rpcGas   = g.matter.Mixture( "rpcGas", density = "7.9300*g/cc", 
+
+        # use argon density at stp for now. has very little effect.
+        rpcGas   = g.matter.Mixture( "rpcGas", density = "1.784*g/L", 
                                      components = (
                                          ("argon",   0.75),
                                          ("CH2FCF3", 0.20),
