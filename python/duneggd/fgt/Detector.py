@@ -104,10 +104,10 @@ class DetectorBuilder(gegede.builder.Builder):
                        ecalUpDim[2] + sttDim[2] + ecalDownDim[2] + 2*sttToEcal ]
 
 
-        # Position volSTT
-        sttPos = [ magPos[0], 
-                   magPos[1],
-                   magPos[2] - 0.5*ecalBounds[2] + ecalUpDim[2] + sttToEcal + 0.5*sttDim[2] ]
+        # Position volSTT inside the Inner magnet volume
+        sttPos = [ Q('0cm'), 
+                   Q('0cm'),
+                   - 0.5*ecalBounds[2] + ecalUpDim[2] + sttToEcal + 0.5*sttDim[2] ]
 
 
         # Position ECAL Barrel
@@ -173,17 +173,41 @@ class DetectorBuilder(gegede.builder.Builder):
 
 
 
-        # Make detector box and place STT inside
+        # Make detector box
         detBox = geom.shapes.Box( self.name,              dx=0.5*self.detDim[0], 
                                   dy=0.5*self.detDim[1],  dz=0.5*self.detDim[2])
         det_lv = geom.structure.Volume('vol'+self.name, material=self.defMat, shape=detBox)
         self.add_volume(det_lv)
+
+
+       # Define magnet as boolean, with hole to fit ECAL inside, place it
+        magOut = geom.shapes.Box( 'MagOut',                 dx=0.5*self.magOutDim[0], 
+                                  dy=0.5*self.magOutDim[1], dz=0.5*self.magOutDim[2]) 
+        magIn = geom.shapes.Box(  'MagInner',               dx=0.5*self.magInDim[0], 
+                                  dy=0.5*self.magInDim[1],  dz=0.5*self.magInDim[2]) 
+        magBox = geom.shapes.Boolean( 'Magnet', type='subtraction', first=magOut, second=magIn ) 
+        mag_lv = geom.structure.Volume('volMagnet', material=self.magMat, shape=magBox)
+        magInner_lv = geom.structure.Volume('volMagnetInner', material=self.defMat, shape=magIn)
+        self.add_volume(mag_lv)
+        self.add_volume(magInner_lv)
+        mag_in_det = geom.structure.Position('Mag_in_Det', magPos[0], magPos[1], magPos[2])
+        pmag_in_D  = geom.structure.Placement('placeMag_in_Det',
+                                              volume = mag_lv,
+                                              pos = mag_in_det)
+        pmagInner_in_D  = geom.structure.Placement('placeMagInner_in_Det',
+                                                   volume = magInner_lv,
+                                                   pos = mag_in_det) # same pos as magnet
+        det_lv.placements.append(pmag_in_D.name)
+        det_lv.placements.append(pmagInner_in_D.name)
+
+
+        # Get STT colume and place in magnetezed inner magnet volume
         stt_lv = self.sttBldr.get_volume('volSTT')
         stt_in_det = geom.structure.Position('STT_in_Det', sttPos[0], sttPos[1], sttPos[2])
         pSTT_in_D = geom.structure.Placement('placeSTT_in_Det',
                                              volume = stt_lv,
                                              pos = stt_in_det)
-        det_lv.placements.append(pSTT_in_D.name)
+        magInner_lv.placements.append(pSTT_in_D.name)
 
         
         # Define and place "framing" volumes around STT
@@ -244,12 +268,38 @@ class DetectorBuilder(gegede.builder.Builder):
         psttFr_posxz = geom.structure.Placement('place_sttFr_posxz',
                                                 volume = sttFr_xz_lv,
                                                 pos = sttFr_posxz_pos)
-        det_lv.placements.append(psttFr_negxy.name)
-        det_lv.placements.append(psttFr_posxy.name)
-        det_lv.placements.append(psttFr_negyz.name)
-        det_lv.placements.append(psttFr_posyz.name)
-        det_lv.placements.append(psttFr_negxz.name)
-        det_lv.placements.append(psttFr_posxz.name)
+        magInner_lv.placements.append(psttFr_negxy.name)
+        magInner_lv.placements.append(psttFr_posxy.name)
+        magInner_lv.placements.append(psttFr_negyz.name)
+        magInner_lv.placements.append(psttFr_posyz.name)
+        magInner_lv.placements.append(psttFr_negxz.name)
+        magInner_lv.placements.append(psttFr_posxz.name)
+
+
+
+        # Get volECALDownstream, volECALUpstream, volECALBarrel volumes and place in volDetector
+        ecalDown_lv = self.ecalDownBldr.get_volume('volECALDownstream')
+        ecalDown_in_det = geom.structure.Position('ECALDown_in_Det', ecalDownPos[0], ecalDownPos[1], ecalDownPos[2])
+        pecalDown_in_D = geom.structure.Placement('placeECALDown_in_Det',
+                                                  volume = ecalDown_lv,
+                                                  pos = ecalDown_in_det)
+        magInner_lv.placements.append(pecalDown_in_D.name)
+        ecalUp_lv = self.ecalUpBldr.get_volume('volECALUpstream')
+        ecalUp_in_det = geom.structure.Position('ECALUp_in_Det', ecalUpPos[0], ecalUpPos[1], ecalUpPos[2])
+        pecalUp_in_D = geom.structure.Placement('placeECALUp_in_Det',
+                                                volume = ecalUp_lv,
+                                                pos = ecalUp_in_det,
+                                                rot='r180aboutY')
+        magInner_lv.placements.append(pecalUp_in_D.name)
+        
+        ecalBar_lv = self.ecalBarBldr.get_volume('volBarrelECAL')
+        ecalBar_in_det = geom.structure.Position('ECALBar_in_Det', ecalBarPos[0], ecalBarPos[1], ecalBarPos[2])
+        pecalBar_in_D = geom.structure.Placement('placeECALBar_in_Det',
+                                                 volume = ecalBar_lv,
+                                                 pos = ecalBar_in_det)
+        magInner_lv.placements.append(pecalBar_in_D.name)
+
+
 
         # Get volMuIDDownstream, volMuIDUpstream, volMuIDBarrel,
         #   volumes and place in volDetector
@@ -272,46 +322,6 @@ class DetectorBuilder(gegede.builder.Builder):
                                                  volume = muidBar_lv,
                                                  pos = muidBar_in_det)
         det_lv.placements.append(pmuidBar_in_D.name)
-
-
-
-        # Define magnet as boolean, with hole to fit ECAL inside, place it
-        magOut = geom.shapes.Box( 'MagOut',                 dx=0.5*self.magOutDim[0], 
-                                  dy=0.5*self.magOutDim[1], dz=0.5*self.magOutDim[2]) 
-        magIn = geom.shapes.Box(  'MagIn',                  dx=0.5*self.magInDim[0], 
-                                  dy=0.5*self.magInDim[1],  dz=0.5*self.magInDim[2]) 
-        magBox = geom.shapes.Boolean( 'Magnet', type='subtraction', first=magOut, second=magIn ) 
-        mag_lv = geom.structure.Volume('volMagnet', material=self.magMat, shape=magBox)
-        self.add_volume(mag_lv)
-        mag_in_det = geom.structure.Position('Mag_in_Det', magPos[0], magPos[1], magPos[2])
-        pmag_in_D  = geom.structure.Placement('placeMag_in_Det',
-                                              volume = mag_lv,
-                                              pos = mag_in_det)
-        det_lv.placements.append(pmag_in_D.name)
-
-
-
-        # Get volECALDownstream, volECALUpstream, volECALBarrel volumes and place in volDetector
-        ecalDown_lv = self.ecalDownBldr.get_volume('volECALDownstream')
-        ecalDown_in_det = geom.structure.Position('ECALDown_in_Det', ecalDownPos[0], ecalDownPos[1], ecalDownPos[2])
-        pecalDown_in_D = geom.structure.Placement('placeECALDown_in_Det',
-                                                  volume = ecalDown_lv,
-                                                  pos = ecalDown_in_det)
-        det_lv.placements.append(pecalDown_in_D.name)
-        ecalUp_lv = self.ecalUpBldr.get_volume('volECALUpstream')
-        ecalUp_in_det = geom.structure.Position('ECALUp_in_Det', ecalUpPos[0], ecalUpPos[1], ecalUpPos[2])
-        pecalUp_in_D = geom.structure.Placement('placeECALUp_in_Det',
-                                                volume = ecalUp_lv,
-                                                pos = ecalUp_in_det,
-                                                rot='r180aboutY')
-        det_lv.placements.append(pecalUp_in_D.name)
-        
-        ecalBar_lv = self.ecalBarBldr.get_volume('volBarrelECAL')
-        ecalBar_in_det = geom.structure.Position('ECALBar_in_Det', ecalBarPos[0], ecalBarPos[1], ecalBarPos[2])
-        pecalBar_in_D = geom.structure.Placement('placeECALBar_in_Det',
-                                                 volume = ecalBar_lv,
-                                                 pos = ecalBar_in_det)
-        det_lv.placements.append(pecalBar_in_D.name)
        
 
 
