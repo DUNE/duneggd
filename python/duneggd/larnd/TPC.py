@@ -57,9 +57,12 @@ class TPCBuilder(gegede.builder.Builder):
 
 
         # Calculate volTPCPlane position assuming plane is centered in y and z.
-        readPlanePos = [ -0.5*self.tpcDim[0] + 0.5*readPlaneDim[0], '0cm', '0cm' ]
-        readPlane_in_tpc = geom.structure.Position('readPlane_in_TPC', 
-                                                   readPlanePos[0], readPlanePos[1], readPlanePos[2])
+        readPlane0Pos = [ -0.5*self.tpcDim[0] + 0.5*readPlaneDim[0], '0cm', '0cm' ]
+        readPlane0_in_tpc = geom.structure.Position('readPlane0_in_TPC', 
+                                                    readPlane0Pos[0], readPlane0Pos[1], readPlane0Pos[2])
+        readPlane1Pos = [ -0.5*self.tpcDim[0] + 1.5*readPlaneDim[0], '0cm', '0cm' ]
+        readPlane1_in_tpc = geom.structure.Position('readPlane1_in_TPC', 
+                                                    readPlane1Pos[0], readPlane1Pos[1], readPlane1Pos[2])
 
         # Calculate volTPCActive position assuming plane is centered in y and z.
         tpcActivePos = [ 0.5*self.tpcDim[0] - 0.5*tpcActiveDim[0], '0cm', '0cm' ]
@@ -68,11 +71,15 @@ class TPCBuilder(gegede.builder.Builder):
 
 
         # place each plane and active volume in TPC volume
-        pPlane_in_TPC = geom.structure.Placement('placePlane_in_TPC',
+        pPlane0_in_TPC = geom.structure.Placement('placePlane0_in_TPC',
                                                  volume = readPlane_lv,
-                                                 pos = readPlane_in_tpc)
+                                                 pos = readPlane0_in_tpc)
+        pPlane1_in_TPC = geom.structure.Placement('placePlane1_in_TPC',
+                                                 volume = readPlane_lv,
+                                                 pos = readPlane1_in_tpc)
         pActive_in_TPC = geom.structure.Placement('placeActive_in_TPC',
                                                   volume = tpcActive_lv,
                                                   pos = tpcActive_in_tpc)
-        tpc_lv.placements.append(pPlane_in_TPC.name)
+        tpc_lv.placements.append(pPlane0_in_TPC.name)
+        tpc_lv.placements.append(pPlane1_in_TPC.name)
         tpc_lv.placements.append(pActive_in_TPC.name)

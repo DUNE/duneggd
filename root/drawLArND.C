@@ -33,6 +33,12 @@ drawLArND(TString volName="")
   gGeoManager->GetVolume("volMembrane")->SetLineColor(kGray);
   gGeoManager->GetVolume("volMembrane")->SetVisibility(1);
   gGeoManager->GetVolume("volMembrane")->SetTransparency(20);
+  gGeoManager->GetVolume("volMagBarShort")->SetLineColor(kGray);
+  gGeoManager->GetVolume("volMagBarShort")->SetVisibility(1);
+  gGeoManager->GetVolume("volMagBarShort")->SetTransparency(20);
+  gGeoManager->GetVolume("volMagBarLong")->SetLineColor(kGray);
+  gGeoManager->GetVolume("volMagBarLong")->SetVisibility(1);
+  gGeoManager->GetVolume("volMagBarLong")->SetTransparency(20);
 
   gGeoManager->GetVolume("volTPCPlane")->SetLineColor(kRed-3);
   gGeoManager->GetVolume("volTPCPlane")->SetVisibility(1);

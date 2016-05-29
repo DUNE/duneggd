@@ -1,46 +1,55 @@
 <?xml version="1.0" encoding="ASCII"?>
 <gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd">
   <define>
-    <position name="readPlane_in_TPC" unit="cm" x="-50.0" y="0" z="0"/>
-    <position name="tpcActive_in_TPC" unit="cm" x="0.0075" y="0" z="0"/>
-    <position name="Module-0_in_Cryo" unit="cm" x="-220.446" y="0.0" z="-300.6"/>
-    <position name="Mod-0_TPC-0_in_Cryo" unit="cm" x="-270.4615" y="0.0" z="-300.6"/>
-    <position name="Mod-0_TPC-1_in_Cryo" unit="cm" x="-170.4305" y="0.0" z="-300.6"/>
-    <position name="Module-1_in_Cryo" unit="cm" x="-220.446" y="0.0" z="-100.2"/>
-    <position name="Mod-1_TPC-0_in_Cryo" unit="cm" x="-270.4615" y="0.0" z="-100.2"/>
-    <position name="Mod-1_TPC-1_in_Cryo" unit="cm" x="-170.4305" y="0.0" z="-100.2"/>
-    <position name="Module-2_in_Cryo" unit="cm" x="-220.446" y="0.0" z="100.2"/>
-    <position name="Mod-2_TPC-0_in_Cryo" unit="cm" x="-270.4615" y="0.0" z="100.2"/>
-    <position name="Mod-2_TPC-1_in_Cryo" unit="cm" x="-170.4305" y="0.0" z="100.2"/>
-    <position name="Module-3_in_Cryo" unit="cm" x="-220.446" y="0.0" z="300.6"/>
-    <position name="Mod-3_TPC-0_in_Cryo" unit="cm" x="-270.4615" y="0.0" z="300.6"/>
-    <position name="Mod-3_TPC-1_in_Cryo" unit="cm" x="-170.4305" y="0.0" z="300.6"/>
+    <position name="readPlane0_in_TPC" unit="cm" x="-50.0075" y="0" z="0"/>
+    <position name="readPlane1_in_TPC" unit="cm" x="-49.9925" y="0" z="0"/>
+    <position name="tpcActive_in_TPC" unit="cm" x="0.015" y="0" z="0"/>
+    <position name="Module-0_in_Cryo" unit="cm" x="-220.476" y="0.0" z="-300.6"/>
+    <position name="Mod-0_TPC-0_in_Cryo" unit="cm" x="-270.499" y="0.0" z="-300.6"/>
+    <position name="Mod-0_TPC-1_in_Cryo" unit="cm" x="-170.453" y="0.0" z="-300.6"/>
+    <position name="Module-1_in_Cryo" unit="cm" x="-220.476" y="0.0" z="-100.2"/>
+    <position name="Mod-1_TPC-0_in_Cryo" unit="cm" x="-270.499" y="0.0" z="-100.2"/>
+    <position name="Mod-1_TPC-1_in_Cryo" unit="cm" x="-170.453" y="0.0" z="-100.2"/>
+    <position name="Module-2_in_Cryo" unit="cm" x="-220.476" y="0.0" z="100.2"/>
+    <position name="Mod-2_TPC-0_in_Cryo" unit="cm" x="-270.499" y="0.0" z="100.2"/>
+    <position name="Mod-2_TPC-1_in_Cryo" unit="cm" x="-170.453" y="0.0" z="100.2"/>
+    <position name="Module-3_in_Cryo" unit="cm" x="-220.476" y="0.0" z="300.6"/>
+    <position name="Mod-3_TPC-0_in_Cryo" unit="cm" x="-270.499" y="0.0" z="300.6"/>
+    <position name="Mod-3_TPC-1_in_Cryo" unit="cm" x="-170.453" y="0.0" z="300.6"/>
     <position name="Module-4_in_Cryo" unit="cm" x="0.0" y="0.0" z="-300.6"/>
-    <position name="Mod-4_TPC-0_in_Cryo" unit="cm" x="-50.0155" y="0.0" z="-300.6"/>
-    <position name="Mod-4_TPC-1_in_Cryo" unit="cm" x="50.0155" y="0.0" z="-300.6"/>
+    <position name="Mod-4_TPC-0_in_Cryo" unit="cm" x="-50.023" y="0.0" z="-300.6"/>
+    <position name="Mod-4_TPC-1_in_Cryo" unit="cm" x="50.023" y="0.0" z="-300.6"/>
     <position name="Module-5_in_Cryo" unit="cm" x="0.0" y="0.0" z="-100.2"/>
-    <position name="Mod-5_TPC-0_in_Cryo" unit="cm" x="-50.0155" y="0.0" z="-100.2"/>
-    <position name="Mod-5_TPC-1_in_Cryo" unit="cm" x="50.0155" y="0.0" z="-100.2"/>
+    <position name="Mod-5_TPC-0_in_Cryo" unit="cm" x="-50.023" y="0.0" z="-100.2"/>
+    <position name="Mod-5_TPC-1_in_Cryo" unit="cm" x="50.023" y="0.0" z="-100.2"/>
     <position name="Module-6_in_Cryo" unit="cm" x="0.0" y="0.0" z="100.2"/>
-    <position name="Mod-6_TPC-0_in_Cryo" unit="cm" x="-50.0155" y="0.0" z="100.2"/>
-    <position name="Mod-6_TPC-1_in_Cryo" unit="cm" x="50.0155" y="0.0" z="100.2"/>
+    <position name="Mod-6_TPC-0_in_Cryo" unit="cm" x="-50.023" y="0.0" z="100.2"/>
+    <position name="Mod-6_TPC-1_in_Cryo" unit="cm" x="50.023" y="0.0" z="100.2"/>
     <position name="Module-7_in_Cryo" unit="cm" x="0.0" y="0.0" z="300.6"/>
-    <position name="Mod-7_TPC-0_in_Cryo" unit="cm" x="-50.0155" y="0.0" z="300.6"/>
-    <position name="Mod-7_TPC-1_in_Cryo" unit="cm" x="50.0155" y="0.0" z="300.6"/>
-    <position name="Module-8_in_Cryo" unit="cm" x="220.446" y="0.0" z="-300.6"/>
-    <position name="Mod-8_TPC-0_in_Cryo" unit="cm" x="170.4305" y="0.0" z="-300.6"/>
-    <position name="Mod-8_TPC-1_in_Cryo" unit="cm" x="270.4615" y="0.0" z="-300.6"/>
-    <position name="Module-9_in_Cryo" unit="cm" x="220.446" y="0.0" z="-100.2"/>
-    <position name="Mod-9_TPC-0_in_Cryo" unit="cm" x="170.4305" y="0.0" z="-100.2"/>
-    <position name="Mod-9_TPC-1_in_Cryo" unit="cm" x="270.4615" y="0.0" z="-100.2"/>
-    <position name="Module-10_in_Cryo" unit="cm" x="220.446" y="0.0" z="100.2"/>
-    <position name="Mod-10_TPC-0_in_Cryo" unit="cm" x="170.4305" y="0.0" z="100.2"/>
-    <position name="Mod-10_TPC-1_in_Cryo" unit="cm" x="270.4615" y="0.0" z="100.2"/>
-    <position name="Module-11_in_Cryo" unit="cm" x="220.446" y="0.0" z="300.6"/>
-    <position name="Mod-11_TPC-0_in_Cryo" unit="cm" x="170.4305" y="0.0" z="300.6"/>
-    <position name="Mod-11_TPC-1_in_Cryo" unit="cm" x="270.4615" y="0.0" z="300.6"/>
+    <position name="Mod-7_TPC-0_in_Cryo" unit="cm" x="-50.023" y="0.0" z="300.6"/>
+    <position name="Mod-7_TPC-1_in_Cryo" unit="cm" x="50.023" y="0.0" z="300.6"/>
+    <position name="Module-8_in_Cryo" unit="cm" x="220.476" y="0.0" z="-300.6"/>
+    <position name="Mod-8_TPC-0_in_Cryo" unit="cm" x="170.453" y="0.0" z="-300.6"/>
+    <position name="Mod-8_TPC-1_in_Cryo" unit="cm" x="270.499" y="0.0" z="-300.6"/>
+    <position name="Module-9_in_Cryo" unit="cm" x="220.476" y="0.0" z="-100.2"/>
+    <position name="Mod-9_TPC-0_in_Cryo" unit="cm" x="170.453" y="0.0" z="-100.2"/>
+    <position name="Mod-9_TPC-1_in_Cryo" unit="cm" x="270.499" y="0.0" z="-100.2"/>
+    <position name="Module-10_in_Cryo" unit="cm" x="220.476" y="0.0" z="100.2"/>
+    <position name="Mod-10_TPC-0_in_Cryo" unit="cm" x="170.453" y="0.0" z="100.2"/>
+    <position name="Mod-10_TPC-1_in_Cryo" unit="cm" x="270.499" y="0.0" z="100.2"/>
+    <position name="Module-11_in_Cryo" unit="cm" x="220.476" y="0.0" z="300.6"/>
+    <position name="Mod-11_TPC-0_in_Cryo" unit="cm" x="170.453" y="0.0" z="300.6"/>
+    <position name="Mod-11_TPC-1_in_Cryo" unit="cm" x="270.499" y="0.0" z="300.6"/>
     <position name="Membrane_in_Cryo" unit="cm" x="0" y="0" z="0"/>
-    <position name="Cryo_in_Enc" unit="cm" x="5.41433564649e-14" y="-616.626" z="-337.54625"/>
+    <position name="Cryo_in_Enc" unit="cm" x="5.41433564649e-14" y="-606.626" z="-337.54625"/>
+    <position name="magBarShort_bot_up_in_Enc" unit="cm" x="5.41433564649e-14" y="-763.096" z="-762.11625"/>
+    <position name="magBarShort_top_up_in_Enc" unit="cm" x="5.41433564649e-14" y="-450.156" z="-762.11625"/>
+    <position name="magBarShort_bot_down_in_Enc" unit="cm" x="5.41433564649e-14" y="-763.096" z="87.02375"/>
+    <position name="magBarShort_top_down_in_Enc" unit="cm" x="5.41433564649e-14" y="-450.156" z="87.02375"/>
+    <position name="magBarLong_bot_neg_in_Enc" unit="cm" x="-354.484" y="-763.096" z="-337.54625"/>
+    <position name="magBarLong_top_neg_in_Enc" unit="cm" x="-354.484" y="-450.156" z="-337.54625"/>
+    <position name="magBarLong_bot_pos_in_Enc" unit="cm" x="354.484" y="-763.096" z="-337.54625"/>
+    <position name="magBarLong_top_pos_in_Enc" unit="cm" x="354.484" y="-450.156" z="-337.54625"/>
     <rotation name="r90aboutX" unit="degree" x="90" y="0" z="0"/>
     <rotation name="rminus90aboutX" unit="degree" x="-90" y="0" z="0"/>
     <rotation name="r90aboutY" unit="degree" x="0" y="90" z="0"/>
@@ -48,16 +57,16 @@
     <rotation name="rminus90aboutY" unit="degree" x="0" y="-90" z="0"/>
     <rotation name="r90aboutZ" unit="degree" x="0" y="0" z="90"/>
     <rotation name="r90aboutXZ" unit="degree" x="90" y="0" z="90"/>
-    <position name="DetEnc_in_World" unit="cm" x="-5.41433564649e-14" y="616.626" z="739.61625"/>
-    <position name="secHall_in_World" unit="cm" x="-1615.44" y="16.17" z="937.26"/>
-    <position name="pShaft_in_World" unit="cm" x="-5.41433564649e-14" y="3761.2476" z="-426.72"/>
-    <position name="sShaft_in_World" unit="cm" x="-2072.64" y="3160.7916" z="937.26"/>
+    <position name="DetEnc_in_World" unit="cm" x="-5.41433564649e-14" y="606.626" z="739.61625"/>
+    <position name="secHall_in_World" unit="cm" x="-1615.44" y="6.17" z="937.26"/>
+    <position name="pShaft_in_World" unit="cm" x="-5.41433564649e-14" y="3751.2476" z="-426.72"/>
+    <position name="sShaft_in_World" unit="cm" x="-2072.64" y="3150.7916" z="937.26"/>
     <position name="pShaft_in_dLayer" unit="cm" x="-5.41433564649e-14" y="0" z="-426.72"/>
     <position name="sShaft_in_dLayer" unit="cm" x="-2072.64" y="0" z="937.26"/>
-    <position name="dLayer_in_World" unit="cm" x="0" y="5375.7732" z="0"/>
-    <position name="sky_in_World" unit="cm" x="0" y="8068.8866" z="0"/>
+    <position name="dLayer_in_World" unit="cm" x="0" y="5365.7732" z="0"/>
+    <position name="sky_in_World" unit="cm" x="0" y="8063.8866" z="0"/>
     <rotation name="rSevBuilding_aboutY" unit="degree" x="0" y="74.3519835199" z="0"/>
-    <position name="servB_in_Sky" unit="cm" x="-454.92989085" y="-1359.6134" z="-299.290223217"/>
+    <position name="servB_in_Sky" unit="cm" x="-454.92989085" y="-1364.6134" z="-299.290223217"/>
     <position name="center"/>
     <rotation name="identity"/>
   </define>
@@ -239,6 +248,10 @@
       <D value="0.2297"/>
       <composite n="1" ref="argon"/>
     </material>
+    <material formula="" name="Aluminum">
+      <D value="2.7"/>
+      <composite n="1" ref="aluminum"/>
+    </material>
     <material formula="" name="CarbonFiber">
       <D value="1.6"/>
       <composite n="1" ref="carbon"/>
@@ -278,9 +291,9 @@
       <fraction n="0.001" ref="carbon"/>
     </material>
     <material formula="" name="AirSteel">
-      <D value="0.1586875"/>
-      <fraction n="0.833333333333" ref="Air"/>
-      <fraction n="0.166666666667" ref="Steel"/>
+      <D value="3.9656125"/>
+      <fraction n="0.5" ref="Air"/>
+      <fraction n="0.5" ref="Steel"/>
     </material>
     <material formula="" name="CH2FCF3">
       <D value="0.00425"/>
@@ -289,7 +302,7 @@
       <composite n="4" ref="fluorine"/>
     </material>
     <material formula="" name="C4H10">
-      <D value="2.51"/>
+      <D value="0.00251"/>
       <composite n="4" ref="carbon"/>
       <composite n="10" ref="hydrogen"/>
     </material>
@@ -299,7 +312,7 @@
       <composite n="6" ref="fluorine"/>
     </material>
     <material formula="" name="rpcGas">
-      <D value="7.93"/>
+      <D value="0.001784"/>
       <fraction n="0.75" ref="argon"/>
       <fraction n="0.2" ref="CH2FCF3"/>
       <fraction n="0.04" ref="C4H10"/>
@@ -329,10 +342,10 @@
     <tube aunit="radian" deltaphi="6.28318530718" lunit="cm" name="TPCWire_Z" rmax="0.0075" rmin="0.0" startphi="0.0" z="250.0"/>
     <box lunit="cm" name="TPCPlane" x="0.015" y="250.0" z="200.0"/>
     <box lunit="cm" name="TPCActive" x="100.0" y="300.0" z="200.0"/>
-    <box lunit="cm" name="TPC" x="100.015" y="300.0" z="200.0"/>
-    <box lunit="cm" name="Cryostat" x="663.878" y="302.94" z="804.14"/>
-    <box lunit="cm" name="G10CageOut" x="220.446" y="300.4" z="200.4"/>
-    <box lunit="cm" name="G10CageIn" x="220.046" y="300.0" z="200.0"/>
+    <box lunit="cm" name="TPC" x="100.03" y="300.0" z="200.0"/>
+    <box lunit="cm" name="Cryostat" x="663.968" y="302.94" z="804.14"/>
+    <box lunit="cm" name="G10CageOut" x="220.476" y="300.4" z="200.4"/>
+    <box lunit="cm" name="G10CageIn" x="220.076" y="300.0" z="200.0"/>
     <subtraction name="G10Cage">
       <first ref="G10CageOut"/>
       <second ref="G10CageIn"/>
@@ -340,8 +353,8 @@
       <rotationref ref="identity"/>
     </subtraction>
     <box lunit="cm" name="Cathode" x="0.016" y="300.0" z="200.0"/>
-    <box lunit="cm" name="MembraneOut" x="663.878" y="302.94" z="804.14"/>
-    <box lunit="cm" name="MembraneIn" x="661.338" y="300.4" z="801.6"/>
+    <box lunit="cm" name="MembraneOut" x="663.968" y="302.94" z="804.14"/>
+    <box lunit="cm" name="MembraneIn" x="661.428" y="300.4" z="801.6"/>
     <subtraction name="Membrane">
       <first ref="MembraneOut"/>
       <second ref="MembraneIn"/>
@@ -349,6 +362,8 @@
       <rotationref ref="identity"/>
     </subtraction>
     <box lunit="cm" name="DetEnclosure" x="1798.32" y="1536.192" z="3003.2325"/>
+    <box lunit="cm" name="magBarLong" x="45.0" y="10.0" z="894.14"/>
+    <box lunit="cm" name="magBarShort" x="663.968" y="10.0" z="45.0"/>
     <box lunit="cm" name="World" x="20000.0" y="20000.0" z="20000.0"/>
     <box lunit="cm" name="SecondaryHall" x="1432.56" y="335.28" z="579.12"/>
     <tube aunit="radian" deltaphi="6.28318530718" lunit="cm" name="PrimaryShaft" rmax="335.28" rmin="0.0" startphi="0.0" z="4753.0512"/>
@@ -366,7 +381,7 @@
       <positionref ref="sShaft_in_dLayer"/>
       <rotationref ref="r90aboutX"/>
     </subtraction>
-    <box lunit="cm" name="Sky" x="20000.0" y="3862.2268" z="20000.0"/>
+    <box lunit="cm" name="Sky" x="20000.0" y="3872.2268" z="20000.0"/>
     <box lunit="cm" name="ServiceBuilding" x="1371.6" y="1143.0" z="4130.04"/>
   </solids>
   <structure>
@@ -383,7 +398,12 @@
       <solidref ref="TPC"/>
       <physvol>
         <volumeref ref="volTPCPlane"/>
-        <positionref ref="readPlane_in_TPC"/>
+        <positionref ref="readPlane0_in_TPC"/>
+        <rotationref ref="identity"/>
+      </physvol>
+      <physvol>
+        <volumeref ref="volTPCPlane"/>
+        <positionref ref="readPlane1_in_TPC"/>
         <rotationref ref="identity"/>
       </physvol>
       <physvol>
@@ -653,12 +673,60 @@
         <rotationref ref="identity"/>
       </physvol>
     </volume>
+    <volume name="volMagBarShort">
+      <materialref ref="Aluminum"/>
+      <solidref ref="magBarShort"/>
+    </volume>
+    <volume name="volMagBarLong">
+      <materialref ref="Aluminum"/>
+      <solidref ref="magBarLong"/>
+    </volume>
     <volume name="volDetEnclosure">
       <materialref ref="Air"/>
       <solidref ref="DetEnclosure"/>
       <physvol>
         <volumeref ref="volCryostat"/>
         <positionref ref="Cryo_in_Enc"/>
+        <rotationref ref="identity"/>
+      </physvol>
+      <physvol>
+        <volumeref ref="volMagBarShort"/>
+        <positionref ref="magBarShort_bot_up_in_Enc"/>
+        <rotationref ref="identity"/>
+      </physvol>
+      <physvol>
+        <volumeref ref="volMagBarShort"/>
+        <positionref ref="magBarShort_top_up_in_Enc"/>
+        <rotationref ref="identity"/>
+      </physvol>
+      <physvol>
+        <volumeref ref="volMagBarShort"/>
+        <positionref ref="magBarShort_bot_down_in_Enc"/>
+        <rotationref ref="identity"/>
+      </physvol>
+      <physvol>
+        <volumeref ref="volMagBarShort"/>
+        <positionref ref="magBarShort_top_down_in_Enc"/>
+        <rotationref ref="identity"/>
+      </physvol>
+      <physvol>
+        <volumeref ref="volMagBarLong"/>
+        <positionref ref="magBarLong_bot_neg_in_Enc"/>
+        <rotationref ref="identity"/>
+      </physvol>
+      <physvol>
+        <volumeref ref="volMagBarLong"/>
+        <positionref ref="magBarLong_top_neg_in_Enc"/>
+        <rotationref ref="identity"/>
+      </physvol>
+      <physvol>
+        <volumeref ref="volMagBarLong"/>
+        <positionref ref="magBarLong_bot_pos_in_Enc"/>
+        <rotationref ref="identity"/>
+      </physvol>
+      <physvol>
+        <volumeref ref="volMagBarLong"/>
+        <positionref ref="magBarLong_top_pos_in_Enc"/>
         <rotationref ref="identity"/>
       </physvol>
     </volume>
