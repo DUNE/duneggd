@@ -10,7 +10,7 @@ class TargetPlaneBuilder(gegede.builder.Builder):
 
     #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
     def configure( self, tTube_innerDia=None, tTube_outerDia=None, tTube_length=None, 
-                   tTube_interval=Q('0.505in'), nTubesPerTarget=275, 
+                   nTubesPerTarget=68, 
                    targetMat='ArgonTarget', **kwds ):
 
         if tTube_innerDia is None:
@@ -27,7 +27,6 @@ class TargetPlaneBuilder(gegede.builder.Builder):
         self.tTube_innerDia  = tTube_innerDia
         self.tTube_outerDia  = tTube_outerDia
         self.tTube_length    = tTube_length
-        self.tTube_interval  = tTube_interval
         self.nTubesPerTarget = nTubesPerTarget
 
 
@@ -37,18 +36,24 @@ class TargetPlaneBuilder(gegede.builder.Builder):
 
         # Make the tubes of target material, with aluminum tube on the outer boundary
         # rmin=0, else material at 0 would be default of target plane
-        targetTube    = geom.shapes.Tubs(self.name+'Tube', 
+        targetTube    = geom.shapes.Tubs(self.name+'_Tube', 
                                          rmin = '0cm',              
                                          rmax = 0.5*self.tTube_outerDia, 
                                          dz   = 0.5*self.tTube_length)
-        targetTube_lv = geom.structure.Volume('vol'+self.name+'Tube', material=self.targetMat, shape=targetTube)
-        cFiberTube      = geom.shapes.Tubs(self.name+'CarbFiberTube', 
-                                         rmin = 0.5*self.tTube_innerDia, 
-                                         rmax = 0.5*self.tTube_outerDia, 
+        targetTube_lv = geom.structure.Volume('vol'+self.name+'Tube', material=self.tubeMat, shape=targetTube)
+        #CarbonTube    = geom.shapes.Tubs(self.name+'_CarbonTube', 
+        #                                 rmin = 0.5*self.tTube_innerDia, 
+        #                                 rmax = 0.5*self.tTube_outerDia, 
+        #                                 dz   = 0.5*self.tTube_length)
+        GasTube    = geom.shapes.Tubs(self.name+'_ArgonTarget', 
+                                         rmin = '0cm', 
+                                         rmax = 0.5*self.tTube_innerDia, 
                                          dz   = 0.5*self.tTube_length)
-        cFiberTube_lv   = geom.structure.Volume('vol'+self.name+'CarbFiberTube', material=self.tubeMat, shape=targetTube)
-        pCFiber_in_Tube = geom.structure.Placement( 'placeCFiber_in_Tube', volume = cFiberTube_lv )
-        targetTube_lv.placements.append( pCFiber_in_Tube.name )
+        #CarbonTube_lv   = geom.structure.Volume('vol'+self.name+'CarbonTube', material=self.tubeMat, shape=CarbonTube)
+        GasTube_lv   = geom.structure.Volume('vol'+self.name+'GasTube', material=self.targetMat, shape=GasTube)
+        #GasTube_lv   = geom.structure.Volume('vol'+self.name+'GasTube', material='Air', shape=GasTube)
+        pGas_in_Tube = geom.structure.Placement( 'placeGas_in_Tube', volume = GasTube_lv )
+        targetTube_lv.placements.append( pGas_in_Tube.name )
         self.add_volume(targetTube_lv)
 
 
@@ -62,7 +67,13 @@ class TargetPlaneBuilder(gegede.builder.Builder):
         self.add_volume(targetPlane_lv)
 
 
-        # Check parameter consistency
+        # Calculate spaceing based off of number of target tubes
+        self.tTube_interval = (self.targetPlaneDim[0] - self.tTube_outerDia) / self.nTubesPerTarget
+        if( self.tTube_interval <= self.tTube_outerDia ):
+            print " WARNING: target tube interval "+str(self.tTube_interval)+", diameter "+str(self.tTube_outerDia);
+
+
+        # Check parameter consistency in case interval is asserted
         calculatedWidth = ( (self.nTubesPerTarget-1) * self.tTube_interval ) + self.tTube_outerDia
         if( calculatedWidth > self.targetPlaneDim[0] ):
             # TODO: Make a set of warning string templates for printing things like this
@@ -70,9 +81,6 @@ class TargetPlaneBuilder(gegede.builder.Builder):
             print "TargetBuilder: "+str(self.nTubesPerTarget)+" target tubes at a "+str(self.tTube_interval)+" interval don't fit in Target Plane"
             self.tTube_interval = ( self.targetPlaneDim[0] - self.tTube_outerDia )/(self.nTubesPerTarget-1)
             print "TargetBuilder: Reset interval to "+str(self.tTube_interval)
-            if( self.tTube_interval < self.tTube_outerDia ):
-                print " WARNING: target tube interval "+str(self.tTube_interval)+", diameter "+str(self.tTube_outerDia);
-
 
 
         # Place tubes

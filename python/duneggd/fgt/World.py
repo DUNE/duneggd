@@ -330,9 +330,8 @@ class WorldBuilder(gegede.builder.Builder):
 
         # Materials for the radiators and st planes following
         # WARNING! densities not right!
-        #Fabric = g.matter.Molecule("Fabric", density="0.1*g/cc",   elements=(("carbon",16),("hydrogen",18),("oxygen",1)))
         C3H6   = g.matter.Molecule("C3H6",   density="0.946*g/cc",   elements=(("carbon",3), ("hydrogen",6)))
-        fracC3H6 = 25.0/150 # TODO get from spacing in RadiatorBldr cfg
+        fracC3H6 = (25*0.946)/(25*0.946+125*0.001225) # TODO get from spacing in RadiatorBldr cfg
         #densRad = fracC3H6*0.946 + (1-fracC3H6)*0.001225
         #dRad = str(densRad)+"*g/cc"
         dRad = "0.1586875*g/cc"
@@ -373,18 +372,8 @@ class WorldBuilder(gegede.builder.Builder):
                                           ("argon",  1-fracCO2)
                                       ))
 
-        # for the straws -- density??
-        fib_glass = g.matter.Mixture( "fibrous_glass", density = "1.0*g/cc", 
-                                      components = (
-                                          ("SiO2",   0.600),
-                                          ("CaO",    0.224),
-                                          ("Al2O3",  0.118),
-                                          ("MgO",    0.034),
-                                          ("TiO2",   0.013),
-                                          ("Na2O",   0.010),
-                                          ("Fe2O3",  0.001)
-                                      ))
 
+        Kapton   = g.matter.Molecule("Kapton",   density="1.4*g/cc",   elements=(("carbon",22), ("oxygen",5), ("nitrogen",2)))
 
 
         Iron     = g.matter.Molecule("Iron",     density="7.874*g/cc", elements=(("iron",1),))
@@ -400,14 +389,25 @@ class WorldBuilder(gegede.builder.Builder):
                                      ))
 
         # make up a dumb but not crazy density for the STT framing just inside of the ECAL
-        densAirSteel = 0.5*7.93 + 0.5*0.001225
-        dAirSteel = str(densAirSteel)+"*g/cc"
-        AirSteel = g.matter.Mixture( "AirSteel", density = dAirSteel, 
-                                     components = (
-                                         ("Air",   0.5),
-                                         ("Steel", 0.5)
-                                     ))
+        sttFrameMix = g.matter.Mixture( "sttFrameMix", density = "0.5*g/cc", 
+                                        components = (
+                                            ("Air",    0.01),
+                                            ("carbon", 0.99)
+                                        ))
         
+        
+        # for the straws -- density??
+        fib_glass = g.matter.Mixture( "fibrous_glass", density = "1.0*g/cc", 
+                                      components = (
+                                          ("SiO2",   0.600),
+                                          ("CaO",    0.224),
+                                          ("Al2O3",  0.118),
+                                          ("MgO",    0.034),
+                                          ("TiO2",   0.013),
+                                          ("Na2O",   0.010),
+                                          ("Fe2O3",  0.001)
+                                      ))
+
         #   Materials for the RPCs
         # tetraflouroethane:
         CH2FCF3 = g.matter.Molecule( "CH2FCF3",  density="0.00425*g/cc",   
@@ -431,6 +431,7 @@ class WorldBuilder(gegede.builder.Builder):
 
         # Materials for the ECAL
         # Epoxy Resin (Glue that will hold the scintillator bars and the lead sheets together):
+        # probably won't show up, just the default material of SBPlane
         epoxy_resin   = g.matter.Molecule("epoxy_resin",   density="1.1250*g/cc",   
                                           elements=(
                                               ("carbon",38), 
@@ -450,4 +451,4 @@ class WorldBuilder(gegede.builder.Builder):
 
 
         # for LAr otion using this world:
-        ArTarget = g.matter.Molecule("LAr", density="1.4*g/cc", elements=(("argon",1),))
+        LArTarget = g.matter.Molecule("LAr", density="1.4*g/cc", elements=(("argon",1),))

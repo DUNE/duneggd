@@ -14,9 +14,12 @@ class DetectorBuilder(gegede.builder.Builder):
     #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
     def configure(self, defMat = 'Air',
                   magInDim=None, magThickness=Q('60cm'), 
-                  downMuIDtoMagnet = Q('0.8m'), upMuIDtoMagnet = Q('1.15m'), **kwds):
+                  downMuIDtoMagnet = Q('0.8m'), upMuIDtoMagnet = Q('1.15m'),
+                  vesselAroundSTT = False, vesselThickness=None, **kwds):
         if magInDim is None:
             raise ValueError("No value given for magInDim")
+        if ((vesselThickness is None) and vesselAroundSTT is True):
+            raise ValueError("No value given for vesselThickness")
 
         self.defMat      = defMat
         self.magMat      = 'Steel'
@@ -41,6 +44,9 @@ class DetectorBuilder(gegede.builder.Builder):
 
         self.upMuIDtoMagnet   = upMuIDtoMagnet
         self.downMuIDtoMagnet = downMuIDtoMagnet
+
+        self.vesselAroundSTT = vesselAroundSTT
+        self.vesselThickness = vesselThickness
 
 
     #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
@@ -190,11 +196,11 @@ class DetectorBuilder(gegede.builder.Builder):
         magInner_lv = geom.structure.Volume('volMagnetInner', material=self.defMat, shape=magIn)
         self.add_volume(mag_lv)
         self.add_volume(magInner_lv)
-        mag_in_det = geom.structure.Position('Mag_in_Det', magPos[0], magPos[1], magPos[2])
-        pmag_in_D  = geom.structure.Placement('placeMag_in_Det',
+        mag_in_det = geom.structure.Position('Mag_in_MagInner', magPos[0], magPos[1], magPos[2])
+        pmag_in_D  = geom.structure.Placement('placeMag_in_MagInner',
                                               volume = mag_lv,
                                               pos = mag_in_det)
-        pmagInner_in_D  = geom.structure.Placement('placeMagInner_in_Det',
+        pmagInner_in_D  = geom.structure.Placement('placeMagInner_in_MagInner',
                                                    volume = magInner_lv,
                                                    pos = mag_in_det) # same pos as magnet
         det_lv.placements.append(pmag_in_D.name)
@@ -203,101 +209,121 @@ class DetectorBuilder(gegede.builder.Builder):
 
         # Get STT colume and place in magnetezed inner magnet volume
         stt_lv = self.sttBldr.get_volume('volSTT')
-        stt_in_det = geom.structure.Position('STT_in_Det', sttPos[0], sttPos[1], sttPos[2])
-        pSTT_in_D = geom.structure.Placement('placeSTT_in_Det',
+        stt_in_det = geom.structure.Position('STT_in_MagInner', sttPos[0], sttPos[1], sttPos[2])
+        pSTT_in_MagInner = geom.structure.Placement('placeSTT_in_MagInner',
                                              volume = stt_lv,
                                              pos = stt_in_det)
-        magInner_lv.placements.append(pSTT_in_D.name)
+        magInner_lv.placements.append(pSTT_in_MagInner.name)
 
         
-        # Define and place "framing" volumes around STT
-        sttFraming_xy = geom.shapes.Box( 'sttFraming_xy',  dx=0.5*sttDim[0],
-                                         dy=0.5*sttDim[1], dz=0.5*sttToEcal)
-        sttFraming_yz = geom.shapes.Box( 'sttFraming_yz',  dx=0.5*sttToEcal,
-                                         dy=0.5*sttDim[1], dz=0.5*sttDim[2])
-        sttFraming_xz = geom.shapes.Box( 'sttFraming_xz',  dx=0.5*sttDim[0],
-                                         dy=0.5*sttToEcal, dz=0.5*sttDim[2])
-        sttFr_xy_lv   = geom.structure.Volume( 'volsttFraming_xy', 
-                                               material='AirSteel', 
-                                               shape=sttFraming_xy)
-        sttFr_yz_lv   = geom.structure.Volume( 'volsttFraming_yz', 
-                                               material='AirSteel', 
-                                               shape=sttFraming_yz)
-        sttFr_xz_lv   = geom.structure.Volume( 'volsttFraming_xz', 
-                                               material='AirSteel', 
-                                               shape=sttFraming_xz)
-        sttFr_negxy_pos = geom.structure.Position('posSTT_negxy_framing', 
-                                                  sttPos[0], 
-                                                  sttPos[1], 
-                                                  sttPos[2] - 0.5*sttDim[2] - 0.5*sttToEcal)
-        sttFr_negyz_pos = geom.structure.Position('posSTT_negyz_framing', 
-                                                  sttPos[0] - 0.5*sttDim[0] - 0.5*sttToEcal, 
-                                                  sttPos[1], 
-                                                  sttPos[2])
-        sttFr_negxz_pos = geom.structure.Position('posSTT_negxz_framing', 
-                                                  sttPos[0], 
-                                                  sttPos[1] - 0.5*sttDim[1] - 0.5*sttToEcal, 
-                                                  sttPos[2])
-        sttFr_posxy_pos = geom.structure.Position('posSTT_posxy_framing', 
-                                                  sttPos[0], 
-                                                  sttPos[1], 
-                                                  sttPos[2] + 0.5*sttDim[2] + 0.5*sttToEcal)
-        sttFr_posyz_pos = geom.structure.Position('posSTT_posyz_framing', 
-                                                  sttPos[0] + 0.5*sttDim[0] + 0.5*sttToEcal, 
-                                                  sttPos[1], 
-                                                  sttPos[2])
-        sttFr_posxz_pos = geom.structure.Position('posSTT_posxz_framing', 
-                                                  sttPos[0], 
-                                                  sttPos[1] + 0.5*sttDim[1] + 0.5*sttToEcal, 
-                                                  sttPos[2])
-        psttFr_negxy = geom.structure.Placement('place_sttFr_negxy',
-                                                volume = sttFr_xy_lv,
-                                                pos = sttFr_negxy_pos)
-        psttFr_posxy = geom.structure.Placement('place_sttFr_posxy',
-                                                volume = sttFr_xy_lv,
-                                                pos = sttFr_posxy_pos)
-        psttFr_negyz = geom.structure.Placement('place_sttFr_negyz',
-                                                volume = sttFr_yz_lv,
-                                                pos = sttFr_negyz_pos)
-        psttFr_posyz = geom.structure.Placement('place_sttFr_posyz',
-                                                volume = sttFr_yz_lv,
-                                                pos = sttFr_posyz_pos)
-        psttFr_negxz = geom.structure.Placement('place_sttFr_negxz',
-                                                volume = sttFr_xz_lv,
-                                                pos = sttFr_negxz_pos)
-        psttFr_posxz = geom.structure.Placement('place_sttFr_posxz',
-                                                volume = sttFr_xz_lv,
-                                                pos = sttFr_posxz_pos)
-        magInner_lv.placements.append(psttFr_negxy.name)
-        magInner_lv.placements.append(psttFr_posxy.name)
-        magInner_lv.placements.append(psttFr_negyz.name)
-        magInner_lv.placements.append(psttFr_posyz.name)
-        magInner_lv.placements.append(psttFr_negxz.name)
-        magInner_lv.placements.append(psttFr_posxz.name)
-
+        # vessel steel plating for study by Steve Manly and student 
+        if(self.vesselAroundSTT):
+            if( self.vesselThickness != Q('0cm') ):
+                vesselInDim = list(sttDim)
+                vesselOutDim = list(sttDim)
+                for i in range(0, 3):
+                    vesselInDim[i]  += Q('1um')
+                    vesselOutDim[i] = vesselInDim[i] + 2*self.vesselThickness
+                vesselOut = geom.shapes.Box( 'VesselOut',            dx=0.5*vesselOutDim[0], 
+                                             dy=0.5*vesselOutDim[1], dz=0.5*vesselOutDim[2]) 
+                vesselIn  = geom.shapes.Box( 'VesselInner',          dx=0.5*vesselInDim[0], 
+                                             dy=0.5*vesselInDim[1],  dz=0.5*vesselInDim[2]) 
+                vesselBox = geom.shapes.Boolean( 'Vessel', type='subtraction', first=vesselOut, second=vesselIn ) 
+                vessel_lv = geom.structure.Volume('volVessel', material='Steel', shape=vesselBox)
+                pvessel_in_MagInner  = geom.structure.Placement('placeVessel_in_MagInner',
+                                                         volume = vessel_lv,
+                                                         pos = stt_in_det)
+                magInner_lv.placements.append(pvessel_in_MagInner.name)                
+        else:
+            # Define and place "framing" volumes around STT
+            sttFraming_xy = geom.shapes.Box( 'sttFraming_xy',  dx=0.5*sttDim[0],
+                                             dy=0.5*sttDim[1], dz=0.5*sttToEcal)
+            sttFraming_yz = geom.shapes.Box( 'sttFraming_yz',  dx=0.5*sttToEcal,
+                                             dy=0.5*sttDim[1], dz=0.5*sttDim[2])
+            sttFraming_xz = geom.shapes.Box( 'sttFraming_xz',  dx=0.5*sttDim[0],
+                                             dy=0.5*sttToEcal, dz=0.5*sttDim[2])
+            sttFr_xy_lv   = geom.structure.Volume( 'volsttFraming_xy', 
+                                                   material='sttFrameMix', 
+                                                   shape=sttFraming_xy)
+            sttFr_yz_lv   = geom.structure.Volume( 'volsttFraming_yz', 
+                                                   material='sttFrameMix', 
+                                                   shape=sttFraming_yz)
+            sttFr_xz_lv   = geom.structure.Volume( 'volsttFraming_xz', 
+                                                   material='sttFrameMix', 
+                                                   shape=sttFraming_xz)
+            sttFr_negxy_pos = geom.structure.Position('posSTT_negxy_framing', 
+                                                      sttPos[0], 
+                                                      sttPos[1], 
+                                                      sttPos[2] - 0.5*sttDim[2] - 0.5*sttToEcal)
+            sttFr_negyz_pos = geom.structure.Position('posSTT_negyz_framing', 
+                                                      sttPos[0] - 0.5*sttDim[0] - 0.5*sttToEcal, 
+                                                      sttPos[1], 
+                                                      sttPos[2])
+            sttFr_negxz_pos = geom.structure.Position('posSTT_negxz_framing', 
+                                                      sttPos[0], 
+                                                      sttPos[1] - 0.5*sttDim[1] - 0.5*sttToEcal, 
+                                                      sttPos[2])
+            sttFr_posxy_pos = geom.structure.Position('posSTT_posxy_framing', 
+                                                      sttPos[0], 
+                                                      sttPos[1], 
+                                                      sttPos[2] + 0.5*sttDim[2] + 0.5*sttToEcal)
+            sttFr_posyz_pos = geom.structure.Position('posSTT_posyz_framing', 
+                                                      sttPos[0] + 0.5*sttDim[0] + 0.5*sttToEcal, 
+                                                      sttPos[1], 
+                                                      sttPos[2])
+            sttFr_posxz_pos = geom.structure.Position('posSTT_posxz_framing', 
+                                                      sttPos[0], 
+                                                      sttPos[1] + 0.5*sttDim[1] + 0.5*sttToEcal, 
+                                                      sttPos[2])
+            psttFr_negxy = geom.structure.Placement('place_sttFr_negxy',
+                                                    volume = sttFr_xy_lv,
+                                                    pos = sttFr_negxy_pos)
+            psttFr_posxy = geom.structure.Placement('place_sttFr_posxy',
+                                                    volume = sttFr_xy_lv,
+                                                    pos = sttFr_posxy_pos)
+            psttFr_negyz = geom.structure.Placement('place_sttFr_negyz',
+                                                    volume = sttFr_yz_lv,
+                                                    pos = sttFr_negyz_pos)
+            psttFr_posyz = geom.structure.Placement('place_sttFr_posyz',
+                                                    volume = sttFr_yz_lv,
+                                                    pos = sttFr_posyz_pos)
+            psttFr_negxz = geom.structure.Placement('place_sttFr_negxz',
+                                                    volume = sttFr_xz_lv,
+                                                    pos = sttFr_negxz_pos)
+            psttFr_posxz = geom.structure.Placement('place_sttFr_posxz',
+                                                    volume = sttFr_xz_lv,
+                                                    pos = sttFr_posxz_pos)
+            magInner_lv.placements.append(psttFr_negyz.name)
+            magInner_lv.placements.append(psttFr_posyz.name)
+            magInner_lv.placements.append(psttFr_negxz.name)
+            magInner_lv.placements.append(psttFr_posxz.name)
+            # No material in front of up/down ECAL
+            #magInner_lv.placements.append(psttFr_negxy.name)
+            #magInner_lv.placements.append(psttFr_posxy.name)
+            
 
 
         # Get volECALDownstream, volECALUpstream, volECALBarrel volumes and place in volDetector
         ecalDown_lv = self.ecalDownBldr.get_volume('volECALDownstream')
-        ecalDown_in_det = geom.structure.Position('ECALDown_in_Det', ecalDownPos[0], ecalDownPos[1], ecalDownPos[2])
-        pecalDown_in_D = geom.structure.Placement('placeECALDown_in_Det',
+        ecalDown_in_det = geom.structure.Position('ECALDown_in_MagInner', ecalDownPos[0], ecalDownPos[1], ecalDownPos[2])
+        pecalDown_in_MagInner = geom.structure.Placement('placeECALDown_in_MagInner',
                                                   volume = ecalDown_lv,
                                                   pos = ecalDown_in_det)
-        magInner_lv.placements.append(pecalDown_in_D.name)
+        magInner_lv.placements.append(pecalDown_in_MagInner.name)
         ecalUp_lv = self.ecalUpBldr.get_volume('volECALUpstream')
-        ecalUp_in_det = geom.structure.Position('ECALUp_in_Det', ecalUpPos[0], ecalUpPos[1], ecalUpPos[2])
-        pecalUp_in_D = geom.structure.Placement('placeECALUp_in_Det',
+        ecalUp_in_det = geom.structure.Position('ECALUp_in_MagInner', ecalUpPos[0], ecalUpPos[1], ecalUpPos[2])
+        pecalUp_in_MagInner = geom.structure.Placement('placeECALUp_in_MagInner',
                                                 volume = ecalUp_lv,
                                                 pos = ecalUp_in_det,
                                                 rot='r180aboutY')
-        magInner_lv.placements.append(pecalUp_in_D.name)
+        magInner_lv.placements.append(pecalUp_in_MagInner.name)
         
         ecalBar_lv = self.ecalBarBldr.get_volume('volBarrelECAL')
-        ecalBar_in_det = geom.structure.Position('ECALBar_in_Det', ecalBarPos[0], ecalBarPos[1], ecalBarPos[2])
-        pecalBar_in_D = geom.structure.Placement('placeECALBar_in_Det',
+        ecalBar_in_det = geom.structure.Position('ECALBar_in_MagInner', ecalBarPos[0], ecalBarPos[1], ecalBarPos[2])
+        pecalBar_in_MagInner = geom.structure.Placement('placeECALBar_in_MagInner',
                                                  volume = ecalBar_lv,
                                                  pos = ecalBar_in_det)
-        magInner_lv.placements.append(pecalBar_in_D.name)
+        magInner_lv.placements.append(pecalBar_in_MagInner.name)
 
 
 

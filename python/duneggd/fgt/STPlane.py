@@ -14,7 +14,7 @@ class STPlaneBuilder(gegede.builder.Builder):
     def configure(self, sTube_innerDia=Q('0.95cm'), sTube_outerDia=Q('0.9565cm'), 
                   sTube_length=Q('350cm'), sAnodeWire_Dia=('0.003cm'),
                   nTubesPerPlane = 336,
-                  stPlaneMat='Air', strawMat='fibrous_glass', stGas='stGas_Ar', **kwds):
+                  stPlaneMat='Air', strawMat='Kapton', stGas='stGas_Ar', **kwds):
         self.material   = stPlaneMat
         self.strawMat   = strawMat
         self.stGas      = stGas
