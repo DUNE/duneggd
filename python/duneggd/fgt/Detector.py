@@ -236,25 +236,16 @@ class DetectorBuilder(gegede.builder.Builder):
                 magInner_lv.placements.append(pvessel_in_MagInner.name)                
         else:
             # Define and place "framing" volumes around STT
-            sttFraming_xy = geom.shapes.Box( 'sttFraming_xy',  dx=0.5*sttDim[0],
-                                             dy=0.5*sttDim[1], dz=0.5*sttToEcal)
             sttFraming_yz = geom.shapes.Box( 'sttFraming_yz',  dx=0.5*sttToEcal,
                                              dy=0.5*sttDim[1], dz=0.5*sttDim[2])
             sttFraming_xz = geom.shapes.Box( 'sttFraming_xz',  dx=0.5*sttDim[0],
                                              dy=0.5*sttToEcal, dz=0.5*sttDim[2])
-            sttFr_xy_lv   = geom.structure.Volume( 'volsttFraming_xy', 
-                                                   material='sttFrameMix', 
-                                                   shape=sttFraming_xy)
             sttFr_yz_lv   = geom.structure.Volume( 'volsttFraming_yz', 
                                                    material='sttFrameMix', 
                                                    shape=sttFraming_yz)
             sttFr_xz_lv   = geom.structure.Volume( 'volsttFraming_xz', 
                                                    material='sttFrameMix', 
                                                    shape=sttFraming_xz)
-            sttFr_negxy_pos = geom.structure.Position('posSTT_negxy_framing', 
-                                                      sttPos[0], 
-                                                      sttPos[1], 
-                                                      sttPos[2] - 0.5*sttDim[2] - 0.5*sttToEcal)
             sttFr_negyz_pos = geom.structure.Position('posSTT_negyz_framing', 
                                                       sttPos[0] - 0.5*sttDim[0] - 0.5*sttToEcal, 
                                                       sttPos[1], 
@@ -263,10 +254,6 @@ class DetectorBuilder(gegede.builder.Builder):
                                                       sttPos[0], 
                                                       sttPos[1] - 0.5*sttDim[1] - 0.5*sttToEcal, 
                                                       sttPos[2])
-            sttFr_posxy_pos = geom.structure.Position('posSTT_posxy_framing', 
-                                                      sttPos[0], 
-                                                      sttPos[1], 
-                                                      sttPos[2] + 0.5*sttDim[2] + 0.5*sttToEcal)
             sttFr_posyz_pos = geom.structure.Position('posSTT_posyz_framing', 
                                                       sttPos[0] + 0.5*sttDim[0] + 0.5*sttToEcal, 
                                                       sttPos[1], 
@@ -275,12 +262,6 @@ class DetectorBuilder(gegede.builder.Builder):
                                                       sttPos[0], 
                                                       sttPos[1] + 0.5*sttDim[1] + 0.5*sttToEcal, 
                                                       sttPos[2])
-            psttFr_negxy = geom.structure.Placement('place_sttFr_negxy',
-                                                    volume = sttFr_xy_lv,
-                                                    pos = sttFr_negxy_pos)
-            psttFr_posxy = geom.structure.Placement('place_sttFr_posxy',
-                                                    volume = sttFr_xy_lv,
-                                                    pos = sttFr_posxy_pos)
             psttFr_negyz = geom.structure.Placement('place_sttFr_negyz',
                                                     volume = sttFr_yz_lv,
                                                     pos = sttFr_negyz_pos)
@@ -297,10 +278,6 @@ class DetectorBuilder(gegede.builder.Builder):
             magInner_lv.placements.append(psttFr_posyz.name)
             magInner_lv.placements.append(psttFr_negxz.name)
             magInner_lv.placements.append(psttFr_posxz.name)
-            # No material in front of up/down ECAL
-            #magInner_lv.placements.append(psttFr_negxy.name)
-            #magInner_lv.placements.append(psttFr_posxy.name)
-            
 
 
         # Get volECALDownstream, volECALUpstream, volECALBarrel volumes and place in volDetector

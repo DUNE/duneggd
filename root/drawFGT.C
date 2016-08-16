@@ -20,7 +20,8 @@ drawFGT(TString volName="")
   
   //char topVol[] ="volWorld";
   //char topVol[] ="volDetEnclosure";
-  char topVol[] ="volDetector";
+  
+char topVol[] ="volDetector";
 
   //char topVol[] ="volMuIDDownstream";
   //char topVol[] ="volMuIDBarrel";

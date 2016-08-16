@@ -15,20 +15,25 @@ class DetEncLArBuilder(gegede.builder.Builder):
 
     #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
     def configure(self, 
-                  detEncDim       = None, 
-                  magBarsDim      = None,
-                  encBoundToDet_z = None, 
+                  detEncDim            = None, 
+                  magBarsDim           = None,
+                  supportTubeThickness = None,
+                  encBoundToDet_z      = None, 
                   **kwds):
         if detEncDim is None:
             raise ValueError("No value given for detEncDim")
         if magBarsDim is None:
             raise ValueError("No value given for magBarsDim")
+        if supportTubeThickness is None:
+            raise ValueError("No value given for supportTubeThickness")
         if encBoundToDet_z is None:
             raise ValueError("No value given for encBoundToDet_z")
 
         self.detEncMat     = 'Air'
         self.detEncDim     = detEncDim
         self.magBarsDim    = magBarsDim
+
+        self.supportTubeThickness = supportTubeThickness
 
         # Space from negative face of volDetEnc to closest face of detector
         #  This positions the detector in the enclosure
@@ -63,6 +68,12 @@ class DetEncLArBuilder(gegede.builder.Builder):
                                        dz=0.5*self.magBarsDim[2])
         magBarShort_lv = geom.structure.Volume('volMagBarShort', material='Aluminum', shape=magBarShort)
 
+
+        supportTube = geom.shapes.Tubs('MagSupportTube', 
+                                       rmin = 0.5*self.magBarsDim[0] - self.supportTubeThickness,
+                                       rmax = 0.5*self.magBarsDim[0], 
+                                       dz   = 0.5*cryoDim[1])
+        supportTube_lv = geom.structure.Volume('volMagSupportTube', material='Steel', shape=supportTube)
 
 
         # Calculate position of detector in the enclosure
@@ -124,6 +135,8 @@ class DetEncLArBuilder(gegede.builder.Builder):
                                             volume = magBarShort_lv,
                                             pos = magBar_in_enc)
         detEnc_lv.placements.append(pMB_in_E.name)
+
+
       
         posName = 'magBarLong_bot_neg_in_Enc' # bottom negative x
         magBar_in_enc = geom.structure.Position(posName, 
@@ -145,6 +158,38 @@ class DetEncLArBuilder(gegede.builder.Builder):
                                             pos = magBar_in_enc)
         detEnc_lv.placements.append(pMB_in_E.name)
 
+
+        support_up_neg_enc = geom.structure.Position(posName+'_support_up',
+                                                     self.detCenter[0] - 0.5*cryoDim[0] - 0.5*magBarsDim[0], 
+                                                     self.detCenter[1], 
+                                                     self.detCenter[2] - 0.5*cryoDim[2] - 0.5*magBarsDim[2] )
+        support_mid_neg_enc = geom.structure.Position(posName+'_support_mid',
+                                                     self.detCenter[0] - 0.5*cryoDim[0] - 0.5*magBarsDim[0], 
+                                                     self.detCenter[1], 
+                                                     self.detCenter[2]  )
+        support_down_neg_enc = geom.structure.Position(posName+'_support_down',
+                                                     self.detCenter[0] - 0.5*cryoDim[0] - 0.5*magBarsDim[0], 
+                                                     self.detCenter[1], 
+                                                     self.detCenter[2] + 0.5*cryoDim[2] + 0.5*magBarsDim[2] )
+        psup_in_E = geom.structure.Placement('place'+posName+'_support_up',
+                                             volume = supportTube_lv,
+                                             pos = support_up_neg_enc,
+                                             rot = 'r90aboutX')
+        detEnc_lv.placements.append(psup_in_E.name)
+        psup_in_E = geom.structure.Placement('place'+posName+'_support_mid',
+                                             volume = supportTube_lv,
+                                             pos = support_mid_neg_enc,
+                                             rot = 'r90aboutX')
+        detEnc_lv.placements.append(psup_in_E.name)
+        psup_in_E = geom.structure.Placement('place'+posName+'_support_down',
+                                             volume = supportTube_lv,
+                                             pos = support_down_neg_enc,
+                                             rot = 'r90aboutX')
+        detEnc_lv.placements.append(psup_in_E.name)
+
+
+
+
         posName = 'magBarLong_bot_pos_in_Enc' # bottom positive x
         magBar_in_enc = geom.structure.Position(posName, 
                                                 self.detCenter[0] + 0.5*cryoDim[0] + 0.5*magBarsDim[0], 
@@ -164,3 +209,31 @@ class DetEncLArBuilder(gegede.builder.Builder):
                                             volume = magBarLong_lv,
                                             pos = magBar_in_enc)
         detEnc_lv.placements.append(pMB_in_E.name)
+
+        support_up_pos_enc = geom.structure.Position(posName+'_support_up',
+                                                     self.detCenter[0] + 0.5*cryoDim[0] + 0.5*magBarsDim[0], 
+                                                     self.detCenter[1], 
+                                                     self.detCenter[2] - 0.5*cryoDim[2] - 0.5*magBarsDim[2] )
+        support_mid_pos_enc = geom.structure.Position(posName+'_support_mid',
+                                                     self.detCenter[0] + 0.5*cryoDim[0] + 0.5*magBarsDim[0], 
+                                                     self.detCenter[1], 
+                                                     self.detCenter[2]  )
+        support_down_pos_enc = geom.structure.Position(posName+'_support_down',
+                                                     self.detCenter[0] + 0.5*cryoDim[0] + 0.5*magBarsDim[0], 
+                                                     self.detCenter[1], 
+                                                     self.detCenter[2] + 0.5*cryoDim[2] + 0.5*magBarsDim[2] )
+        psup_in_E = geom.structure.Placement('place'+posName+'_support_up',
+                                             volume = supportTube_lv,
+                                             pos = support_up_pos_enc,
+                                             rot = 'r90aboutX')
+        detEnc_lv.placements.append(psup_in_E.name)
+        psup_in_E = geom.structure.Placement('place'+posName+'_support_mid',
+                                             volume = supportTube_lv,
+                                             pos = support_mid_pos_enc,
+                                             rot = 'r90aboutX')
+        detEnc_lv.placements.append(psup_in_E.name)
+        psup_in_E = geom.structure.Placement('place'+posName+'_support_down',
+                                             volume = supportTube_lv,
+                                             pos = support_down_pos_enc,
+                                             rot = 'r90aboutX')
+        detEnc_lv.placements.append(psup_in_E.name)

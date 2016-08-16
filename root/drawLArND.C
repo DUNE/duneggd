@@ -6,10 +6,11 @@ drawLArND(TString volName="")
   gSystem->Load("libGeom");
   gSystem->Load("libGdml");
 
-  TGeoManager::Import("larnd_nowires.gdml");
-  //TGeoManager::Import("larnd.gdml");
+  //TGeoManager::Import("larnd_nowires.gdml");
+  TGeoManager::Import("larnd.gdml");
   gGeoManager->DefaultColors();
 
+  
   
   //char topVol[] ="volWorld";
   char topVol[] ="volDetEnclosure";
@@ -39,6 +40,9 @@ drawLArND(TString volName="")
   gGeoManager->GetVolume("volMagBarLong")->SetLineColor(kGray);
   gGeoManager->GetVolume("volMagBarLong")->SetVisibility(1);
   gGeoManager->GetVolume("volMagBarLong")->SetTransparency(20);
+  gGeoManager->GetVolume("volMagSupportTube")->SetLineColor(kGray);
+  gGeoManager->GetVolume("volMagSupportTube")->SetVisibility(1);
+  gGeoManager->GetVolume("volMagSupportTube")->SetTransparency(20);
 
   gGeoManager->GetVolume("volTPCPlane")->SetLineColor(kRed-3);
   gGeoManager->GetVolume("volTPCPlane")->SetVisibility(1);

@@ -388,11 +388,19 @@ class WorldBuilder(gegede.builder.Builder):
                                          ("carbon",   0.0010)
                                      ))
 
+
+        Polycarbonate = g.matter.Molecule("polycarbonate", density="1.6*g/cc",  
+                                          elements=(
+                                              ("carbon",16),
+                                              ("hydrogen",6),
+                                              ("oxygen",3)
+                                          ))
+
         # make up a dumb but not crazy density for the STT framing just inside of the ECAL
-        sttFrameMix = g.matter.Mixture( "sttFrameMix", density = "0.5*g/cc", 
+        sttFrameMix = g.matter.Mixture( "sttFrameMix", density = "0.235*g/cc", 
                                         components = (
-                                            ("Air",    0.01),
-                                            ("carbon", 0.99)
+                                            ("carbon",        3.9/5.1),
+                                            ("polycarbonate", 1.2/5.1)
                                         ))
         
         

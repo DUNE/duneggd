@@ -48,8 +48,14 @@
     <position name="magBarShort_top_down_in_Enc" unit="cm" x="5.41433564649e-14" y="-450.156" z="87.02375"/>
     <position name="magBarLong_bot_neg_in_Enc" unit="cm" x="-354.484" y="-763.096" z="-337.54625"/>
     <position name="magBarLong_top_neg_in_Enc" unit="cm" x="-354.484" y="-450.156" z="-337.54625"/>
+    <position name="magBarLong_top_neg_in_Enc_support_up" unit="cm" x="-354.484" y="-606.626" z="-762.11625"/>
+    <position name="magBarLong_top_neg_in_Enc_support_mid" unit="cm" x="-354.484" y="-606.626" z="-337.54625"/>
+    <position name="magBarLong_top_neg_in_Enc_support_down" unit="cm" x="-354.484" y="-606.626" z="87.02375"/>
     <position name="magBarLong_bot_pos_in_Enc" unit="cm" x="354.484" y="-763.096" z="-337.54625"/>
     <position name="magBarLong_top_pos_in_Enc" unit="cm" x="354.484" y="-450.156" z="-337.54625"/>
+    <position name="magBarLong_top_pos_in_Enc_support_up" unit="cm" x="354.484" y="-606.626" z="-762.11625"/>
+    <position name="magBarLong_top_pos_in_Enc_support_mid" unit="cm" x="354.484" y="-606.626" z="-337.54625"/>
+    <position name="magBarLong_top_pos_in_Enc_support_down" unit="cm" x="354.484" y="-606.626" z="87.02375"/>
     <rotation name="r90aboutX" unit="degree" x="90" y="0" z="0"/>
     <rotation name="rminus90aboutX" unit="degree" x="-90" y="0" z="0"/>
     <rotation name="r90aboutY" unit="degree" x="0" y="90" z="0"/>
@@ -231,8 +237,8 @@
     </material>
     <material formula="" name="RadiatorBlend">
       <D value="0.1586875"/>
-      <fraction n="0.833333333333" ref="Air"/>
-      <fraction n="0.166666666667" ref="C3H6"/>
+      <fraction n="0.00643297886307" ref="Air"/>
+      <fraction n="0.993567021137" ref="C3H6"/>
     </material>
     <material formula="" name="stGas_Xe">
       <D value="0.00469254464286"/>
@@ -261,15 +267,11 @@
       <fraction n="0.3" ref="CO2"/>
       <fraction n="0.7" ref="argon"/>
     </material>
-    <material formula="" name="fibrous_glass">
-      <D value="1.0"/>
-      <fraction n="0.6" ref="SiO2"/>
-      <fraction n="0.224" ref="CaO"/>
-      <fraction n="0.118" ref="Al2O3"/>
-      <fraction n="0.034" ref="MgO"/>
-      <fraction n="0.013" ref="TiO2"/>
-      <fraction n="0.01" ref="Na2O"/>
-      <fraction n="0.001" ref="Fe2O3"/>
+    <material formula="" name="Kapton">
+      <D value="1.4"/>
+      <composite n="22" ref="carbon"/>
+      <composite n="5" ref="oxygen"/>
+      <composite n="2" ref="nitrogen"/>
     </material>
     <material formula="" name="Iron">
       <D value="7.874"/>
@@ -290,10 +292,26 @@
       <fraction n="0.09" ref="nickel"/>
       <fraction n="0.001" ref="carbon"/>
     </material>
-    <material formula="" name="AirSteel">
-      <D value="3.9656125"/>
-      <fraction n="0.5" ref="Air"/>
-      <fraction n="0.5" ref="Steel"/>
+    <material formula="" name="polycarbonate">
+      <D value="1.6"/>
+      <composite n="16" ref="carbon"/>
+      <composite n="6" ref="hydrogen"/>
+      <composite n="3" ref="oxygen"/>
+    </material>
+    <material formula="" name="sttFrameMix">
+      <D value="0.235"/>
+      <fraction n="0.764705882353" ref="carbon"/>
+      <fraction n="0.235294117647" ref="polycarbonate"/>
+    </material>
+    <material formula="" name="fibrous_glass">
+      <D value="1.0"/>
+      <fraction n="0.6" ref="SiO2"/>
+      <fraction n="0.224" ref="CaO"/>
+      <fraction n="0.118" ref="Al2O3"/>
+      <fraction n="0.034" ref="MgO"/>
+      <fraction n="0.013" ref="TiO2"/>
+      <fraction n="0.01" ref="Na2O"/>
+      <fraction n="0.001" ref="Fe2O3"/>
     </material>
     <material formula="" name="CH2FCF3">
       <D value="0.00425"/>
@@ -364,6 +382,7 @@
     <box lunit="cm" name="DetEnclosure" x="1798.32" y="1536.192" z="3003.2325"/>
     <box lunit="cm" name="magBarLong" x="45.0" y="10.0" z="894.14"/>
     <box lunit="cm" name="magBarShort" x="663.968" y="10.0" z="45.0"/>
+    <tube aunit="radian" deltaphi="6.28318530718" lunit="cm" name="MagSupportTube" rmax="22.5" rmin="21.5" startphi="0.0" z="302.94"/>
     <box lunit="cm" name="World" x="20000.0" y="20000.0" z="20000.0"/>
     <box lunit="cm" name="SecondaryHall" x="1432.56" y="335.28" z="579.12"/>
     <tube aunit="radian" deltaphi="6.28318530718" lunit="cm" name="PrimaryShaft" rmax="335.28" rmin="0.0" startphi="0.0" z="4753.0512"/>
@@ -681,6 +700,10 @@
       <materialref ref="Aluminum"/>
       <solidref ref="magBarLong"/>
     </volume>
+    <volume name="volMagSupportTube">
+      <materialref ref="Steel"/>
+      <solidref ref="MagSupportTube"/>
+    </volume>
     <volume name="volDetEnclosure">
       <materialref ref="Air"/>
       <solidref ref="DetEnclosure"/>
@@ -720,6 +743,21 @@
         <rotationref ref="identity"/>
       </physvol>
       <physvol>
+        <volumeref ref="volMagSupportTube"/>
+        <positionref ref="magBarLong_top_neg_in_Enc_support_up"/>
+        <rotationref ref="r90aboutX"/>
+      </physvol>
+      <physvol>
+        <volumeref ref="volMagSupportTube"/>
+        <positionref ref="magBarLong_top_neg_in_Enc_support_mid"/>
+        <rotationref ref="r90aboutX"/>
+      </physvol>
+      <physvol>
+        <volumeref ref="volMagSupportTube"/>
+        <positionref ref="magBarLong_top_neg_in_Enc_support_down"/>
+        <rotationref ref="r90aboutX"/>
+      </physvol>
+      <physvol>
         <volumeref ref="volMagBarLong"/>
         <positionref ref="magBarLong_bot_pos_in_Enc"/>
         <rotationref ref="identity"/>
@@ -728,6 +766,21 @@
         <volumeref ref="volMagBarLong"/>
         <positionref ref="magBarLong_top_pos_in_Enc"/>
         <rotationref ref="identity"/>
+      </physvol>
+      <physvol>
+        <volumeref ref="volMagSupportTube"/>
+        <positionref ref="magBarLong_top_pos_in_Enc_support_up"/>
+        <rotationref ref="r90aboutX"/>
+      </physvol>
+      <physvol>
+        <volumeref ref="volMagSupportTube"/>
+        <positionref ref="magBarLong_top_pos_in_Enc_support_mid"/>
+        <rotationref ref="r90aboutX"/>
+      </physvol>
+      <physvol>
+        <volumeref ref="volMagSupportTube"/>
+        <positionref ref="magBarLong_top_pos_in_Enc_support_down"/>
+        <rotationref ref="r90aboutX"/>
       </physvol>
     </volume>
     <volume name="volSecondaryHall">
