@@ -9,15 +9,18 @@ from gegede import Quantity as Q
 class STTBuilder(gegede.builder.Builder):
 
     #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
-    def configure( self, nRadiatorModules=75,
+    def configure( self, config='cdr', 
+                   nRadiatorModules=75,
                    FeTar_z = ('1mm'), CaTar_z = ('7mm'), 
                    CTar_z = ('4mm'), # this default bogus
                    radiatorMod_z=Q('76mm'), stt_z=Q('6.4m'), xxyyMod_z=Q('62mm'),
                    sttMat='Air', **kwds):
+        self.config          = config
         self.sttMat          = sttMat
         self.stPlaneTarBldr  = self.get_builder('STPlaneTarget')
         self.stPlaneRadBldr  = self.get_builder('STPlaneRadiator')
         self.argonTargetBldr = self.get_builder('TargetPlaneArgon')
+        self.emptyArTargetBldr = self.get_builder('EmptyTargetPlaneArgon')
         self.radiatorBldr    = self.get_builder('Radiator')
 
         self.nRadiatorModules  = nRadiatorModules
@@ -38,14 +41,15 @@ class STTBuilder(gegede.builder.Builder):
     def construct(self, geom):
 
         # Get subbuilder dimensions and volumes
-        self.argonTarget_lv  = self.argonTargetBldr.get_volume('volTargetPlaneArgon')
-        self.targetArDim     = self.argonTargetBldr.targetPlaneDim
-        self.radiator_lv     = self.radiatorBldr.get_volume('volRadiator')
-        self.radiatorDim     = self.radiatorBldr.radiatorDim
-        self.stPlaneTar_lv   = self.stPlaneTarBldr.get_volume('volSTPlaneTarget')
-        self.stPlaneDim      = self.stPlaneTarBldr.stPlaneDim 
+        self.emptyArTarget_lv = self.emptyArTargetBldr.get_volume('volEmptyTargetPlaneArgon')
+        self.argonTarget_lv   = self.argonTargetBldr.get_volume('volTargetPlaneArgon')
+        self.targetArDim      = self.argonTargetBldr.targetPlaneDim
+        self.radiator_lv      = self.radiatorBldr.get_volume('volRadiator')
+        self.radiatorDim      = self.radiatorBldr.radiatorDim
+        self.stPlaneTar_lv    = self.stPlaneTarBldr.get_volume('volSTPlaneTarget')
+        self.stPlaneDim       = self.stPlaneTarBldr.stPlaneDim 
         # assume both types of planes have the same dimensions
-        self.stPlaneRad_lv   = self.stPlaneRadBldr.get_volume('volSTPlaneRadiator')
+        self.stPlaneRad_lv    = self.stPlaneRadBldr.get_volume('volSTPlaneRadiator')
 
 
         # Make various targets that are not Ar
@@ -90,33 +94,58 @@ class STTBuilder(gegede.builder.Builder):
         mod_i = 0
 
 
+        if self.config=='cdr':
+            # Fe target and subsequent XXYY planes
+            zpos += 0.5*self.targetFeMod_z
+            self.place_TargetModule(geom, mod_i, zpos, 'Iron')
+            zpos += 0.5*self.targetFeMod_z
+            mod_i+=1
+            
+            # Ar target
+            zpos += 0.5*self.targetArMod_z
+            self.place_TargetModule(geom, mod_i, zpos, 'Argon')
+            zpos += 0.5*self.targetArMod_z
+            mod_i+=1
+            
+            # Ca target and subsequent XXYY planes
+            zpos += 0.5*self.targetCaMod_z
+            self.place_TargetModule(geom, mod_i, zpos, 'Calcium')
+            zpos += 0.5*self.targetCaMod_z
+            mod_i+=1
+            
+            # 2 graphite targets and subsequent XXYY planes
+            for i in range(2):
+                zpos += 0.5*self.targetCMod_z
+                self.place_TargetModule(geom, mod_i, zpos, 'Carbon')
+                zpos += 0.5*self.targetCMod_z
+                mod_i+=1
 
-        # Fe target and subsequent XXYY planes
-        zpos += 0.5*self.targetFeMod_z
-        self.place_TargetModule(geom, mod_i, zpos, 'Iron')
-        zpos += 0.5*self.targetFeMod_z
-        mod_i+=1
-        
-        # Ar target
-        zpos += 0.5*self.targetArMod_z
-        self.place_TargetModule(geom, mod_i, zpos, 'Argon')
-        zpos += 0.5*self.targetArMod_z
-        mod_i+=1
+        elif self.config=='ArOptimized':
+            self.nRadiatorModules -= 2
+            print('STTBuilder: ArOptimized mode: subtracting 2 radiator modules to fit extra Ar targets')
 
-        # Ca target and subsequent XXYY planes
-        zpos += 0.5*self.targetCaMod_z
-        self.place_TargetModule(geom, mod_i, zpos, 'Calcium')
-        zpos += 0.5*self.targetCaMod_z
-        mod_i+=1
+            # Ca target and subsequent XXYY planes
+            zpos += 0.5*self.targetCaMod_z
+            self.place_TargetModule(geom, mod_i, zpos, 'Calcium')
+            zpos += 0.5*self.targetCaMod_z
+            mod_i+=1
 
-        # 2 graphite targets and subsequent XXYY planes
-        for i in range(2):
-            zpos += 0.5*self.targetCMod_z
-            self.place_TargetModule(geom, mod_i, zpos, 'Carbon')
-            zpos += 0.5*self.targetCMod_z
+            # 3 Ar targets
+            for i in range(3):
+                zpos += 0.5*self.targetArMod_z
+                self.place_TargetModule(geom, mod_i, zpos, 'Argon')
+                zpos += 0.5*self.targetArMod_z
+                mod_i+=1
+                
+            # one empty Ar target for carbon subtraction
+            zpos += 0.5*self.targetArMod_z
+            self.place_TargetModule(geom, mod_i, zpos, 'EmptyArgon')
+            zpos += 0.5*self.targetArMod_z
             mod_i+=1
 
 
+        else:
+            print('No configuration for string: '+self.config)
 
         # Place all of the subsequent radiator modules
         for i in range(self.nRadiatorModules):
@@ -138,6 +167,10 @@ class STTBuilder(gegede.builder.Builder):
             tar_z     = self.FeTar_z
         elif(tarType=='Argon'): 
             tar_lv = self.argonTarget_lv
+            tarMod_z  = self.targetArMod_z
+            tar_z     = self.targetArDim[2]
+        elif(tarType=='EmptyArgon'): 
+            tar_lv = self.emptyArTarget_lv
             tarMod_z  = self.targetArMod_z
             tar_z     = self.targetArDim[2]
         elif(tarType=='Calcium'):

@@ -9,7 +9,8 @@ from gegede import Quantity as Q
 class TargetPlaneBuilder(gegede.builder.Builder):
 
     #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
-    def configure( self, tTube_innerDia=None, tTube_outerDia=None, tTube_length=None, 
+    def configure( self, empty=False, 
+                   tTube_innerDia=None, tTube_outerDia=None, tTube_length=None, 
                    nTubesPerTarget=68, 
                    targetMat='ArgonTarget', **kwds ):
 
@@ -20,6 +21,7 @@ class TargetPlaneBuilder(gegede.builder.Builder):
         if tTube_length is None:
             raise ValueError("No value given for tTube_length")
 
+            
         self.targetMat   = targetMat
         self.defaultMat  = 'Air'
         self.tubeMat     = 'CarbonFiber'
@@ -52,7 +54,7 @@ class TargetPlaneBuilder(gegede.builder.Builder):
         #CarbonTube_lv   = geom.structure.Volume('vol'+self.name+'CarbonTube', material=self.tubeMat, shape=CarbonTube)
         GasTube_lv   = geom.structure.Volume('vol'+self.name+'GasTube', material=self.targetMat, shape=GasTube)
         #GasTube_lv   = geom.structure.Volume('vol'+self.name+'GasTube', material='Air', shape=GasTube)
-        pGas_in_Tube = geom.structure.Placement( 'placeGas_in_Tube', volume = GasTube_lv )
+        pGas_in_Tube = geom.structure.Placement( 'placeGas_in_Tube_'+self.name, volume = GasTube_lv )
         targetTube_lv.placements.append( pGas_in_Tube.name )
         self.add_volume(targetTube_lv)
 
@@ -89,8 +91,8 @@ class TargetPlaneBuilder(gegede.builder.Builder):
 
             xpos =  xstart + i*(self.tTube_interval)
             
-            T_in_Tar  = geom.structure.Position('Tube-'+str(i)+'_in_TargetPlane', xpos, '0cm', '0cm')
-            pT_in_Tar = geom.structure.Placement( 'placeTube-'+str(i)+'_in_TargetPlane',
+            T_in_Tar  = geom.structure.Position('Tube-'+str(i)+'_in_'+self.name, xpos, '0cm', '0cm')
+            pT_in_Tar = geom.structure.Placement( 'placeTube-'+str(i)+'_in_'+self.name,
                                                   volume = targetTube_lv,
                                                   pos = T_in_Tar,
                                                   rot = 'r90aboutX')
