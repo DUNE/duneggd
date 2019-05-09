@@ -12,17 +12,89 @@ class SimpleWorldBuilder(gegede.builder.Builder):
                   worldDim = [Q('100m'), Q('100m'), Q('100m')],
                   **kwds):
 
-        self.material = material
-        self.worldDim = worldDim
+        self.material   = material
+        self.worldDim   = worldDim
+        self.detEncBldr = self.get_builder("DetEnclosure")
         pass
 
     #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
     def construct(self, geom):
-        dim   = (0.5*self.worldDim[0], 0.5*self.worldDim[1], 0.5*self.worldDim[2])
-        shape = geom.shapes.Box(self.name + '_box_shape', *dim)
-        lv    = geom.structure.Volume(self.name + '_volume', material=self.material, shape=shape)
-        self.add_volume(lv)
 
+        # Getting various dimensions
+        detEncDim     = list(self.detEncBldr.detEncDim)
+        encBoundToDet = list(self.detEncBldr.encBoundToDet)
+        detDim        = list(self.detEncBldr.detDim)
+
+        # Setting the origin
+        setXCenter    =   0.5*detEncDim[0] - encBoundToDet[0] - 0.5*detDim[0]
+        setYCenter    =   0.5*detEncDim[1] - encBoundToDet[1] - 0.5*detDim[1]
+        setZCenter    =   0.5*detEncDim[2] - encBoundToDet[2]                
+        detEncPos     = [ setXCenter, setYCenter, setZCenter ]
+        
+        # Defining the world box
+        worldShape = geom.shapes.Box(self.name,
+                                     dx=0.5*self.worldDim[0] ,
+                                     dy=0.5*self.worldDim[1] ,
+                                     dz=0.5*self.worldDim[2] )
+        world_lv   = geom.structure.Volume(self.name + '_volume'   ,
+                                           material = self.material,
+                                           shape    = worldShape   )
+        self.add_volume(world_lv)
+
+        # Defining the detector enclosure and placing it
+        detEnc_lv       = self.detEncBldr.get_volume("DetEnclosure_volume")
+        detEnc_in_world = geom.structure.Position('DetEnc_in_World',
+                                                  detEncPos[0],
+                                                  detEncPos[1],
+                                                  detEncPos[2])
+        pD_in_W         = geom.structure.Placement('placeDetEnc_in_World'  ,
+                                                   volume = detEnc_lv      ,
+                                                   pos    = detEnc_in_world)
+        world_lv.placements.append(pD_in_W.name)
+
+    #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
+    def define_materials(self, g):
+        h  = g.matter.Element("hydrogen",   "H",  1,  "1.0791*g/mole" )
+        c  = g.matter.Element("carbon",     "C",  6,  "12.0107*g/mole")
+        n  = g.matter.Element("nitrogen",   "N",  7,  "14.0671*g/mole")
+        o  = g.matter.Element("oxygen",     "O",  8,  "15.999*g/mole" )
+        f  = g.matter.Element("fluorine",   "F",  9,  "18.9984*g/mole")
+        na = g.matter.Element("sodium",     "Na", 11, "22.99*g/mole"  )
+        mg = g.matter.Element("magnesium",  "Mg", 12, "24.305*g/mole" )
+        al = g.matter.Element("aluminum",   "Al", 13, "26.9815*g/mole")
+        si = g.matter.Element("silicon",    "Si", 14, "28.0855*g/mole")
+        p  = g.matter.Element("phosphorus", "P",  15, "30.973*g/mole" )
+        s  = g.matter.Element("sulfur",     "S",  16, "32.065*g/mole" )
+        ar = g.matter.Element("argon",      "Ar", 18, "39.948*g/mole" )
+        ar = g.matter.Element("potassium",  "K",  19, "39.0983*g/mole")
+        ca = g.matter.Element("calcium",    "Ca", 20, "40.078*g/mole" )
+        ti = g.matter.Element("titanium",   "Ti", 22, "47.867*g/mole" )
+        cr = g.matter.Element("chromium",   "Cr", 24, "51.9961*g/mole")
+        fe = g.matter.Element("iron",       "Fe", 26, "55.8450*g/mole")
+        ni = g.matter.Element("nickel",     "Ni", 28, "58.6934*g/mole")
+        br = g.matter.Element("bromine",    "Br", 35, "79.904*g/mole" )
+        xe = g.matter.Element("xenon",      "Xe", 54, "131.293*g/mole")
+        pb = g.matter.Element("lead",       "Pb", 82, "207.20*g/mole" )
+
+        Air   = g.matter.Mixture( "Air", density = "0.001225*g/cc", 
+                                 components = (
+                                     ("nitrogen", 0.781154), 
+                                     ("oxygen",   0.209476),
+                                     ("argon",    0.00934)
+                                 ))        
+
+
+
+#  __  __                   _____                      _ _           _           _  __          __        _     _ 
+# |  \/  |                 / ____|                    | (_)         | |         | | \ \        / /       | |   | |
+# | \  / | ___  _ __ ___  | |     ___  _ __ ___  _ __ | |_  ___ __ _| |_ ___  __| |  \ \  /\  / /__  _ __| | __| |
+# | |\/| |/ _ \| '__/ _ \ | |    / _ \| '_ ` _ \| '_ \| | |/ __/ _` | __/ _ \/ _` |   \ \/  \/ / _ \| '__| |/ _` |
+# | |  | | (_) | | |  __/ | |___| (_) | | | | | | |_) | | | (_| (_| | ||  __/ (_| |    \  /\  / (_) | |  | | (_| |
+# |_|  |_|\___/|_|  \___|  \_____\___/|_| |_| |_| .__/|_|_|\___\__,_|\__\___|\__,_|     \/  \/ \___/|_|  |_|\__,_|
+#                                               | |                                                               
+#                                               |_|                                                               
+#
+       
 class WorldBuilder(gegede.builder.Builder):
     '''
     Build a big box world volume.
