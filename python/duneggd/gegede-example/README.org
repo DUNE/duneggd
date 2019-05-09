@@ -1,0 +1,86 @@
+#+TITLE: Example GeGeDe Application
+
+This package provides an example illustrating how to use the [[https://github.com/brettviren/gegede/][GeGeDe]] package to author geometry description.
+
+* Setting up your package
+
+To start off on the right foot, write your geometry description as a Python package.  This section outlines how this very package is put together.
+
+#+BEGIN_EXAMPLE
+  $ mkdir gegede-example
+  $ cd gegede-example
+  $ mkdir ggdex
+  $ emacs setup.py ggdex/__init__.py ggdex.cfg
+
+#+END_EXAMPLE
+
+This primes the package with:
+
+ - =setup.py= :: used to build a Python package from this source area
+ - =ggdex/__init__.py= :: initially empty, primes the package, will hold builders
+ - =ggdex.cfg= :: initially empty, will hold GGD configuration
+
+Create a GeGeDe [[https://github.com/brettviren/gegede#development][development environment]] and add your package in like so:
+
+#+BEGIN_EXAMPLE
+  $ python setup.py develop
+  $ python -c 'import ggdex'
+  $ echo $?
+  0
+#+END_EXAMPLE
+
+That second command should quietly succeed.  You are now setup so that any development on your code will be reflected "live" in your Python setup.
+
+* The builders
+
+The example this package provides is very simple.  Together they create a box-shaped world and inside that a 3x3x3 Rubik's Cube.  All builders live in [[./ggdex/__init__.py]].  There are three builder classes:
+
+** WorldBuilder
+
+This builder makes a cubic box.  This can be used as a top-level "world" builder.  It takes these configuration parameters:
+
+ - =material= :: the name for the material to use for the world
+ - =size= :: a (full) size for the world box 
+
+** RubikBuilder
+
+This builder is an example of a compound builder which builds some geometry directly and delegates more building to sub-builders.  It does not directly create the sub-builders (although that is allowed) and instead relies on the user providing the configuration to give it the required sub-builders.  Because of this indirection 
+there is a contract made between this builder and any sub-builders w.r.t. what they provide.  This particular builder expects three sub-builders, each returning one "type" of Rubik's block in order: corner, edge and center.  
+
+Note, this is all contrived.  It's both more complex and to simplistic than required to describe an actual Rubik's cube.  
+
+This builder takes these configuration parameters:
+
+ - =material= :: name of material to make the overall box from
+ - =gap= :: a buffer between blocks when placing them
+
+** RubikBlockBuilder
+
+This builder makes one of the block 3x3x3-1 blocks that make up a Rubik's cube.  It allows satisfying the contract described above.  It takes these configuration parameters:
+
+ - =location= :: a description of the block location taking values (=corner=, =edge=, =center=)
+ - =material= :: the material to use to make the block
+ - =size= :: the (full) size of the cube block
+
+* The configuration
+
+A configuration which uses these builders is given in [[./ggdex.cfg]].  There is one section for each instance of a builder.  The world builder is first by convention (can be overridden) and sets a non-default value for material. It sets a sub-builder that of the overall Rubik's cube.  That builder then has three sub-builders each of which name on of three instances of the same builder type =RubikBlockBuilder=.  The three instances are differentiated by their different =location= parameter.  Care is taken in ordering these instances.  See comments in the =RubikBuilder.construct()= method in [[./ggdex/__init__.py]].
+
+* Generating and exporting
+
+The command line interface to GeGeDe can be used to generate geometry and to export it to some file.
+
+#+BEGIN_EXAMPLE
+  $ gegede-cli -o ggdex.gdml ggdex.cfg
+#+END_EXAMPLE
+
+
+
+
+
+
+
+
+
+
+
