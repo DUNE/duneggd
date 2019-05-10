@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="ASCII"?>
+<gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd">
+  <define>
+    <position name="block0_pos" unit="cm" x="50.0" y="50.0" z="50.0"/>
+    <position name="block1_pos" unit="cm" x="50.0" y="50.0" z="50.0"/>
+    <position name="block2_pos" unit="cm" x="50.0" y="50.0" z="50.0"/>
+    <position name="center"/>
+    <rotation name="identity"/>
+  </define>
+  <materials/>
+  <solids>
+    <box lunit="cm" name="inner1_box_shape" x="20.0" y="20.0" z="20.0"/>
+    <box lunit="cm" name="inner2_box_shape" x="15.0" y="15.0" z="15.0"/>
+    <box lunit="cm" name="inner3_box_shape" x="10.0" y="10.0" z="10.0"/>
+    <box lunit="cm" name="outer_box_shape" x="100.0" y="100.0" z="100.0"/>
+    <box lunit="cm" name="world_box_shape" x="100.0" y="100.0" z="100.0"/>
+  </solids>
+  <structure>
+    <volume name="inner1_volume">
+      <materialref ref="Plastic"/>
+      <solidref ref="inner1_box_shape"/>
+    </volume>
+    <volume name="inner2_volume">
+      <materialref ref="Plastic"/>
+      <solidref ref="inner2_box_shape"/>
+    </volume>
+    <volume name="inner3_volume">
+      <materialref ref="Plastic"/>
+      <solidref ref="inner3_box_shape"/>
+    </volume>
+    <volume name="outer_volume">
+      <materialref ref="Air"/>
+      <solidref ref="outer_box_shape"/>
+      <physvol>
+        <volumeref ref="inner1_volume"/>
+        <positionref ref="block0_pos"/>
+        <rotationref ref="identity"/>
+      </physvol>
+      <physvol>
+        <volumeref ref="inner2_volume"/>
+        <positionref ref="block1_pos"/>
+        <rotationref ref="identity"/>
+      </physvol>
+      <physvol>
+        <volumeref ref="inner3_volume"/>
+        <positionref ref="block2_pos"/>
+        <rotationref ref="identity"/>
+      </physvol>
+    </volume>
+    <volume name="world_volume">
+      <materialref ref="Water"/>
+      <solidref ref="world_box_shape"/>
+      <physvol>
+        <volumeref ref="outer_volume"/>
+        <positionref ref="center"/>
+        <rotationref ref="identity"/>
+      </physvol>
+    </volume>
+  </structure>
+  <setup name="Default" version="0">
+    <world ref="world_volume"/>
+  </setup>
+</gdml>
