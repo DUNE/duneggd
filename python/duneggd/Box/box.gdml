@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="ASCII"?>
+<gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd">
+  <define>
+    <position name="pos_-1-1-1" unit="cm" x="-20.2" y="-20.2" z="-20.2"/>
+    <position name="pos_-1-10" unit="cm" x="-20.2" y="-20.2" z="0.0"/>
+    <position name="pos_-1-11" unit="cm" x="-20.2" y="-20.2" z="20.2"/>
+    <position name="pos_-10-1" unit="cm" x="-20.2" y="0.0" z="-20.2"/>
+    <position name="pos_-100" unit="cm" x="-20.2" y="0.0" z="0.0"/>
+    <position name="pos_-101" unit="cm" x="-20.2" y="0.0" z="20.2"/>
+    <position name="pos_-11-1" unit="cm" x="-20.2" y="20.2" z="-20.2"/>
+    <position name="pos_-110" unit="cm" x="-20.2" y="20.2" z="0.0"/>
+    <position name="pos_-111" unit="cm" x="-20.2" y="20.2" z="20.2"/>
+    <position name="pos_0-1-1" unit="cm" x="0.0" y="-20.2" z="-20.2"/>
+    <position name="pos_0-10" unit="cm" x="0.0" y="-20.2" z="0.0"/>
+    <position name="pos_0-11" unit="cm" x="0.0" y="-20.2" z="20.2"/>
+    <position name="pos_00-1" unit="cm" x="0.0" y="0.0" z="-20.2"/>
+    <position name="pos_001" unit="cm" x="0.0" y="0.0" z="20.2"/>
+    <position name="pos_01-1" unit="cm" x="0.0" y="20.2" z="-20.2"/>
+    <position name="pos_010" unit="cm" x="0.0" y="20.2" z="0.0"/>
+    <position name="pos_011" unit="cm" x="0.0" y="20.2" z="20.2"/>
+    <position name="pos_1-1-1" unit="cm" x="20.2" y="-20.2" z="-20.2"/>
+    <position name="pos_1-10" unit="cm" x="20.2" y="-20.2" z="0.0"/>
+    <position name="pos_1-11" unit="cm" x="20.2" y="-20.2" z="20.2"/>
+    <position name="pos_10-1" unit="cm" x="20.2" y="0.0" z="-20.2"/>
+    <position name="pos_100" unit="cm" x="20.2" y="0.0" z="0.0"/>
+    <position name="pos_101" unit="cm" x="20.2" y="0.0" z="20.2"/>
+    <position name="pos_11-1" unit="cm" x="20.2" y="20.2" z="-20.2"/>
+    <position name="pos_110" unit="cm" x="20.2" y="20.2" z="0.0"/>
+    <position name="pos_111" unit="cm" x="20.2" y="20.2" z="20.2"/>
+    <position name="center"/>
+    <rotation name="identity"/>
+  </define>
+  <materials/>
+  <solids>
+    <box lunit="cm" name="block1_box_shape" x="20.0" y="20.0" z="20.0"/>
+    <box lunit="cm" name="block2_box_shape" x="20.0" y="20.0" z="20.0"/>
+    <box lunit="cm" name="block3_box_shape" x="20.0" y="20.0" z="20.0"/>
+    <box lunit="cm" name="rubik_box_shape" x="60.6" y="60.6" z="60.6"/>
+    <box lunit="cm" name="world_box_shape" x="100.0" y="100.0" z="100.0"/>
+  </solids>
+  <structure>
+    <volume name="block1_volume">
+      <materialref ref="Plastic"/>
+      <solidref ref="block1_box_shape"/>
+    </volume>
+    <volume name="block2_volume">
+      <materialref ref="Plastic"/>
+      <solidref ref="block2_box_shape"/>
+    </volume>
+    <volume name="block3_volume">
+      <materialref ref="Plastic"/>
+      <solidref ref="block3_box_shape"/>
+    </volume>
+    <volume name="rubik_volume">
+      <materialref ref="Air"/>
+      <solidref ref="rubik_box_shape"/>
+      <physvol>
+        <volumeref ref="block1_volume"/>
+        <positionref ref="pos_-1-1-1"/>
+        <rotationref ref="identity"/>
+      </physvol>
+      <physvol>
+        <volumeref ref="block2_volume"/>
+        <positionref ref="pos_-1-10"/>
+        <rotationref ref="identity"/>
+      </physvol>
+      <physvol>
+        <volumeref ref="block1_volume"/>
+        <positionref ref="pos_-1-11"/>
+        <rotationref ref="identity"/>
+      </physvol>
+      <physvol>
+        <volumeref ref="block2_volume"/>
+        <positionref ref="pos_-10-1"/>
+        <rotationref ref="identity"/>
+      </physvol>
+      <physvol>
+        <volumeref ref="block3_volume"/>
+        <positionref ref="pos_-100"/>
+        <rotationref ref="identity"/>
+      </physvol>
+      <physvol>
+        <volumeref ref="block2_volume"/>
+        <positionref ref="pos_-101"/>
+        <rotationref ref="identity"/>
+      </physvol>
+      <physvol>
+        <volumeref ref="block1_volume"/>
+        <positionref ref="pos_-11-1"/>
+        <rotationref ref="identity"/>
+      </physvol>
+      <physvol>
+        <volumeref ref="block2_volume"/>
+        <positionref ref="pos_-110"/>
+        <rotationref ref="identity"/>
+      </physvol>
+      <physvol>
+        <volumeref ref="block1_volume"/>
+        <positionref ref="pos_-111"/>
+        <rotationref ref="identity"/>
+      </physvol>
+      <physvol>
+        <volumeref ref="block2_volume"/>
+        <positionref ref="pos_0-1-1"/>
+        <rotationref ref="identity"/>
+      </physvol>
+      <physvol>
+        <volumeref ref="block3_volume"/>
+        <positionref ref="pos_0-10"/>
+        <rotationref ref="identity"/>
+      </physvol>
+      <physvol>
+        <volumeref ref="block2_volume"/>
+        <positionref ref="pos_0-11"/>
+        <rotationref ref="identity"/>
+      </physvol>
+      <physvol>
+        <volumeref ref="block3_volume"/>
+        <positionref ref="pos_00-1"/>
+        <rotationref ref="identity"/>
+      </physvol>
+      <physvol>
+        <volumeref ref="block3_volume"/>
+        <positionref ref="pos_001"/>
+        <rotationref ref="identity"/>
+      </physvol>
+      <physvol>
+        <volumeref ref="block2_volume"/>
+        <positionref ref="pos_01-1"/>
+        <rotationref ref="identity"/>
+      </physvol>
+      <physvol>
+        <volumeref ref="block3_volume"/>
+        <positionref ref="pos_010"/>
+        <rotationref ref="identity"/>
+      </physvol>
+      <physvol>
+        <volumeref ref="block2_volume"/>
+        <positionref ref="pos_011"/>
+        <rotationref ref="identity"/>
+      </physvol>
+      <physvol>
+        <volumeref ref="block1_volume"/>
+        <positionref ref="pos_1-1-1"/>
+        <rotationref ref="identity"/>
+      </physvol>
+      <physvol>
+        <volumeref ref="block2_volume"/>
+        <positionref ref="pos_1-10"/>
+        <rotationref ref="identity"/>
+      </physvol>
+      <physvol>
+        <volumeref ref="block1_volume"/>
+        <positionref ref="pos_1-11"/>
+        <rotationref ref="identity"/>
+      </physvol>
+      <physvol>
+        <volumeref ref="block2_volume"/>
+        <positionref ref="pos_10-1"/>
+        <rotationref ref="identity"/>
+      </physvol>
+      <physvol>
+        <volumeref ref="block3_volume"/>
+        <positionref ref="pos_100"/>
+        <rotationref ref="identity"/>
+      </physvol>
+      <physvol>
+        <volumeref ref="block2_volume"/>
+        <positionref ref="pos_101"/>
+        <rotationref ref="identity"/>
+      </physvol>
+      <physvol>
+        <volumeref ref="block1_volume"/>
+        <positionref ref="pos_11-1"/>
+        <rotationref ref="identity"/>
+      </physvol>
+      <physvol>
+        <volumeref ref="block2_volume"/>
+        <positionref ref="pos_110"/>
+        <rotationref ref="identity"/>
+      </physvol>
+      <physvol>
+        <volumeref ref="block1_volume"/>
+        <positionref ref="pos_111"/>
+        <rotationref ref="identity"/>
+      </physvol>
+    </volume>
+    <volume name="world_volume">
+      <materialref ref="Water"/>
+      <solidref ref="world_box_shape"/>
+      <physvol>
+        <volumeref ref="rubik_volume"/>
+        <positionref ref="center"/>
+        <rotationref ref="identity"/>
+      </physvol>
+    </volume>
+  </structure>
+  <setup name="Default" version="0">
+    <world ref="world_volume"/>
+  </setup>
+</gdml>

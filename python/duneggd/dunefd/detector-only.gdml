@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="ASCII"?>
+<gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd">
+  <define>
+    <position name="Det_in_Enc" unit="cm" x="4.4408920985e-14" y="-665.0" z="450.0"/>
+    <position name="center"/>
+    <rotation name="identity"/>
+  </define>
+  <materials/>
+  <solids>
+    <box lunit="cm" name="DetEnclosure_box_shape" x="2000.0" y="2000.0" z="2000.0"/>
+    <box lunit="cm" name="Detector_box_shape" x="670.0" y="670.0" z="1300.0"/>
+    <box lunit="cm" name="World_box_shape" x="10000.0" y="10000.0" z="10000.0"/>
+  </solids>
+  <structure>
+    <volume name="World_volume">
+      <materialref ref="Air"/>
+      <solidref ref="World_box_shape"/>
+    </volume>
+  </structure>
+  <setup name="Default" version="0">
+    <world ref="World_volume"/>
+  </setup>
+</gdml>

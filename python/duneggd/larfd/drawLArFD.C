@@ -1,0 +1,59 @@
+#import "TGeoManager.h"
+/////////////////////////////////////////////////
+/////////////////////////////////////////////////
+void drawLArFD(TString volName="")
+{
+  gSystem->Load("libGeom");
+  gSystem->Load("libGdml");
+
+  //TGeoManager::Import("larnd_nowires.gdml");
+  TGeoManager::Import("larfd.gdml");
+  gGeoManager->DefaultColors();
+
+  
+  
+  //char topVol[] ="volWorld";
+  char topVol[] ="volCryostat";
+  //char topVol[] ="volCryostat";
+
+  //char topVol[] ="volTPC";
+  //char topVol[] ="volTPCPlane";
+
+
+  gGeoManager->GetVolume("volDetEnclosure")->SetLineColor(kGray);
+  gGeoManager->GetVolume("volDetEnclosure")->SetVisibility(1);
+  gGeoManager->GetVolume("volDetEnclosure")->SetTransparency(20);
+
+
+
+  gGeoManager->GetVolume("volMembrane")->SetLineColor(kGray);
+  gGeoManager->GetVolume("volMembrane")->SetVisibility(1);
+  gGeoManager->GetVolume("volMembrane")->SetTransparency(20);
+
+
+  gGeoManager->GetVolume("volTPCPlaneZ")->SetLineColor(kRed-3);
+  gGeoManager->GetVolume("volTPCPlaneZ")->SetVisibility(1);
+
+  gGeoManager->FindVolumeFast("volTPCActive")->SetVisibility(1);
+  gGeoManager->FindVolumeFast("volTPCActive")->SetTransparency(31);
+  gGeoManager->FindVolumeFast("volTPCActive")->SetLineColor(3);
+
+
+ //gGeoManager->GetTopNode();
+ gGeoManager->CheckOverlaps(1e-5,"d");
+ gGeoManager->PrintOverlaps();
+ //gGeoManager->FindVolumeFast(topVol)->CheckOverlaps(1e-5,"d");
+ //gGeoManager->FindVolumeFast(topVol)->GetNode(0)->PrintOverlaps();
+ gGeoManager->SetMaxVisNodes(70000);
+
+
+ gGeoManager->FindVolumeFast(topVol)->Draw("ogl");
+
+
+  TFile *tf = new TFile("drawLarND.root", "RECREATE");
+ 
+  gGeoManager->Write();
+
+  tf->Close();
+}
+
