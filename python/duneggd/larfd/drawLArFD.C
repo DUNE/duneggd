@@ -1,23 +1,23 @@
-#import "TGeoManager.h"
+//#import "TGeoManager.h"
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
-void drawLArFD(TString volName="")
+
+drawLArFD()
 {
   gSystem->Load("libGeom");
   gSystem->Load("libGdml");
 
-  //TGeoManager::Import("larnd_nowires.gdml");
   TGeoManager::Import("larfd.gdml");
   gGeoManager->DefaultColors();
 
   
   
   //char topVol[] ="volWorld";
-  char topVol[] ="volCryostat";
   //char topVol[] ="volCryostat";
+  char topVol[] ="volCryostat";
 
   //char topVol[] ="volTPC";
-  //char topVol[] ="volTPCPlane";
+  //char topVol[] ="volTPCPlaneU";
 
 
   gGeoManager->GetVolume("volDetEnclosure")->SetLineColor(kGray);
@@ -31,12 +31,16 @@ void drawLArFD(TString volName="")
   gGeoManager->GetVolume("volMembrane")->SetTransparency(20);
 
 
-  gGeoManager->GetVolume("volTPCPlaneZ")->SetLineColor(kRed-3);
-  gGeoManager->GetVolume("volTPCPlaneZ")->SetVisibility(1);
+  gGeoManager->GetVolume("volTPCPlaneU")->SetLineColor(kRed-3);
+  gGeoManager->GetVolume("volTPCPlaneU")->SetVisibility(1);
 
   gGeoManager->FindVolumeFast("volTPCActive")->SetVisibility(1);
   gGeoManager->FindVolumeFast("volTPCActive")->SetTransparency(31);
   gGeoManager->FindVolumeFast("volTPCActive")->SetLineColor(3);
+
+  gGeoManager->FindVolumeFast("volCathode")->SetVisibility(1);
+  //gGeoManager->FindVolumeFast("volCathode")->SetTransparency(31);
+  gGeoManager->FindVolumeFast("volCathode")->SetLineColor(kGreen+3);
 
 
  //gGeoManager->GetTopNode();
@@ -50,7 +54,7 @@ void drawLArFD(TString volName="")
  gGeoManager->FindVolumeFast(topVol)->Draw("ogl");
 
 
-  TFile *tf = new TFile("drawLarND.root", "RECREATE");
+  TFile *tf = new TFile("drawLarFD.root", "RECREATE");
  
   gGeoManager->Write();
 
