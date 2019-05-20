@@ -178,9 +178,9 @@ class CryostatBuilder(gegede.builder.Builder):
 
 
         # make and place the steel membrane
-        membraneOut = geom.shapes.Box( 'MembraneOut',                 dx=0.5*membraneOutDim[0], 
+        membraneOut = geom.shapes.Box( 'MembraneOut',            dx=0.5*membraneOutDim[0], 
                                        dy=0.5*membraneOutDim[1], dz=0.5*membraneOutDim[2]) 
-        membraneIn = geom.shapes.Box(  'MembraneIn',                  dx=0.5*membraneInDim[0], 
+        membraneIn = geom.shapes.Box(  'MembraneIn',              dx=0.5*membraneInDim[0], 
                                        dy=0.5*membraneInDim[1],  dz=0.5*membraneInDim[2]) 
         membraneBox = geom.shapes.Boolean( 'Membrane', type='subtraction', first=membraneOut, second=membraneIn ) 
         membrane_lv = geom.structure.Volume('volMembrane', material='Steel', shape=membraneBox)

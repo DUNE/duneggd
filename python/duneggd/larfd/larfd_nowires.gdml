@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="ASCII"?>
 <gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd">
   <define>
-    <position name="readPlaneZ_in_TPC" unit="cm" x="-180.47225" y="0" z="0"/>
-    <position name="readPlaneV_in_TPC" unit="cm" x="-180.45725" y="0" z="0"/>
-    <position name="readPlaneU_in_TPC" unit="cm" x="-180.44225" y="0" z="0"/>
-    <position name="tpcActive_in_TPC" unit="cm" x="0.47975" y="0" z="0"/>
+    <position name="readPlaneZ_in_TPC" unit="cm" x="180.47225" y="0" z="0"/>
+    <position name="readPlaneV_in_TPC" unit="cm" x="180.45725" y="0" z="0"/>
+    <position name="readPlaneU_in_TPC" unit="cm" x="180.44225" y="0" z="0"/>
+    <position name="tpcActive_in_TPC" unit="cm" x="-0.47975" y="0" z="0"/>
     <position name="TPC-0_in_Cryo" unit="cm" x="-184.2908" y="-301.134375" z="-568.47895"/>
     <position name="TPC-1_in_Cryo" unit="cm" x="181.7348" y="-301.134375" z="-568.47895"/>
     <position name="CPA-0_in_Cryo" unit="cm" x="-364.77855" y="-301.134375" z="-568.47895"/>
@@ -207,9 +207,9 @@
     </material>
   </materials>
   <solids>
-    <box lunit="cm" name="TPCPlaneZ" x="0.015" y="606.3175" z="229.456"/>
-    <box lunit="cm" name="TPCPlaneV" x="0.015" y="606.3175" z="229.05"/>
-    <box lunit="cm" name="TPCPlaneU" x="0.015" y="606.635" z="229.685"/>
+    <box lunit="cm" name="TPCPlaneZ" x="0.015" y="606.3475" z="229.486"/>
+    <box lunit="cm" name="TPCPlaneV" x="0.015" y="606.3475" z="229.08"/>
+    <box lunit="cm" name="TPCPlaneU" x="0.015" y="606.665" z="229.715"/>
     <box lunit="cm" name="TPCActive" x="360.0" y="607.82875" z="232.39"/>
     <box lunit="cm" name="TPC" x="360.9595" y="607.82875" z="232.39"/>
     <box lunit="cm" name="Cryostat" x="759.5571" y="1308.0975" z="1747.28"/>

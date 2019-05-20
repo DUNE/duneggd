@@ -75,15 +75,15 @@ class TPCBuilder(gegede.builder.Builder):
 
 
         # Calculate volTPCPlane position assuming plane is centered in y and z.
-        readPlaneZPos = [ -0.5*self.tpcDim[0] + 0.5*plane_x, Q('0cm'), Q('0cm') ]
+        readPlaneZPos = [ 0.5*self.tpcDim[0] - 0.5*plane_x, Q('0cm'), Q('0cm') ]
         readPlaneZ_in_tpc = geom.structure.Position('readPlaneZ_in_TPC', 
                                                     readPlaneZPos[0], readPlaneZPos[1], readPlaneZPos[2])
 
-        readPlaneVPos = [ -0.5*self.tpcDim[0] + 1.5*plane_x, Q('0cm'), Q('0cm') ]
+        readPlaneVPos = [ 0.5*self.tpcDim[0] - 1.5*plane_x, Q('0cm'), Q('0cm') ]
         readPlaneV_in_tpc = geom.structure.Position('readPlaneV_in_TPC', 
                                                     readPlaneVPos[0], readPlaneVPos[1], readPlaneVPos[2])
 
-        readPlaneUPos = [ -0.5*self.tpcDim[0] + 2.5*plane_x, Q('0cm'), Q('0cm') ]
+        readPlaneUPos = [ 0.5*self.tpcDim[0] - 2.5*plane_x, Q('0cm'), Q('0cm') ]
         readPlaneU_in_tpc = geom.structure.Position('readPlaneU_in_TPC', 
                                                     readPlaneUPos[0], readPlaneUPos[1], readPlaneUPos[2])
 
@@ -91,7 +91,7 @@ class TPCBuilder(gegede.builder.Builder):
 
         
         # Calculate volTPCActive position assuming plane is centered in y and z.
-        tpcActivePos = [ 0.5*self.tpcDim[0] - 0.5*tpcActiveDim[0], Q('0cm'), Q('0cm') ]
+        tpcActivePos = [ -0.5*self.tpcDim[0] + 0.5*tpcActiveDim[0], Q('0cm'), Q('0cm') ]
         tpcActive_in_tpc = geom.structure.Position('tpcActive_in_TPC', 
                                                    tpcActivePos[0], tpcActivePos[1], tpcActivePos[2])
 
