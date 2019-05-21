@@ -28,6 +28,7 @@ class CryostatBuilder(gegede.builder.Builder):
 
         if nAPAs is None:
             raise ValueError("No value given for nAPAs")
+        assert nAPAs[1] <= 2 # can only read out APAs from top or bottom, 2 levels max
 
         self.membraneThickness    = membraneThickness
         self.cathodeThickness     = cathodeThickness
@@ -135,14 +136,22 @@ class CryostatBuilder(gegede.builder.Builder):
                     tpc0_in_cryo = geom.structure.Position(pos0Name, tpc0Pos[0], tpc0Pos[1], tpc0Pos[2])
                     tpc1_in_cryo = geom.structure.Position(pos1Name, tpc1Pos[0], tpc1Pos[1], tpc1Pos[2])
 
+                    if y_i == self.nAPAs[1]-1: # readout at top, no X rotation
+                        rot0 = 'identity'
+                        rot1 = 'r180aboutY'
+                    else:                      # otherwise put readout on bottom with 180 about X
+                        rot0 = 'r180aboutX'
+                        rot1 = 'r180aboutX_180aboutY'
+
                     # Place the TPCs, making sure to rotate the right one
                     pTPC0_in_C = geom.structure.Placement('place'+pos0Name,
                                                           volume = tpc_lv,
-                                                          pos = tpc0_in_cryo)
+                                                          pos = tpc0_in_cryo,
+                                                          rot = rot0 )
                     pTPC1_in_C = geom.structure.Placement('place'+pos1Name,
                                                           volume = tpc_lv,
                                                           pos = tpc1_in_cryo,
-                                                          rot = 'r180aboutY')
+                                                          rot = rot1 )
                     cryo_lv.placements.append(pTPC0_in_C.name)
                     cryo_lv.placements.append(pTPC1_in_C.name)
 

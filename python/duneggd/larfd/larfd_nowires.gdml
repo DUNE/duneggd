@@ -56,7 +56,9 @@
     <position name="Membrane_in_Cryo" unit="cm" x="0" y="0" z="0"/>
     <position name="Cryo_in_Enc" unit="cm" x="-5.41433564649e-14" y="-114.04725" z="134.02375"/>
     <rotation name="r90aboutX" unit="degree" x="90" y="0" z="0"/>
+    <rotation name="r180aboutX" unit="degree" x="180" y="0" z="0"/>
     <rotation name="r180aboutY" unit="degree" x="0" y="180" z="0"/>
+    <rotation name="r180aboutX_180aboutY" unit="degree" x="180" y="180" z="0"/>
     <position name="DetEnc_in_World" unit="cm" x="5.41433564649e-14" y="109.99725" z="437.14625"/>
     <position name="center"/>
     <rotation name="identity"/>
@@ -280,12 +282,12 @@
       <physvol>
         <volumeref ref="volTPC"/>
         <positionref ref="TPC-0_in_Cryo"/>
-        <rotationref ref="identity"/>
+        <rotationref ref="r180aboutX"/>
       </physvol>
       <physvol>
         <volumeref ref="volTPC"/>
         <positionref ref="TPC-1_in_Cryo"/>
-        <rotationref ref="r180aboutY"/>
+        <rotationref ref="r180aboutX_180aboutY"/>
       </physvol>
       <physvol>
         <volumeref ref="volCathode"/>
@@ -320,12 +322,12 @@
       <physvol>
         <volumeref ref="volTPC"/>
         <positionref ref="TPC-4_in_Cryo"/>
-        <rotationref ref="identity"/>
+        <rotationref ref="r180aboutX"/>
       </physvol>
       <physvol>
         <volumeref ref="volTPC"/>
         <positionref ref="TPC-5_in_Cryo"/>
-        <rotationref ref="r180aboutY"/>
+        <rotationref ref="r180aboutX_180aboutY"/>
       </physvol>
       <physvol>
         <volumeref ref="volCathode"/>
@@ -360,12 +362,12 @@
       <physvol>
         <volumeref ref="volTPC"/>
         <positionref ref="TPC-8_in_Cryo"/>
-        <rotationref ref="identity"/>
+        <rotationref ref="r180aboutX"/>
       </physvol>
       <physvol>
         <volumeref ref="volTPC"/>
         <positionref ref="TPC-9_in_Cryo"/>
-        <rotationref ref="r180aboutY"/>
+        <rotationref ref="r180aboutX_180aboutY"/>
       </physvol>
       <physvol>
         <volumeref ref="volCathode"/>
@@ -400,12 +402,12 @@
       <physvol>
         <volumeref ref="volTPC"/>
         <positionref ref="TPC-12_in_Cryo"/>
-        <rotationref ref="identity"/>
+        <rotationref ref="r180aboutX"/>
       </physvol>
       <physvol>
         <volumeref ref="volTPC"/>
         <positionref ref="TPC-13_in_Cryo"/>
-        <rotationref ref="r180aboutY"/>
+        <rotationref ref="r180aboutX_180aboutY"/>
       </physvol>
       <physvol>
         <volumeref ref="volCathode"/>
@@ -440,12 +442,12 @@
       <physvol>
         <volumeref ref="volTPC"/>
         <positionref ref="TPC-16_in_Cryo"/>
-        <rotationref ref="identity"/>
+        <rotationref ref="r180aboutX"/>
       </physvol>
       <physvol>
         <volumeref ref="volTPC"/>
         <positionref ref="TPC-17_in_Cryo"/>
-        <rotationref ref="r180aboutY"/>
+        <rotationref ref="r180aboutX_180aboutY"/>
       </physvol>
       <physvol>
         <volumeref ref="volCathode"/>
@@ -480,12 +482,12 @@
       <physvol>
         <volumeref ref="volTPC"/>
         <positionref ref="TPC-20_in_Cryo"/>
-        <rotationref ref="identity"/>
+        <rotationref ref="r180aboutX"/>
       </physvol>
       <physvol>
         <volumeref ref="volTPC"/>
         <positionref ref="TPC-21_in_Cryo"/>
-        <rotationref ref="r180aboutY"/>
+        <rotationref ref="r180aboutX_180aboutY"/>
       </physvol>
       <physvol>
         <volumeref ref="volCathode"/>
