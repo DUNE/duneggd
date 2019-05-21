@@ -55,7 +55,6 @@ class WorldBuilder(gegede.builder.Builder):
         #  then through cryo steel and upstream dead LAr                        #
         setZCenter    -=  self.cryoBldr.membraneThickness                       #
         setZCenter    -=  self.cryoBldr.APAToUpstreamWall                       #
-        setZCenter    -=  0.5*self.cryoBldr.APAGap_z                            #
                                                                                 #
         detEncPos     = [ setXCenter, setYCenter, setZCenter ]                  #
         #########################################################################

@@ -1336,7 +1336,7 @@
     <position name="Cryo_in_Enc" unit="cm" x="-5.41433564649e-14" y="-114.04725" z="134.02375"/>
     <rotation name="r90aboutX" unit="degree" x="90" y="0" z="0"/>
     <rotation name="r180aboutY" unit="degree" x="0" y="180" z="0"/>
-    <position name="DetEnc_in_World" unit="cm" x="5.41433564649e-14" y="109.99725" z="436.74625"/>
+    <position name="DetEnc_in_World" unit="cm" x="5.41433564649e-14" y="109.99725" z="437.14625"/>
     <position name="center"/>
     <rotation name="identity"/>
   </define>
