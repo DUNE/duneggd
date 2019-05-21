@@ -5,59 +5,59 @@
     <position name="readPlaneV_in_TPC" unit="cm" x="180.45725" y="0" z="0"/>
     <position name="readPlaneU_in_TPC" unit="cm" x="180.44225" y="0" z="0"/>
     <position name="tpcActive_in_TPC" unit="cm" x="-0.47975" y="0" z="0"/>
-    <position name="TPC-0_in_Cryo" unit="cm" x="-184.2908" y="-301.134375" z="-568.47895"/>
-    <position name="TPC-1_in_Cryo" unit="cm" x="181.7348" y="-301.134375" z="-568.47895"/>
-    <position name="CPA-0_in_Cryo" unit="cm" x="-364.77855" y="-301.134375" z="-568.47895"/>
-    <position name="CPA-1_in_Cryo" unit="cm" x="362.22255" y="-301.134375" z="-568.47895"/>
-    <position name="TPC-2_in_Cryo" unit="cm" x="-184.2908" y="306.694375" z="-568.47895"/>
-    <position name="TPC-3_in_Cryo" unit="cm" x="181.7348" y="306.694375" z="-568.47895"/>
-    <position name="CPA-2_in_Cryo" unit="cm" x="-364.77855" y="306.694375" z="-568.47895"/>
-    <position name="CPA-3_in_Cryo" unit="cm" x="362.22255" y="306.694375" z="-568.47895"/>
-    <position name="TPC-4_in_Cryo" unit="cm" x="-184.2908" y="-301.134375" z="-336.08895"/>
-    <position name="TPC-5_in_Cryo" unit="cm" x="181.7348" y="-301.134375" z="-336.08895"/>
-    <position name="CPA-4_in_Cryo" unit="cm" x="-364.77855" y="-301.134375" z="-336.08895"/>
-    <position name="CPA-5_in_Cryo" unit="cm" x="362.22255" y="-301.134375" z="-336.08895"/>
-    <position name="TPC-6_in_Cryo" unit="cm" x="-184.2908" y="306.694375" z="-336.08895"/>
-    <position name="TPC-7_in_Cryo" unit="cm" x="181.7348" y="306.694375" z="-336.08895"/>
-    <position name="CPA-6_in_Cryo" unit="cm" x="-364.77855" y="306.694375" z="-336.08895"/>
-    <position name="CPA-7_in_Cryo" unit="cm" x="362.22255" y="306.694375" z="-336.08895"/>
-    <position name="TPC-8_in_Cryo" unit="cm" x="-184.2908" y="-301.134375" z="-103.69895"/>
-    <position name="TPC-9_in_Cryo" unit="cm" x="181.7348" y="-301.134375" z="-103.69895"/>
-    <position name="CPA-8_in_Cryo" unit="cm" x="-364.77855" y="-301.134375" z="-103.69895"/>
-    <position name="CPA-9_in_Cryo" unit="cm" x="362.22255" y="-301.134375" z="-103.69895"/>
-    <position name="TPC-10_in_Cryo" unit="cm" x="-184.2908" y="306.694375" z="-103.69895"/>
-    <position name="TPC-11_in_Cryo" unit="cm" x="181.7348" y="306.694375" z="-103.69895"/>
-    <position name="CPA-10_in_Cryo" unit="cm" x="-364.77855" y="306.694375" z="-103.69895"/>
-    <position name="CPA-11_in_Cryo" unit="cm" x="362.22255" y="306.694375" z="-103.69895"/>
-    <position name="TPC-12_in_Cryo" unit="cm" x="-184.2908" y="-301.134375" z="128.69105"/>
-    <position name="TPC-13_in_Cryo" unit="cm" x="181.7348" y="-301.134375" z="128.69105"/>
-    <position name="CPA-12_in_Cryo" unit="cm" x="-364.77855" y="-301.134375" z="128.69105"/>
-    <position name="CPA-13_in_Cryo" unit="cm" x="362.22255" y="-301.134375" z="128.69105"/>
-    <position name="TPC-14_in_Cryo" unit="cm" x="-184.2908" y="306.694375" z="128.69105"/>
-    <position name="TPC-15_in_Cryo" unit="cm" x="181.7348" y="306.694375" z="128.69105"/>
-    <position name="CPA-14_in_Cryo" unit="cm" x="-364.77855" y="306.694375" z="128.69105"/>
-    <position name="CPA-15_in_Cryo" unit="cm" x="362.22255" y="306.694375" z="128.69105"/>
-    <position name="TPC-16_in_Cryo" unit="cm" x="-184.2908" y="-301.134375" z="361.08105"/>
-    <position name="TPC-17_in_Cryo" unit="cm" x="181.7348" y="-301.134375" z="361.08105"/>
-    <position name="CPA-16_in_Cryo" unit="cm" x="-364.77855" y="-301.134375" z="361.08105"/>
-    <position name="CPA-17_in_Cryo" unit="cm" x="362.22255" y="-301.134375" z="361.08105"/>
-    <position name="TPC-18_in_Cryo" unit="cm" x="-184.2908" y="306.694375" z="361.08105"/>
-    <position name="TPC-19_in_Cryo" unit="cm" x="181.7348" y="306.694375" z="361.08105"/>
-    <position name="CPA-18_in_Cryo" unit="cm" x="-364.77855" y="306.694375" z="361.08105"/>
-    <position name="CPA-19_in_Cryo" unit="cm" x="362.22255" y="306.694375" z="361.08105"/>
-    <position name="TPC-20_in_Cryo" unit="cm" x="-184.2908" y="-301.134375" z="593.47105"/>
-    <position name="TPC-21_in_Cryo" unit="cm" x="181.7348" y="-301.134375" z="593.47105"/>
-    <position name="CPA-20_in_Cryo" unit="cm" x="-364.77855" y="-301.134375" z="593.47105"/>
-    <position name="CPA-21_in_Cryo" unit="cm" x="362.22255" y="-301.134375" z="593.47105"/>
-    <position name="TPC-22_in_Cryo" unit="cm" x="-184.2908" y="306.694375" z="593.47105"/>
-    <position name="TPC-23_in_Cryo" unit="cm" x="181.7348" y="306.694375" z="593.47105"/>
-    <position name="CPA-22_in_Cryo" unit="cm" x="-364.77855" y="306.694375" z="593.47105"/>
-    <position name="CPA-23_in_Cryo" unit="cm" x="362.22255" y="306.694375" z="593.47105"/>
+    <position name="TPC-0_in_Cryo" unit="cm" x="-184.2908" y="-301.134375" z="-456.645"/>
+    <position name="TPC-1_in_Cryo" unit="cm" x="181.7348" y="-301.134375" z="-456.645"/>
+    <position name="CPA-0_in_Cryo" unit="cm" x="-364.77855" y="-301.134375" z="-456.645"/>
+    <position name="CPA-1_in_Cryo" unit="cm" x="362.22255" y="-301.134375" z="-456.645"/>
+    <position name="TPC-2_in_Cryo" unit="cm" x="-184.2908" y="306.694375" z="-456.645"/>
+    <position name="TPC-3_in_Cryo" unit="cm" x="181.7348" y="306.694375" z="-456.645"/>
+    <position name="CPA-2_in_Cryo" unit="cm" x="-364.77855" y="306.694375" z="-456.645"/>
+    <position name="CPA-3_in_Cryo" unit="cm" x="362.22255" y="306.694375" z="-456.645"/>
+    <position name="TPC-4_in_Cryo" unit="cm" x="-184.2908" y="-301.134375" z="-224.255"/>
+    <position name="TPC-5_in_Cryo" unit="cm" x="181.7348" y="-301.134375" z="-224.255"/>
+    <position name="CPA-4_in_Cryo" unit="cm" x="-364.77855" y="-301.134375" z="-224.255"/>
+    <position name="CPA-5_in_Cryo" unit="cm" x="362.22255" y="-301.134375" z="-224.255"/>
+    <position name="TPC-6_in_Cryo" unit="cm" x="-184.2908" y="306.694375" z="-224.255"/>
+    <position name="TPC-7_in_Cryo" unit="cm" x="181.7348" y="306.694375" z="-224.255"/>
+    <position name="CPA-6_in_Cryo" unit="cm" x="-364.77855" y="306.694375" z="-224.255"/>
+    <position name="CPA-7_in_Cryo" unit="cm" x="362.22255" y="306.694375" z="-224.255"/>
+    <position name="TPC-8_in_Cryo" unit="cm" x="-184.2908" y="-301.134375" z="8.135"/>
+    <position name="TPC-9_in_Cryo" unit="cm" x="181.7348" y="-301.134375" z="8.135"/>
+    <position name="CPA-8_in_Cryo" unit="cm" x="-364.77855" y="-301.134375" z="8.135"/>
+    <position name="CPA-9_in_Cryo" unit="cm" x="362.22255" y="-301.134375" z="8.135"/>
+    <position name="TPC-10_in_Cryo" unit="cm" x="-184.2908" y="306.694375" z="8.135"/>
+    <position name="TPC-11_in_Cryo" unit="cm" x="181.7348" y="306.694375" z="8.135"/>
+    <position name="CPA-10_in_Cryo" unit="cm" x="-364.77855" y="306.694375" z="8.135"/>
+    <position name="CPA-11_in_Cryo" unit="cm" x="362.22255" y="306.694375" z="8.135"/>
+    <position name="TPC-12_in_Cryo" unit="cm" x="-184.2908" y="-301.134375" z="240.525"/>
+    <position name="TPC-13_in_Cryo" unit="cm" x="181.7348" y="-301.134375" z="240.525"/>
+    <position name="CPA-12_in_Cryo" unit="cm" x="-364.77855" y="-301.134375" z="240.525"/>
+    <position name="CPA-13_in_Cryo" unit="cm" x="362.22255" y="-301.134375" z="240.525"/>
+    <position name="TPC-14_in_Cryo" unit="cm" x="-184.2908" y="306.694375" z="240.525"/>
+    <position name="TPC-15_in_Cryo" unit="cm" x="181.7348" y="306.694375" z="240.525"/>
+    <position name="CPA-14_in_Cryo" unit="cm" x="-364.77855" y="306.694375" z="240.525"/>
+    <position name="CPA-15_in_Cryo" unit="cm" x="362.22255" y="306.694375" z="240.525"/>
+    <position name="TPC-16_in_Cryo" unit="cm" x="-184.2908" y="-301.134375" z="472.915"/>
+    <position name="TPC-17_in_Cryo" unit="cm" x="181.7348" y="-301.134375" z="472.915"/>
+    <position name="CPA-16_in_Cryo" unit="cm" x="-364.77855" y="-301.134375" z="472.915"/>
+    <position name="CPA-17_in_Cryo" unit="cm" x="362.22255" y="-301.134375" z="472.915"/>
+    <position name="TPC-18_in_Cryo" unit="cm" x="-184.2908" y="306.694375" z="472.915"/>
+    <position name="TPC-19_in_Cryo" unit="cm" x="181.7348" y="306.694375" z="472.915"/>
+    <position name="CPA-18_in_Cryo" unit="cm" x="-364.77855" y="306.694375" z="472.915"/>
+    <position name="CPA-19_in_Cryo" unit="cm" x="362.22255" y="306.694375" z="472.915"/>
+    <position name="TPC-20_in_Cryo" unit="cm" x="-184.2908" y="-301.134375" z="705.305"/>
+    <position name="TPC-21_in_Cryo" unit="cm" x="181.7348" y="-301.134375" z="705.305"/>
+    <position name="CPA-20_in_Cryo" unit="cm" x="-364.77855" y="-301.134375" z="705.305"/>
+    <position name="CPA-21_in_Cryo" unit="cm" x="362.22255" y="-301.134375" z="705.305"/>
+    <position name="TPC-22_in_Cryo" unit="cm" x="-184.2908" y="306.694375" z="705.305"/>
+    <position name="TPC-23_in_Cryo" unit="cm" x="181.7348" y="306.694375" z="705.305"/>
+    <position name="CPA-22_in_Cryo" unit="cm" x="-364.77855" y="306.694375" z="705.305"/>
+    <position name="CPA-23_in_Cryo" unit="cm" x="362.22255" y="306.694375" z="705.305"/>
     <position name="Membrane_in_Cryo" unit="cm" x="0" y="0" z="0"/>
     <position name="Cryo_in_Enc" unit="cm" x="-5.41433564649e-14" y="-114.04725" z="134.02375"/>
     <rotation name="r90aboutX" unit="degree" x="90" y="0" z="0"/>
     <rotation name="r180aboutY" unit="degree" x="0" y="180" z="0"/>
-    <position name="DetEnc_in_World" unit="cm" x="5.41433564649e-14" y="114.04725" z="739.61625"/>
+    <position name="DetEnc_in_World" unit="cm" x="5.41433564649e-14" y="109.99725" z="436.74625"/>
     <position name="center"/>
     <rotation name="identity"/>
   </define>

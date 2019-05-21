@@ -76,7 +76,7 @@ class CryostatBuilder(gegede.builder.Builder):
         # Add dead LAr on all sides to get inner membrane dimensions
         membraneInDim   = [ AllAPAsDim[0] + 2*self.sideLAr,
                             AllAPAsDim[1] + self.APAToFloor + self.APAToGAr,
-                            AllAPAsDim[2] + self.APAToUpstreamWall + self.APAToDownstreamWall ]
+                            AllAPAsDim[2] + self.APAToUpstreamWall + self.APAToDownstreamWall ]        
         print 'Cryostat inner dimensions: ' + str(membraneInDim)
         membraneOutDim  = [ membraneInDim[0] + 2*self.membraneThickness, 
                             membraneInDim[1] + 2*self.membraneThickness,
@@ -113,7 +113,7 @@ class CryostatBuilder(gegede.builder.Builder):
                     outerAPAPos = x_i==self.nAPAs[0]-1 and self.outerAPAs
 
                     # Calculate first APA position
-                    zpos = - 0.5*self.cryoDim[2] + self.APAToUpstreamWall + 0.5*self.apaPhysicalDim[0]
+                    zpos = - 0.5*self.cryoDim[2] + self.APAToUpstreamWall + 0.5*self.apaPhysicalDim[2]
                     ypos = - 0.5*self.cryoDim[1] + self.APAToFloor + 0.5*self.apaPhysicalDim[1]
                     xpos = - 0.5*self.cryoDim[0] + self.sideLAr
                     if self.outerAPAs: 
@@ -185,7 +185,7 @@ class CryostatBuilder(gegede.builder.Builder):
         membraneBox = geom.shapes.Boolean( 'Membrane', type='subtraction', first=membraneOut, second=membraneIn ) 
         membrane_lv = geom.structure.Volume('volMembrane', material='Steel', shape=membraneBox)
         membrane_in_cryo = geom.structure.Position('Membrane_in_Cryo', 
-                                                  '0cm','0cm','0cm')
+                                                  Q('0cm'),Q('0cm'),Q('0cm'))
         pMembrane_in_C  = geom.structure.Placement('placeMembrane_in_Cryo',
                                                    volume = membrane_lv,
                                                    pos = membrane_in_cryo)

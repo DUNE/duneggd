@@ -21,6 +21,7 @@ class WorldBuilder(gegede.builder.Builder):
         self.worldDim = worldDim
         self.material   = worldMat
         self.detEncBldr = self.get_builder("DetEnclosure")
+        self.cryoBldr   = self.detEncBldr.get_builder("Cryostat")
 
 
     #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
@@ -31,6 +32,7 @@ class WorldBuilder(gegede.builder.Builder):
 
         encBoundToDet = list(self.detEncBldr.encBoundToDet)
         detDim        = list(self.detEncBldr.detDim)
+        steelShell    = self.cryoBldr.membraneThickness
         
 
         ########################### SET THE ORIGIN  #############################
@@ -42,13 +44,18 @@ class WorldBuilder(gegede.builder.Builder):
         # Bring x=0 to -x of detEnc, then to det face, then to center of det    #
         setXCenter    =   0.5*detEncDim[0] - encBoundToDet[0] - 0.5*detDim[0]   #
                                                                                 #
-        # Bring y=0 to bottom of detEnc, then to center of detector             #
-        setYCenter    =   0.5*detEncDim[1] - encBoundToDet[1] - 0.5*detDim[1]   #
+        # Bring y=0 to halfway between the top&bototm APAs                      #
+        setYCenter    =   0.5*detEncDim[1] - encBoundToDet[1]                   #
+        setYCenter    -=  steelShell + self.cryoBldr.APAToFloor                 #
+        setYCenter    -=  self.cryoBldr.apaPhysicalDim[1]                       #
+        setYCenter    -=  0.5*self.cryoBldr.APAGap_y                            #
                                                                                 #
         # Bring z=0 to back of detEnc, then to upstream face of detector.       #
         setZCenter    =   0.5*detEncDim[2] - encBoundToDet[2]                   #
-        #  should we leave this at the back of the enclosure?:                  #
-        #setZCenter    =  -0.5*detEncDim[2]                                     #
+        #  then through cryo steel and upstream dead LAr                        #
+        setZCenter    -=  self.cryoBldr.membraneThickness                       #
+        setZCenter    -=  self.cryoBldr.APAToUpstreamWall                       #
+        setZCenter    -=  0.5*self.cryoBldr.APAGap_z                            #
                                                                                 #
         detEncPos     = [ setXCenter, setYCenter, setZCenter ]                  #
         #########################################################################

@@ -12,8 +12,8 @@ drawLArFD()
 
   
   
-  //char topVol[] ="volWorld";
-  char topVol[] ="volCryostat";
+  char topVol[] ="volWorld";
+  //char topVol[] ="volCryostat";
 
   //char topVol[] ="volTPC";
   //char topVol[] ="volTPCPlaneU";
