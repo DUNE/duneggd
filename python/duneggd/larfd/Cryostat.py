@@ -82,6 +82,7 @@ class CryostatBuilder(gegede.builder.Builder):
         membraneOutDim  = [ membraneInDim[0] + 2*self.membraneThickness, 
                             membraneInDim[1] + 2*self.membraneThickness,
                             membraneInDim[2] + 2*self.membraneThickness ]
+        self.cryoInDim    = list(membraneInDim) 
         self.cryoDim    = list(membraneOutDim) 
 
 
@@ -114,9 +115,9 @@ class CryostatBuilder(gegede.builder.Builder):
                     outerAPAPos = x_i==self.nAPAs[0]-1 and self.outerAPAs
 
                     # Calculate first APA position
-                    zpos = - 0.5*self.cryoDim[2] + self.APAToUpstreamWall + 0.5*self.apaPhysicalDim[2]
-                    ypos = - 0.5*self.cryoDim[1] + self.APAToFloor + 0.5*self.apaPhysicalDim[1]
-                    xpos = - 0.5*self.cryoDim[0] + self.sideLAr
+                    zpos = - 0.5*self.cryoInDim[2] + self.APAToUpstreamWall + 0.5*self.apaPhysicalDim[2]
+                    ypos = - 0.5*self.cryoInDim[1] + self.APAToFloor + 0.5*self.apaPhysicalDim[1]
+                    xpos = - 0.5*self.cryoInDim[0] + self.sideLAr
                     if self.outerAPAs: 
                         xpos += 0.5*self.apaPhysicalDim[0]
                     else:
