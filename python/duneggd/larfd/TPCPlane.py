@@ -176,8 +176,9 @@ class TPCPlaneBuilder(gegede.builder.Builder):
             #wireRot = geom.structure.Rotation( 'rUWire', degAboutX, '0deg','0deg'  )
             print degAboutX
             # Hard code for now, above not working
-            wireRot = geom.structure.Rotation( 'rUWire', '54.29deg', '0deg','0deg'  )
-            order = -1
+            #wireRot = geom.structure.Rotation( 'rUWire', '54.29deg', '0deg','0deg'  )
+            wireRot = geom.structure.Rotation( 'rUWire', '125.71deg ', '0deg','0deg'  )
+            order = 1
         if (self.view == 'V'):
             firstWireOffset = Q( .5, 'cm' )
             degAboutX = Q( 90 + self.wireAngle, 'degree' )
@@ -185,8 +186,9 @@ class TPCPlaneBuilder(gegede.builder.Builder):
             #wireRot = geom.structure.Rotation( 'rVWire', degAboutX, '0deg','0deg'  )
             print degAboutX
             # Hard code for now, above not working
-            wireRot = geom.structure.Rotation( 'rVWire', '125.71deg ', '0deg','0deg'  )
-            order = 1
+            #wireRot = geom.structure.Rotation( 'rVWire', '125.71deg ', '0deg','0deg'  )
+            wireRot = geom.structure.Rotation( 'rVWire', '54.29deg', '0deg','0deg'  )
+            order = -1
 
         # Starting with the bottom corner wires:
            # x=0 to center the wires in the plane
