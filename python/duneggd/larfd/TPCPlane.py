@@ -162,11 +162,11 @@ class TPCPlaneBuilder(gegede.builder.Builder):
                   self.wirePitch / sin(self.wireAngle.to('radians')),
                   self.wirePitch / cos(self.wireAngle.to('radians')) ]
 
-        nChannels  = int( self.planeDim[2]/pitch[2] )
+        nWires  = int( self.planeDim[2]/pitch[2] )
         nSideWires = int( self.planeDim[1]/pitch[1] ) 
 
-        if (nChannels != self.nChannels): 
-            print self.view+' Plane: Calculated '+str(nChannels)+', but configured '+str(self.nChannels)
+        if (nWires != int(0.5*self.nChannels)): 
+            print self.view+' Plane: Calculated '+str(nWires)+', but configured '+str(self.nChannels/2)
             print 'This needs to be reconciled'
 
         if (self.view == 'U'):
@@ -208,7 +208,7 @@ class TPCPlaneBuilder(gegede.builder.Builder):
 
         wireNum=0
         # anchored corner wire segments
-        for i in range(nChannels):
+        for i in range(nWires):
             wireLen = ( firstWireOffset + i*pitch[2] ) / sin(self.wireAngle.to('radians'))
             wirePos = [ Q('0cm'), 
                         firstWirePos[1] + i*0.5*pitch[1],
@@ -223,5 +223,5 @@ class TPCPlaneBuilder(gegede.builder.Builder):
 
 
         # readout corner wire segments
-        #for i in range(nChannels):
+        #for i in range(nWires):
             #wireLen = ( firstWireOffset + i*pitch[2] ) / sin(self.wireAngle.to('radians'))            

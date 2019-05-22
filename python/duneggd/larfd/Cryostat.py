@@ -40,9 +40,9 @@ class CryostatBuilder(gegede.builder.Builder):
         self.APAToUpstreamWall    = APAToUpstreamWall
         self.APAToDownstreamWall  = APAToDownstreamWall
         
-        self.tpcBldr   = self.get_builder('TPC')
-
-
+        self.tpcBldr       = self.get_builder('TPC')
+        if outerAPAs:
+            self.tpcOuterBldr  = self.get_builder('TPCOuter')
         
         
     #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
@@ -57,7 +57,8 @@ class CryostatBuilder(gegede.builder.Builder):
         
         # Using volTPC dimensions, calculate module dimensions
         self.tpcDim = list(self.tpcBldr.tpcDim)
-
+        if self.outerAPAs:
+            self.tpcOuterDim = list(self.tpcOuterBldr.tpcDim)
                    
         # Using module dimensions, calculate cryostat dimensions
         APAToAPA     = [ self.apaFrameDim[0] + 2*self.tpcDim[0] + self.cathodeThickness,
@@ -101,6 +102,8 @@ class CryostatBuilder(gegede.builder.Builder):
 
         # Get the TPC volume from its builder so we can position and place it
         tpc_lv = self.tpcBldr.get_volume('volTPC')
+        if self.outerAPAs:
+            tpcOuter_lv = self.tpcOuterBldr.get_volume('volTPCOuter')
 
 
         # Position both TPCs, APA Frame volumes for each module, and CPAs around 
@@ -129,14 +132,26 @@ class CryostatBuilder(gegede.builder.Builder):
                     zpos += z_i*APAToAPA[2]
 
 
+                    # Outer APA version needs smaller TPCs on outside
+                    tpc0_lv = tpc_lv
+                    tpc1_lv = tpc_lv
+                    tpc0Dim = list(self.tpcDim)
+                    tpc1Dim = list(self.tpcDim)
+                    if outerAPANeg:
+                        tpc0Dim = list(self.tpcOuterDim)
+                        tpc0_lv = tpcOuter_lv
+                    if outerAPAPos:
+                        tpc1Dim = list(self.tpcOuterDim)
+                        tpc1_lv = tpcOuter_lv
+
                     # Calculate volTPC positions around module center
-                    tpc0Pos = [ xpos - 0.5*self.apaFrameDim[0] - 0.5*self.tpcDim[0], ypos, zpos ]
-                    tpc1Pos = [ xpos + 0.5*self.apaFrameDim[0] + 0.5*self.tpcDim[0], ypos, zpos ]
+                    tpc0Pos = [ xpos - 0.5*self.apaFrameDim[0] - 0.5*tpc0Dim[0], ypos, zpos ]
+                    tpc1Pos = [ xpos + 0.5*self.apaFrameDim[0] + 0.5*tpc1Dim[0], ypos, zpos ]
                     pos0Name = 'TPC-'+ str(2*APANum)     + '_in_Cryo'
                     pos1Name = 'TPC-'+ str(2*APANum + 1) + '_in_Cryo'
                     tpc0_in_cryo = geom.structure.Position(pos0Name, tpc0Pos[0], tpc0Pos[1], tpc0Pos[2])
                     tpc1_in_cryo = geom.structure.Position(pos1Name, tpc1Pos[0], tpc1Pos[1], tpc1Pos[2])
-
+                    
                     if y_i == self.nAPAs[1]-1: # readout at top, no X rotation
                         rot0 = 'identity'
                         rot1 = 'r180aboutY'
@@ -146,11 +161,11 @@ class CryostatBuilder(gegede.builder.Builder):
 
                     # Place the TPCs, making sure to rotate the right one
                     pTPC0_in_C = geom.structure.Placement('place'+pos0Name,
-                                                          volume = tpc_lv,
+                                                          volume = tpc0_lv,
                                                           pos = tpc0_in_cryo,
                                                           rot = rot0 )
                     pTPC1_in_C = geom.structure.Placement('place'+pos1Name,
-                                                          volume = tpc_lv,
+                                                          volume = tpc1_lv,
                                                           pos = tpc1_in_cryo,
                                                           rot = rot1 )
                     cryo_lv.placements.append(pTPC0_in_C.name)
