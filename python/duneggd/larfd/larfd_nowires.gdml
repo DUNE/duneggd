@@ -55,6 +55,12 @@
     <position name="CPA-23_in_Cryo" unit="cm" x="363.50005" y="307.964375" z="706.575"/>
     <position name="Membrane_in_Cryo" unit="cm" x="0" y="0" z="0"/>
     <position name="Cryo_in_Enc" unit="cm" x="1.7763568394e-13" y="-1845.95125" z="-4026.36"/>
+    <position name="Water_Top_around_Enc" unit="cm" x="1.7763568394e-13" y="-1186.9025" z="-4026.36"/>
+    <position name="Water_Bot_around_Enc" unit="cm" x="1.7763568394e-13" y="-2505.0" z="-4026.36"/>
+    <position name="Water_Lef_around_Enc" unit="cm" x="384.78605" y="-1845.95125" z="-4026.36"/>
+    <position name="Water_Rig_around_Enc" unit="cm" x="-384.78605" y="-1845.95125" z="-4026.36"/>
+    <position name="Water_Fro_around_Enc" unit="cm" x="1.7763568394e-13" y="-1845.95125" z="-3147.72"/>
+    <position name="Water_Bac_around_Enc" unit="cm" x="1.7763568394e-13" y="-1845.95125" z="-4905.0"/>
     <rotation name="r90aboutX" unit="degree" x="90" y="0" z="0"/>
     <rotation name="r180aboutX" unit="degree" x="180" y="0" z="0"/>
     <rotation name="r180aboutY" unit="degree" x="0" y="180" z="0"/>
@@ -225,6 +231,12 @@
       <rotationref ref="identity"/>
     </subtraction>
     <box lunit="cm" name="DetEnclosure" x="5000.0" y="5000.0" z="10000.0"/>
+    <box lunit="cm" name="WaterBoxTop" x="759.5721" y="10.0" z="1747.28"/>
+    <box lunit="cm" name="WaterBoxBottom" x="759.5721" y="10.0" z="1747.28"/>
+    <box lunit="cm" name="WaterBoxLeft" x="10.0" y="1308.0975" z="1747.28"/>
+    <box lunit="cm" name="WaterBoxRight" x="10.0" y="1308.0975" z="1747.28"/>
+    <box lunit="cm" name="WaterBoxFront" x="759.5721" y="1308.0975" z="10.0"/>
+    <box lunit="cm" name="WaterBoxBack" x="759.5721" y="1308.0975" z="10.0"/>
     <box lunit="cm" name="World" x="20000.0" y="20000.0" z="20000.0"/>
   </solids>
   <structure>
@@ -525,12 +537,66 @@
         <rotationref ref="identity"/>
       </physvol>
     </volume>
+    <volume name="volWaterBoxTop">
+      <materialref ref="Air"/>
+      <solidref ref="WaterBoxTop"/>
+    </volume>
+    <volume name="volWaterBoxBottom">
+      <materialref ref="Air"/>
+      <solidref ref="WaterBoxBottom"/>
+    </volume>
+    <volume name="volWaterBoxLeft">
+      <materialref ref="Air"/>
+      <solidref ref="WaterBoxLeft"/>
+    </volume>
+    <volume name="volWaterBoxRight">
+      <materialref ref="Air"/>
+      <solidref ref="WaterBoxRight"/>
+    </volume>
+    <volume name="volWaterBoxFront">
+      <materialref ref="Air"/>
+      <solidref ref="WaterBoxFront"/>
+    </volume>
+    <volume name="volWaterBoxBack">
+      <materialref ref="Air"/>
+      <solidref ref="WaterBoxBack"/>
+    </volume>
     <volume name="volDetEnclosure">
       <materialref ref="Air"/>
       <solidref ref="DetEnclosure"/>
       <physvol>
         <volumeref ref="volCryostat"/>
         <positionref ref="Cryo_in_Enc"/>
+        <rotationref ref="identity"/>
+      </physvol>
+      <physvol>
+        <volumeref ref="volWaterBoxTop"/>
+        <positionref ref="Water_Top_around_Enc"/>
+        <rotationref ref="identity"/>
+      </physvol>
+      <physvol>
+        <volumeref ref="volWaterBoxBottom"/>
+        <positionref ref="Water_Bot_around_Enc"/>
+        <rotationref ref="identity"/>
+      </physvol>
+      <physvol>
+        <volumeref ref="volWaterBoxLeft"/>
+        <positionref ref="Water_Lef_around_Enc"/>
+        <rotationref ref="identity"/>
+      </physvol>
+      <physvol>
+        <volumeref ref="volWaterBoxRight"/>
+        <positionref ref="Water_Rig_around_Enc"/>
+        <rotationref ref="identity"/>
+      </physvol>
+      <physvol>
+        <volumeref ref="volWaterBoxFront"/>
+        <positionref ref="Water_Fro_around_Enc"/>
+        <rotationref ref="identity"/>
+      </physvol>
+      <physvol>
+        <volumeref ref="volWaterBoxBack"/>
+        <positionref ref="Water_Bac_around_Enc"/>
         <rotationref ref="identity"/>
       </physvol>
     </volume>

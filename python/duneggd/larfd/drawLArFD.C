@@ -1,8 +1,9 @@
-//#import "TGeoManager.h"
+
+#import "TGeoManager.h"
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
 
-drawLArFD()
+void drawLArFD()
 {
   gSystem->Load("libGeom");
   gSystem->Load("libGdml");
@@ -23,7 +24,29 @@ drawLArFD()
   gGeoManager->GetVolume("volDetEnclosure")->SetVisibility(1);
   gGeoManager->GetVolume("volDetEnclosure")->SetTransparency(20);
 
-
+//  gGeoManager->GetVolume("volWaterBoxTop")->SetLineColor(kBlue);
+//  gGeoManager->GetVolume("volWaterBoxTop")->SetVisibility(1);
+//  gGeoManager->GetVolume("volWaterBoxTop")->SetTransparency(20);
+//
+//  gGeoManager->GetVolume("volWaterBoxBottom")->SetLineColor(kBlue);
+//  gGeoManager->GetVolume("volWaterBoxBottom")->SetVisibility(1);
+//  gGeoManager->GetVolume("volWaterBoxBottom")->SetTransparency(20);
+//
+//  gGeoManager->GetVolume("volWaterBoxLeft")->SetLineColor(kBlue);
+//  gGeoManager->GetVolume("volWaterBoxLeft")->SetVisibility(1);
+//  gGeoManager->GetVolume("volWaterBoxLeft")->SetTransparency(20);
+//
+//  gGeoManager->GetVolume("volWaterBoxRight")->SetLineColor(kBlue);
+//  gGeoManager->GetVolume("volWaterBoxRight")->SetVisibility(1);
+//  gGeoManager->GetVolume("volWaterBoxRight")->SetTransparency(20);
+//
+//  gGeoManager->GetVolume("volWaterBoxFront")->SetLineColor(kBlue);
+//  gGeoManager->GetVolume("volWaterBoxFront")->SetVisibility(1);
+//  gGeoManager->GetVolume("volWaterBoxFront")->SetTransparency(20);
+//
+//  gGeoManager->GetVolume("volWaterBoxBack")->SetLineColor(kBlue);
+//  gGeoManager->GetVolume("volWaterBoxBack")->SetVisibility(1);
+//  gGeoManager->GetVolume("volWaterBoxBack")->SetTransparency(20);
 
   gGeoManager->GetVolume("volMembrane")->SetLineColor(kGray);
   gGeoManager->GetVolume("volMembrane")->SetVisibility(1);
