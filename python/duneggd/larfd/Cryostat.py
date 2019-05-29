@@ -79,7 +79,7 @@ class CryostatBuilder(gegede.builder.Builder):
         membraneInDim   = [ AllAPAsDim[0] + 2*self.sideLAr,
                             AllAPAsDim[1] + self.APAToFloor + self.APAToGAr,
                             AllAPAsDim[2] + self.APAToUpstreamWall + self.APAToDownstreamWall ]        
-        print 'Cryostat inner dimensions: ' + str(membraneInDim)
+        print ('Cryostat inner dimensions: ' + str(membraneInDim))
         membraneOutDim  = [ membraneInDim[0] + 2*self.membraneThickness, 
                             membraneInDim[1] + 2*self.membraneThickness,
                             membraneInDim[2] + 2*self.membraneThickness ]
@@ -198,7 +198,7 @@ class CryostatBuilder(gegede.builder.Builder):
                     APANum += 1
                     #print("Constructed APA: " + str(APANum))
 
-        print "Cryostat: Built "+str(self.nAPAs[0])+" wide by "+str(self.nAPAs[1])+" high by "+str(self.nAPAs[2])+" long modules."
+        print ("Cryostat: Built "+str(self.nAPAs[0])+" wide by "+str(self.nAPAs[1])+" high by "+str(self.nAPAs[2])+" long modules.")
 
 
 
