@@ -104,23 +104,23 @@ class TPCPlaneBuilder(gegede.builder.Builder):
 
     #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
     def MakeCollectionPlane( self, geom, readPlane_lv ):
-
+        print('Creating collection wires.')
         nWires = int(0.5*self.nChannels)
         wireSpan_z = (nWires-1) * self.wirePitch # center to center
         if (wireSpan_z > self.planeDim[2]):
             raise Exception('Wire span ' + str(wireSpan_z) + ' excedes ' + str(self.planeDim[2]))
-        print 'Z Plane: Wire span: ' + str(wireSpan_z) + ', plane dim: ' + str(self.planeDim[2])
-
-
+        
         zwire    = geom.shapes.Tubs('TPCWire' + self.view, 
                                     rmin = Q('0cm'),
                                     rmax = 0.5*self.wireDiam, 
                                     dz   = 0.5*self.planeDim[1] )
-        zwire_lv = geom.structure.Volume('volTPCWire' + self.view, material='Steel', shape=zwire)
+        
+        zwire_lv = geom.structure.Volume('volTPCWireVertInner', material='Steel', shape=zwire)
         
         for i in range(nWires):       
             wirePos = [ Q('0cm'), Q('0cm'), -0.5 * wireSpan_z + i*self.wirePitch ]
             self.PlaceWire( geom, i, readPlane_lv, wirePos, 'r90aboutX', zwire_lv )
+        print('DONE - Creating collection wires.')
 
 
 
@@ -150,47 +150,39 @@ class TPCPlaneBuilder(gegede.builder.Builder):
                                     rmin = '0cm',
                                     rmax = 0.5*self.wireDiam, 
                                     dz   = 0.5*wireLen )
-        wire_lv = geom.structure.Volume('volTPCWire' + self.view + '_' + str(num), 
+        wire_lv = geom.structure.Volume('volTPCWire' + self.view + str(num)+'Inner', 
                                         material='Steel', shape=wire)
 
         self.PlaceWire( geom, num, plane_lv, wirePos, wireRot, wire_lv  )
 
     #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
     def MakeInductionPlane( self, geom, plane_lv ):
+        print('Creating induction wires ('+self.view+').')
 
         pitch = [ Q('0cm'), 
                   self.wirePitch / sin(self.wireAngle.to('radians')),
                   self.wirePitch / cos(self.wireAngle.to('radians')) ]
 
-        nWires  = int( self.planeDim[2]/pitch[2] )
-        nSideWires = int( self.planeDim[1]/pitch[1] ) 
+        nWires     = int( self.planeDim[2]/pitch[2] )
+        nSideWires = int( self.planeDim[1]/pitch[1] ) - nWires
+        print('There are '+str(nWires)+' induction wires at the edge and '+str(nSideWires)+' induction wires wrapped.')
+        print('Note these are in reality the same wires.')
 
-        if (nWires != int(0.5*self.nChannels)): 
-            print self.view+' Plane: Calculated '+str(nWires)+', but configured '+str(self.nChannels/2)
-            print 'This needs to be reconciled'
-
+        ### if (nWires != int(0.5*self.nChannels)): 
+        ###     raise Exception(self.view+' Plane: Calculated '+str(nWires)+', but configured '+str(self.nChannels/2)+"\nThis needs to be reconciled")
+                   
         if (self.view == 'U'):
             firstWireOffset = Q('.55cm') + self.g10Thickness + 2*self.g10Thickness*tan(self.wireAngle.to('radians')) - pitch[2]
-            degAboutX = Q( 90 - self.wireAngle, 'degree' )
-            #degAboutX = 90 - self.wireAngle
-            #wireRot = geom.structure.Rotation( 'rUWire', degAboutX, '0deg','0deg'  )
-            print degAboutX
-            # Hard code for now, above not working
-            #wireRot = geom.structure.Rotation( 'rUWire', '54.29deg', '0deg','0deg'  )
-            wireRot = geom.structure.Rotation( 'rUWire', '125.71deg ', '0deg','0deg'  )
+            degAboutX = Q( 90, 'degree') + self.wireAngle
+            wireRot = geom.structure.Rotation( 'rUWire', degAboutX, '0deg','0deg'  )
             order = 1
         if (self.view == 'V'):
             firstWireOffset = Q( .5, 'cm' )
-            degAboutX = Q( 90 + self.wireAngle, 'degree' )
-            #degAboutX = 90 + self.wireAngle
-            #wireRot = geom.structure.Rotation( 'rVWire', degAboutX, '0deg','0deg'  )
-            print degAboutX
-            # Hard code for now, above not working
-            #wireRot = geom.structure.Rotation( 'rVWire', '125.71deg ', '0deg','0deg'  )
-            wireRot = geom.structure.Rotation( 'rVWire', '54.29deg', '0deg','0deg'  )
+            degAboutX = Q( 90, 'degree') - self.wireAngle
+            wireRot = geom.structure.Rotation( 'rVWire', degAboutX, '0deg','0deg'  )
             order = -1
 
-        # Starting with the bottom corner wires:
+          # Starting with the bottom corner wires:
            # x=0 to center the wires in the plane
            # y positioning: (-0.5*$TPCWirePlaneHeight) starts the incremental increase
              # from the bottom of the plane, and trigonometry gives the increment
@@ -203,25 +195,44 @@ class TPCPlaneBuilder(gegede.builder.Builder):
                          - 0.5*self.planeDim[1] + 0.5*firstWireOffset/tan(self.wireAngle.to('radians')), 
                          order * ( - 0.5*self.planeDim[2] + 0.5*firstWireOffset) ]
 
-        print self.planeDim
+        #print (self.planeDim)
 
 
         wireNum=0
+      #  print("now moving to unwrapped")
         # anchored corner wire segments
         for i in range(nWires):
             wireLen = ( firstWireOffset + i*pitch[2] ) / sin(self.wireAngle.to('radians'))
             wirePos = [ Q('0cm'), 
-                        firstWirePos[1] + i*0.5*pitch[1],
-                        firstWirePos[2] + order * i*0.5*pitch[2] ]
+                        firstWirePos[1] + i * 0.5 * pitch[1],
+                        firstWirePos[2] + order * i * 0.5 * pitch[2] ]
             self.MakeAndPlaceWire( geom, wireNum, plane_lv, 
                                    wirePos, wireRot, wireLen )
             wireNum += 1
-
+            #print("wireLen: " + str(wireLen) + "; wirePos Y: " + str(wirePos[1]) + "; wirePos Z: " + str(wirePos[2]))
+        
+       # print("now moving to wrapped")
         # wrapped common wire segments
-        #wireLen = planeDim[2]/sin(self.wireAngle.to('radians'))
-        #for i in range(nSideWires):
-
-
+        wireLen = self.planeDim[2]/sin(self.wireAngle.to('radians'))
+        for i in range(nSideWires):
+            wirePos = [ Q('0cm'), 
+                        firstWirePos[1] + (0.5 * nWires + i) * pitch[1],
+                        firstWirePos[2] + order * (nWires-1) * 0.5 * pitch[2] ]
+            #print("wireLen: " + str(wireLen) + "; wirePos Y: " + str(wirePos[1]) + "; wirePos Z: " + str(wirePos[2]))
+            self.MakeAndPlaceWire( geom, wireNum, plane_lv, 
+                                   wirePos, wireRot, wireLen )
+            wireNum += 1
+        
+       # print("now moving to unwrapped")
         # readout corner wire segments
-        #for i in range(nWires):
-            #wireLen = ( firstWireOffset + i*pitch[2] ) / sin(self.wireAngle.to('radians'))            
+        for i in range(nWires):
+            wireLen = self.planeDim[2]/sin(self.wireAngle.to('radians')) - ( firstWireOffset + i*pitch[2] ) / sin(self.wireAngle.to('radians'))
+            
+            wirePos = [ Q('0cm'), 
+                        firstWirePos[1] + (0.5 * nWires + nSideWires + 0.5 * i) * pitch[1],
+                        firstWirePos[2] + order * (nWires-1 + i) * 0.5 * pitch[2] ]
+            #print("wireLen: " + str(wireLen) + "; wirePos Y: " + str(wirePos[1]) + "; wirePos Z: " + str(wirePos[2]))
+            self.MakeAndPlaceWire( geom, wireNum, plane_lv, 
+                                   wirePos, wireRot, wireLen )
+            wireNum += 1
+        print('DONE - Creating induction wires ('+self.view+').')
