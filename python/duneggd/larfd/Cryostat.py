@@ -59,7 +59,7 @@ class CryostatBuilder(gegede.builder.Builder):
         self.tpcDim = list(self.tpcBldr.tpcDim)
         if self.outerAPAs:
             self.tpcOuterDim = list(self.tpcOuterBldr.tpcDim)
-                   
+           
         # Using module dimensions, calculate cryostat dimensions
         APAToAPA     = [ self.apaFrameDim[0] + 2*self.tpcDim[0] + self.cathodeThickness,
                          self.tpcDim[1],
@@ -79,7 +79,7 @@ class CryostatBuilder(gegede.builder.Builder):
         membraneInDim   = [ AllAPAsDim[0] + 2*self.sideLAr,
                             AllAPAsDim[1] + self.APAToFloor + self.APAToGAr,
                             AllAPAsDim[2] + self.APAToUpstreamWall + self.APAToDownstreamWall ]        
-        print 'Cryostat inner dimensions: ' + str(membraneInDim)
+        print ('Cryostat inner dimensions: ' + str(membraneInDim))
         membraneOutDim  = [ membraneInDim[0] + 2*self.membraneThickness, 
                             membraneInDim[1] + 2*self.membraneThickness,
                             membraneInDim[2] + 2*self.membraneThickness ]
@@ -102,6 +102,7 @@ class CryostatBuilder(gegede.builder.Builder):
 
         # Get the TPC volume from its builder so we can position and place it
         tpc_lv = self.tpcBldr.get_volume('volTPC')
+
         if self.outerAPAs:
             tpcOuter_lv = self.tpcOuterBldr.get_volume('volTPCOuter')
 
@@ -198,7 +199,7 @@ class CryostatBuilder(gegede.builder.Builder):
                     APANum += 1
                     #print("Constructed APA: " + str(APANum))
 
-        print "Cryostat: Built "+str(self.nAPAs[0])+" wide by "+str(self.nAPAs[1])+" high by "+str(self.nAPAs[2])+" long modules."
+        print ("Cryostat: Built "+str(self.nAPAs[0])+" wide by "+str(self.nAPAs[1])+" high by "+str(self.nAPAs[2])+" long modules.")
 
 
 

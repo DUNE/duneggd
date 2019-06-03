@@ -37,7 +37,6 @@ class DetEncLArBuilder(gegede.builder.Builder):
         self.encBoundToDet_z = encBoundToDet_z
 
         self.cryoBldr  = self.get_builder('Cryostat')
-        
 
     #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
     def construct(self, geom):
@@ -60,6 +59,7 @@ class DetEncLArBuilder(gegede.builder.Builder):
                            -0.5*self.detEncDim[1] + self.encBoundToDet[1] + 0.5*self.detDim[1], 
                            -0.5*self.detEncDim[2] + self.encBoundToDet[2] + 0.5*self.detDim[2]  ]
 
+        
         # Place Cryostat
         posName = 'Cryo_in_Enc'
         cryo_in_enc = geom.structure.Position(posName, self.detCenter[0], self.detCenter[1], self.detCenter[2])
@@ -73,8 +73,8 @@ class DetEncLArBuilder(gegede.builder.Builder):
             # Build the water boxes
             waterBoxTop    = geom.shapes.Box('WaterBoxTop'   ,
                                              dx=0.5*self.detDim[0], dy=0.5*self.thickness, dz=0.5*self.detDim[2])
-            waterBoxBottom = geom.shapes.Box('WaterBoxBottom',
-                                             dx=0.5*self.detDim[0], dy=0.5*self.thickness, dz=0.5*self.detDim[2])
+            # waterBoxBottom = geom.shapes.Box('WaterBoxBottom',
+            #                                  dx=0.5*self.detDim[0], dy=0.5*self.thickness, dz=0.5*self.detDim[2])
             waterBoxLeft   = geom.shapes.Box('WaterBoxLeft'  ,
                                              dx=0.5*self.thickness, dy=0.5*self.detDim[1], dz=0.5*self.detDim[2])
             waterBoxRight  = geom.shapes.Box('WaterBoxRight' ,
@@ -86,7 +86,7 @@ class DetEncLArBuilder(gegede.builder.Builder):
         
             # Define the logical volumes
             waterTop_lv    = geom.structure.Volume('volWaterBoxTop'   , material='Air', shape=waterBoxTop   )
-            waterBottom_lv = geom.structure.Volume('volWaterBoxBottom', material='Air', shape=waterBoxBottom)
+            # waterBottom_lv = geom.structure.Volume('volWaterBoxBottom', material='Air', shape=waterBoxBottom)
             waterLeft_lv   = geom.structure.Volume('volWaterBoxLeft'  , material='Air', shape=waterBoxLeft  )
             waterRight_lv  = geom.structure.Volume('volWaterBoxRight' , material='Air', shape=waterBoxRight )
             waterFront_lv  = geom.structure.Volume('volWaterBoxFront' , material='Air', shape=waterBoxFront )
@@ -94,7 +94,7 @@ class DetEncLArBuilder(gegede.builder.Builder):
             
             # Add all of the volumes to the detector
             self.add_volume(waterTop_lv   )
-            self.add_volume(waterBottom_lv)
+            # self.add_volume(waterBottom_lv)
             self.add_volume(waterLeft_lv  )
             self.add_volume(waterRight_lv )
             self.add_volume(waterFront_lv )
@@ -102,7 +102,7 @@ class DetEncLArBuilder(gegede.builder.Builder):
             
             # Work out all of the positions of the water slabs
             posName_1 = 'Water_Top_around_Enc' 
-            posName_2 = 'Water_Bot_around_Enc' 
+            # posName_2 = 'Water_Bot_around_Enc' 
             posName_3 = 'Water_Lef_around_Enc' 
             posName_4 = 'Water_Rig_around_Enc' 
             posName_5 = 'Water_Fro_around_Enc' 
@@ -113,10 +113,10 @@ class DetEncLArBuilder(gegede.builder.Builder):
                                                   self.detCenter[0],
                                                   self.detCenter[1] + 0.5*(self.detDim[1]+self.thickness),
                                                   self.detCenter[2]) 
-            posCenter_2 = geom.structure.Position(posName_2,
-                                                  self.detCenter[0],
-                                                  self.detCenter[1] - 0.5*(self.detDim[1]+self.thickness),
-                                                  self.detCenter[2]) 
+            # posCenter_2 = geom.structure.Position(posName_2,
+            #                                       self.detCenter[0],
+            #                                       self.detCenter[1] - 0.5*(self.detDim[1]+self.thickness),
+            #                                       self.detCenter[2]) 
             posCenter_3 = geom.structure.Position(posName_3,
                                                   self.detCenter[0] + 0.5*(self.detDim[0]+self.thickness),
                                                   self.detCenter[1],
@@ -135,14 +135,14 @@ class DetEncLArBuilder(gegede.builder.Builder):
                                                   self.detCenter[2] - 0.5*(self.detDim[2]+self.thickness)) 
             
             pc_1 = geom.structure.Placement('place'+posName_1, volume=waterTop_lv   , pos=posCenter_1)
-            pc_2 = geom.structure.Placement('place'+posName_2, volume=waterBottom_lv, pos=posCenter_2)
+            # pc_2 = geom.structure.Placement('place'+posName_2, volume=waterBottom_lv, pos=posCenter_2)
             pc_3 = geom.structure.Placement('place'+posName_3, volume=waterLeft_lv  , pos=posCenter_3)
             pc_4 = geom.structure.Placement('place'+posName_4, volume=waterRight_lv , pos=posCenter_4)
             pc_5 = geom.structure.Placement('place'+posName_5, volume=waterFront_lv , pos=posCenter_5)        
             pc_6 = geom.structure.Placement('place'+posName_6, volume=waterBack_lv  , pos=posCenter_6)
             
             detEnc_lv.placements.append(pc_1.name)
-            detEnc_lv.placements.append(pc_2.name)
+            # detEnc_lv.placements.append(pc_2.name)
             detEnc_lv.placements.append(pc_3.name)
             detEnc_lv.placements.append(pc_4.name)
             detEnc_lv.placements.append(pc_5.name)

@@ -48,6 +48,10 @@ void drawLArFD()
 //  gGeoManager->GetVolume("volWaterBoxBack")->SetVisibility(1);
 //  gGeoManager->GetVolume("volWaterBoxBack")->SetTransparency(20);
 
+  gGeoManager->GetVolume("volCryostat")->SetLineColor(kRed);
+  gGeoManager->GetVolume("volCryostat")->SetVisibility(1);
+  gGeoManager->GetVolume("volCryostat")->SetTransparency(20);
+  
   gGeoManager->GetVolume("volMembrane")->SetLineColor(kGray);
   gGeoManager->GetVolume("volMembrane")->SetVisibility(1);
   gGeoManager->GetVolume("volMembrane")->SetTransparency(20);
@@ -75,11 +79,5 @@ void drawLArFD()
 
  gGeoManager->FindVolumeFast(topVol)->Draw("ogl");
 
-
-  TFile *tf = new TFile("drawLarFD.root", "RECREATE");
- 
-  gGeoManager->Write();
-
-  tf->Close();
 }
 
