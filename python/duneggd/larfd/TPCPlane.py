@@ -99,8 +99,37 @@ class TPCPlaneBuilder(gegede.builder.Builder):
             if (self.view == 'V' or self.view == 'U'):
                 self.MakeInductionPlane(geom,readPlane_lv)
 
+    #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
+    def CalcWireEndPoints(self, wire_length, wire_angle, wire_position, wire_number):
+
+        wire_length_y = wire_length * cos(self.wireAngle.to('radians'))
+        wire_length_z = wire_length * sin(self.wireAngle.to('radians'))
+
+        wire_attach_points_z = [] 
+        wire_attach_points_y = []       
+
+        if (self.view == "U"):
+            wire_attach_points_z.append(wire_position[2] - (0.5 * wire_length_z))
+            wire_attach_points_z.append(wire_position[2] + (0.5 * wire_length_z))
+            wire_attach_points_y.append(wire_position[1] + (0.5 * wire_length_y))
+            wire_attach_points_y.append(wire_position[1] - (0.5 * wire_length_y))
+            
+        if (self.view == "V"):
+            wire_attach_points_z.append(wire_position[2] - (0.5 * wire_length_z))
+            wire_attach_points_z.append(wire_position[2] + (0.5 * wire_length_z))
+            wire_attach_points_y.append(wire_position[1] - (0.5 * wire_length_y))
+            wire_attach_points_y.append(wire_position[1] + (0.5 * wire_length_y))
+            
+        words = "Wire " + str(wire_number) + " attachment positions"
+        print("\n   " + words + "   ")
+        print("-"*(len(words) + 6))
+
+        print(str(wire_attach_points_z[0]) + ", \t\t" + str(wire_attach_points_y[0]))
+        print(str(wire_attach_points_z[1]) + ", \t\t" + str(wire_attach_points_y[1]))
 
 
+
+            
 
     #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
     def MakeCollectionPlane( self, geom, readPlane_lv ):
@@ -208,6 +237,7 @@ class TPCPlaneBuilder(gegede.builder.Builder):
                 wire_ends[1] = wire_length * cos(self.wireAngle.to('radians'))
                 wire_num     += 1
                 self.MakeAndPlaceWire(geom, wire_num, plane_lv, wire_position, wireRot, wire_length)
+                self.CalcWireEndPoints(wire_length, self.wireAngle, mid_point, wire_num)
 
                 
         if (self.view == "V"):
@@ -277,3 +307,5 @@ class TPCPlaneBuilder(gegede.builder.Builder):
                 mid_point[2] -= 0.5 * pitch[2]
                 wire_num     += 1
                 self.MakeAndPlaceWire(geom, wire_num, plane_lv, wire_position, wireRot, wire_length)
+
+
