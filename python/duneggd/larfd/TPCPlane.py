@@ -127,9 +127,14 @@ class TPCPlaneBuilder(gegede.builder.Builder):
         print(str(wire_attach_points_z[0]) + ", \t\t" + str(wire_attach_points_y[0]))
         print(str(wire_attach_points_z[1]) + ", \t\t" + str(wire_attach_points_y[1]))
 
-
-
-            
+    def CalcWirePitch(self, wire_info_a, wire_info_b):
+        # wire_info = [wire_length, wire_angle, wire_position, wire_number]
+        # If the wire number is less than half the number of wires, base the pitch
+        # on wire a to wire b.
+        # If the wire number is greater than half the number of wires, base the pitch
+        # on wire b to a.
+        pass
+    
 
     #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
     def MakeCollectionPlane( self, geom, readPlane_lv ):
@@ -237,7 +242,7 @@ class TPCPlaneBuilder(gegede.builder.Builder):
                 wire_ends[1] = wire_length * cos(self.wireAngle.to('radians'))
                 wire_num     += 1
                 self.MakeAndPlaceWire(geom, wire_num, plane_lv, wire_position, wireRot, wire_length)
-                self.CalcWireEndPoints(wire_length, self.wireAngle, mid_point, wire_num)
+                # self.CalcWireEndPoints(wire_length, self.wireAngle, mid_point, wire_num)
 
                 
         if (self.view == "V"):
