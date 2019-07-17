@@ -16,7 +16,6 @@ class WorldBuilder(gegede.builder.Builder):
 
     #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
     def configure(self, worldDim  =  [Q('100m'),Q('100m'),Q('100m')], 
-                  
                   worldMat='Rock', **kwds):
         self.worldDim = worldDim
         self.material   = worldMat
