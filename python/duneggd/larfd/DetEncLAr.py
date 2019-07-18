@@ -12,6 +12,8 @@ import gegede.builder
 from gegede import Quantity as Q
 import math as m
 
+# for the cavern dimensions, I used the 60% CF for the FD Submission drawings
+#http://docs.dunescience.org/cgi-bin/RetrieveFile?docid=11239&filename=EXC%2060PCT%20FD%20Page%20Turn%20Presentation.pdf&version=2
 
 class DetEncLArBuilder(gegede.builder.Builder):
     '''
@@ -28,18 +30,24 @@ class DetEncLArBuilder(gegede.builder.Builder):
                   makeWaterShield      = False,
                   waterBlocks          = False,
                   waterBoxDim          = None,
+                  archRadius           = None,
+                  archHalfAngle        = None,
                   blockSpacing         = Q('30cm'),
                   thickness            = Q('10cm'),
                   **kwds):
+        
         if detEncDim is None:
             raise ValueError("No value given for detEncDim")
         if encBoundToDet_z is None:
             raise ValueError("No value given for encBoundToDet_z")
-        if waterBoxDim is None:
+        if makeWaterShield and waterBoxDim is None:
             raise ValueError("No value given for waterBoxDim")
 
         self.detEncMat        = 'Air'
         self.detEncDim        = detEncDim
+        self.archRadius       = archRadius    
+        self.archHalfAngle    = archHalfAngle
+        
         self.makeWaterShield  = makeWaterShield
         self.waterBlocks      = waterBlocks
         self.waterBoxDim      = waterBoxDim
@@ -52,115 +60,77 @@ class DetEncLArBuilder(gegede.builder.Builder):
 
         self.cryoBldr  = self.get_builder('Cryostat')
 
-    #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
-    def construct(self, geom):
-        encBox = geom.shapes.Box( 'DetEnclosure',            dx=0.5*self.detEncDim[0], 
-                                  dy=0.5*self.detEncDim[1],  dz=0.5*self.detEncDim[2])
-        detEnc_lv = geom.structure.Volume('volDetEnclosure', material=self.detEncMat, shape=encBox)
-        self.add_volume(detEnc_lv)
-
-        cryoDim = list(self.cryoBldr.cryoDim)
-        cryo_lv = self.cryoBldr.get_volume('volCryostat')
-        self.detDim    = list(cryoDim) # this might be used by WorldBuilder for positioning
 
 
-        # Calculate position of detector in the enclosure
-        self.encBoundToDet = [ 0.5*self.detEncDim[0] - 0.5*self.detDim[0], # x: center it for now
-                               Q('0cm'),                                   # y: det on floor
-                               self.encBoundToDet_z ]                      # z: configure
-        
-        self.detCenter = [ -0.5*self.detEncDim[0] + self.encBoundToDet[0] + 0.5*self.detDim[0], 
-                           -0.5*self.detEncDim[1] + self.encBoundToDet[1] + 0.5*self.detDim[1], 
-                           -0.5*self.detEncDim[2] + self.encBoundToDet[2] + 0.5*self.detDim[2]  ]
+    
 
-        
-        # Place Cryostat
-        posName = 'Cryo_in_Enc'
-        cryo_in_enc = geom.structure.Position(posName, self.detCenter[0], self.detCenter[1], self.detCenter[2])
-        pC_in_E = geom.structure.Placement('place'+posName,
-                                           volume = cryo_lv,
-                                           pos = cryo_in_enc)
-        detEnc_lv.placements.append(pC_in_E.name)
-
-        if (self.makeWaterShield):
-            
-            # Build the water boxes
-            waterBoxTop    = geom.shapes.Box('WaterBoxTop'   ,
-                                             dx=0.5*self.detDim[0], dy=0.5*self.thickness, dz=0.5*self.detDim[2])
-            waterBoxBottom = geom.shapes.Box('WaterBoxBottom',
-                                             dx=0.5*self.detDim[0], dy=0.5*self.thickness, dz=0.5*self.detDim[2])
-            waterBoxLeft   = geom.shapes.Box('WaterBoxLeft'  ,
-                                             dx=0.5*self.thickness, dy=0.5*self.detDim[1], dz=0.5*self.detDim[2])
-            waterBoxRight  = geom.shapes.Box('WaterBoxRight' ,
-                                             dx=0.5*self.thickness, dy=0.5*self.detDim[1], dz=0.5*self.detDim[2]) 
-            waterBoxFront  = geom.shapes.Box('WaterBoxFront' ,
-                                             dx=0.5*self.detDim[0], dy=0.5*self.detDim[1], dz=0.5*self.thickness)
-            waterBoxBack   = geom.shapes.Box('WaterBoxBack'  ,
-                                             dx=0.5*self.detDim[0], dy=0.5*self.detDim[1], dz=0.5*self.thickness)
+    def MakeWaterShield(self, geom, detEnc_lv):
+        # Build the water boxes
+        waterBoxTop    = geom.shapes.Box('WaterBoxTop'   ,
+                                         dx=0.5*self.detDim[0], dy=0.5*self.thickness, dz=0.5*self.detDim[2])
+        waterBoxLeft   = geom.shapes.Box('WaterBoxLeft'  ,
+                                         dx=0.5*self.thickness, dy=0.5*self.detDim[1], dz=0.5*self.detDim[2])
+        waterBoxRight  = geom.shapes.Box('WaterBoxRight' ,
+                                         dx=0.5*self.thickness, dy=0.5*self.detDim[1], dz=0.5*self.detDim[2]) 
+        waterBoxFront  = geom.shapes.Box('WaterBoxFront' ,
+                                         dx=0.5*self.detDim[0], dy=0.5*self.detDim[1], dz=0.5*self.thickness)
+        waterBoxBack   = geom.shapes.Box('WaterBoxBack'  ,
+                                         dx=0.5*self.detDim[0], dy=0.5*self.detDim[1], dz=0.5*self.thickness)
         
             # Define the logical volumes
-            waterTop_lv    = geom.structure.Volume('volWaterBoxTop'   , material='Water', shape=waterBoxTop   )
-            waterBottom_lv = geom.structure.Volume('volWaterBoxBottom', material='Water', shape=waterBoxBottom)
-            waterLeft_lv   = geom.structure.Volume('volWaterBoxLeft'  , material='Water', shape=waterBoxLeft  )
-            waterRight_lv  = geom.structure.Volume('volWaterBoxRight' , material='Water', shape=waterBoxRight )
-            waterFront_lv  = geom.structure.Volume('volWaterBoxFront' , material='Water', shape=waterBoxFront )
-            waterBack_lv   = geom.structure.Volume('volWaterBoxBack'  , material='Water', shape=waterBoxBack  ) 
-            
+        waterTop_lv    = geom.structure.Volume('volWaterBoxTop'   , material='Water', shape=waterBoxTop   )
+        waterLeft_lv   = geom.structure.Volume('volWaterBoxLeft'  , material='Water', shape=waterBoxLeft  )
+        waterRight_lv  = geom.structure.Volume('volWaterBoxRight' , material='Water', shape=waterBoxRight )
+        waterFront_lv  = geom.structure.Volume('volWaterBoxFront' , material='Water', shape=waterBoxFront )
+        waterBack_lv   = geom.structure.Volume('volWaterBoxBack'  , material='Water', shape=waterBoxBack  ) 
+        
             # Add all of the volumes to the detector
-            self.add_volume(waterTop_lv   )
-            self.add_volume(waterBottom_lv)
-            self.add_volume(waterLeft_lv  )
-            self.add_volume(waterRight_lv )
-            self.add_volume(waterFront_lv )
-            self.add_volume(waterBack_lv  )
-            
+        self.add_volume(waterTop_lv   )
+        self.add_volume(waterLeft_lv  )
+        self.add_volume(waterRight_lv )
+        self.add_volume(waterFront_lv )
+        self.add_volume(waterBack_lv  )
+        
             # Work out all of the positions of the water slabs
-            posName_1 = 'Water_Top_around_Enc' 
-            posName_2 = 'Water_Bot_around_Enc' 
-            posName_3 = 'Water_Lef_around_Enc' 
-            posName_4 = 'Water_Rig_around_Enc' 
-            posName_5 = 'Water_Fro_around_Enc' 
-            posName_6 = 'Water_Bac_around_Enc'
+        posName_1 = 'Water_Top_around_Enc' 
+        posName_3 = 'Water_Lef_around_Enc' 
+        posName_4 = 'Water_Rig_around_Enc' 
+        posName_5 = 'Water_Fro_around_Enc' 
+        posName_6 = 'Water_Bac_around_Enc'
             
             # Define all of the centers to place the water slabs at
-            posCenter_1 = geom.structure.Position(posName_1,
-                                                  self.detCenter[0],
-                                                  self.detCenter[1] + 0.5*(self.detDim[1]+self.thickness),
-                                                  self.detCenter[2]) 
-            posCenter_2 = geom.structure.Position(posName_2,
-                                                  self.detCenter[0],
-                                                  self.detCenter[1] - 0.5*(self.detDim[1]+self.thickness),
-                                                  self.detCenter[2]) 
-            posCenter_3 = geom.structure.Position(posName_3,
-                                                  self.detCenter[0] + 0.5*(self.detDim[0]+self.thickness),
-                                                  self.detCenter[1],
-                                                  self.detCenter[2]) 
-            posCenter_4 = geom.structure.Position(posName_4,
-                                                  self.detCenter[0] - 0.5*(self.detDim[0]+self.thickness),
-                                                  self.detCenter[1],
-                                                  self.detCenter[2]) 
-            posCenter_5 = geom.structure.Position(posName_5,
-                                                  self.detCenter[0],
-                                                  self.detCenter[1],
-                                                  self.detCenter[2] + 0.5*(self.detDim[2]+self.thickness)) 
-            posCenter_6 = geom.structure.Position(posName_6,
-                                                  self.detCenter[0],
-                                                  self.detCenter[1],
-                                                  self.detCenter[2] - 0.5*(self.detDim[2]+self.thickness)) 
-            
-            pc_1 = geom.structure.Placement('place'+posName_1, volume=waterTop_lv   , pos=posCenter_1)
-            pc_2 = geom.structure.Placement('place'+posName_2, volume=waterBottom_lv, pos=posCenter_2)
-            pc_3 = geom.structure.Placement('place'+posName_3, volume=waterLeft_lv  , pos=posCenter_3)
-            pc_4 = geom.structure.Placement('place'+posName_4, volume=waterRight_lv , pos=posCenter_4)
-            pc_5 = geom.structure.Placement('place'+posName_5, volume=waterFront_lv , pos=posCenter_5)        
-            pc_6 = geom.structure.Placement('place'+posName_6, volume=waterBack_lv  , pos=posCenter_6)
-            
-            detEnc_lv.placements.append(pc_1.name)
-            detEnc_lv.placements.append(pc_2.name)
-            detEnc_lv.placements.append(pc_3.name)
-            detEnc_lv.placements.append(pc_4.name)
-            detEnc_lv.placements.append(pc_5.name)
-            detEnc_lv.placements.append(pc_6.name)
+        posCenter_1 = geom.structure.Position(posName_1,
+                                              self.detCenter[0],
+                                              self.detCenter[1] + 0.5*(self.detDim[1]+self.thickness),
+                                              self.detCenter[2]) 
+        posCenter_3 = geom.structure.Position(posName_3,
+                                              self.detCenter[0] + 0.5*(self.detDim[0]+self.thickness),
+                                              self.detCenter[1],
+                                              self.detCenter[2]) 
+        posCenter_4 = geom.structure.Position(posName_4,
+                                              self.detCenter[0] - 0.5*(self.detDim[0]+self.thickness),
+                                              self.detCenter[1],
+                                              self.detCenter[2]) 
+        posCenter_5 = geom.structure.Position(posName_5,
+                                              self.detCenter[0],
+                                              self.detCenter[1],
+                                              self.detCenter[2] + 0.5*(self.detDim[2]+self.thickness)) 
+        posCenter_6 = geom.structure.Position(posName_6,
+                                              self.detCenter[0],
+                                              self.detCenter[1],
+                                              self.detCenter[2] - 0.5*(self.detDim[2]+self.thickness)) 
+        
+        pc_1 = geom.structure.Placement('place'+posName_1, volume=waterTop_lv   , pos=posCenter_1)
+        pc_3 = geom.structure.Placement('place'+posName_3, volume=waterLeft_lv  , pos=posCenter_3)
+        pc_4 = geom.structure.Placement('place'+posName_4, volume=waterRight_lv , pos=posCenter_4)
+        pc_5 = geom.structure.Placement('place'+posName_5, volume=waterFront_lv , pos=posCenter_5)        
+        pc_6 = geom.structure.Placement('place'+posName_6, volume=waterBack_lv  , pos=posCenter_6)
+        
+        detEnc_lv.placements.append(pc_1.name)
+        detEnc_lv.placements.append(pc_3.name)
+        detEnc_lv.placements.append(pc_4.name)
+        detEnc_lv.placements.append(pc_5.name)
+        detEnc_lv.placements.append(pc_6.name)
 
         if (self.waterBlocks):
 
@@ -559,3 +529,78 @@ class DetEncLArBuilder(gegede.builder.Builder):
             print(' '*space + str(words) + ' '*space)
             # print(' '*space + 'Cost of boxes: $' + str(container_cost * num_boxes_placed / 1000000) + "M")
             print('='*80)
+
+    def MakeBeamStructure(self, geom, detEnc_lv):
+        #self.get_builder("BeamStructure").IPEBeamLength = detDim[1]
+        posX_beam_lv = self.get_builder("BeamStructure").get_volume('volBeamPlanePosX')
+        posName = 'BeamPlanePosX_in_Enc'
+        print(str(self.detCenter[1]))
+        posX_beam_in_enc = geom.structure.Position(posName,
+                                                   self.detCenter[0]+self.detDim[0]/2,
+                                                   self.detCenter[1],
+                                                   self.detCenter[2])
+        p_posX_beam_in_E  = geom.structure.Placement('place'+posName,
+                                                     volume = posX_beam_lv,
+                                                     pos = posX_beam_in_enc)
+        detEnc_lv.placements.append(p_posX_beam_in_E.name)
+
+        
+
+    #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
+    def construct(self, geom):
+        encBox = geom.shapes.Box('DetEnclosureBox',
+                                 dx=0.5*self.detEncDim[0], 
+                                 dy=0.5*self.detEncDim[1],
+                                 dz=0.5*self.detEncDim[2])
+        encArch = geom.shapes.Tubs('DetEnclosureArch',  rmin=Q('0cm'), rmax=self.archRadius,
+                                   dz=0.5*self.detEncDim[2],
+                                   sphi=Q('90deg')-self.archHalfAngle, dphi=self.archHalfAngle*2)
+        elevation = self.detEncDim[1]/2 - m.cos(self.archHalfAngle.to('radians')) * self.archRadius
+        
+        Pos = geom.structure.Position(self.name+'_ArchPos',
+                                      Q('0m'),elevation, Q('0m'))
+        
+        encTotal = geom.shapes.Boolean(self.name+"BoolAdd",
+                                       type='union', first=encBox,
+                                       second=encArch, pos=Pos)
+        
+        detEnc_lv = geom.structure.Volume('volDetEnclosure', material=self.detEncMat, shape=encTotal)
+        self.add_volume(detEnc_lv)
+
+        cryoDim = list(self.cryoBldr.cryoDim)
+        cryo_lv = self.cryoBldr.get_volume('volCryostat')
+        self.detDim    = list(cryoDim) # this might be used by WorldBuilder for positioning
+
+
+        # Calculate position of detector in the enclosure
+        self.encBoundToDet = [ 0.5*self.detEncDim[0] - 0.5*self.detDim[0], # x: center it for now
+                               Q('0cm'),                                   # y: det on floor
+                               self.encBoundToDet_z ]                      # z: configure
+        
+        self.detCenter = [ -0.5*self.detEncDim[0] + self.encBoundToDet[0] + 0.5*self.detDim[0], 
+                           -0.5*self.detEncDim[1] + self.encBoundToDet[1] + 0.5*self.detDim[1], 
+                           -0.5*self.detEncDim[2] + self.encBoundToDet[2] + 0.5*self.detDim[2]  ]
+
+        
+        # Place Cryostat
+        posName = 'Cryostat_in_Enc'
+        cryo_in_enc = geom.structure.Position(posName, self.detCenter[0], self.detCenter[1], self.detCenter[2])
+        pCryo_in_E  = geom.structure.Placement('place'+posName,
+                                               volume = cryo_lv,
+                                               pos = cryo_in_enc)
+        detEnc_lv.placements.append(pCryo_in_E.name)
+
+        builders = self.get_builders()
+        print (type(builders[0]))
+        if (self.makeWaterShield):
+            self.MakeWaterShield(geom, detEnc_lv)
+
+        self.MakeBeamStructure(geom, detEnc_lv)
+
+
+
+
+
+
+
+
