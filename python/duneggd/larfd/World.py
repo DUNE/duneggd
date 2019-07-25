@@ -28,10 +28,9 @@ class WorldBuilder(gegede.builder.Builder):
 
         # Get relevant dimensions
         detEncDim     = list(self.detEncBldr.detEncDim)
-
-        encBoundToDet = list(self.detEncBldr.encBoundToDet)
-        detDim        = list(self.detEncBldr.detDim)
-        steelShell    = self.cryoBldr.membraneThickness
+        encBoundToDet = list(self.detEncBldr.ConcreteBeamGap)
+        detDim        = list(self.detEncBldr.WarmCryostatDim)
+        InsulationBeam= self.cryoBldr.Layer1Thickness + self.cryoBldr.Layer2Thickness + self.cryoBldr.Layer3Thickness + self.cryoBldr.SteelThickness + self.cryoBldr.IPEBeamHeight
         
 
         ########################### SET THE ORIGIN  #############################
@@ -45,14 +44,14 @@ class WorldBuilder(gegede.builder.Builder):
                                                                                 #
         # Bring y=0 to halfway between the top&bototm APAs                      #
         setYCenter    =   0.5*detEncDim[1] - encBoundToDet[1]                   #
-        setYCenter    -=  steelShell + self.cryoBldr.APAToFloor                 #
+        setYCenter    -=  InsulationBeam + self.cryoBldr.APAToFloor             #
         setYCenter    -=  self.cryoBldr.apaPhysicalDim[1]                       #
         setYCenter    -=  0.5*self.cryoBldr.APAGap_y                            #
                                                                                 #
         # Bring z=0 to back of detEnc, then to upstream face of detector.       #
         setZCenter    =   0.5*detEncDim[2] - encBoundToDet[2]                   #
         #  then through cryo steel and upstream dead LAr                        #
-        setZCenter    -=  self.cryoBldr.membraneThickness                       #
+        setZCenter    -=  InsulationBeam                                        #
         setZCenter    -=  self.cryoBldr.APAToUpstreamWall                       #
                                                                                 #
         detEncPos     = [ setXCenter, setYCenter, setZCenter ]                  #
@@ -90,6 +89,7 @@ class WorldBuilder(gegede.builder.Builder):
     #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
     def define_materials(self, g):
         h  = g.matter.Element("hydrogen",   "H",  1,  "1.0791*g/mole" )
+        be = g.matter.Element("beryllium",  "Be", 4,  "9.012182*g/mole" )
         c  = g.matter.Element("carbon",     "C",  6,  "12.0107*g/mole")
         n  = g.matter.Element("nitrogen",   "N",  7,  "14.0671*g/mole")
         o  = g.matter.Element("oxygen",     "O",  8,  "15.999*g/mole" )
@@ -105,8 +105,10 @@ class WorldBuilder(gegede.builder.Builder):
         ca = g.matter.Element("calcium",    "Ca", 20, "40.078*g/mole" )
         ti = g.matter.Element("titanium",   "Ti", 22, "47.867*g/mole" )
         cr = g.matter.Element("chromium",   "Cr", 24, "51.9961*g/mole")
+        mn = g.matter.Element("manganese",  "Mn", 25, "54.9380*g/mole")
         fe = g.matter.Element("iron",       "Fe", 26, "55.8450*g/mole")
         ni = g.matter.Element("nickel",     "Ni", 28, "58.6934*g/mole")
+        cu = g.matter.Element("copper",     "Cu", 29, "63.55*g/mole"  )
         br = g.matter.Element("bromine",    "Br", 35, "79.904*g/mole" )
         xe = g.matter.Element("xenon",      "Xe", 54, "131.293*g/mole")
         pb = g.matter.Element("lead",       "Pb", 82, "207.20*g/mole" )
@@ -122,39 +124,50 @@ class WorldBuilder(gegede.builder.Builder):
         CaO   = g.matter.Molecule("CaO",   density="3.35*g/cc",  elements=(("calcium",1),("oxygen",1)))
         Na2O  = g.matter.Molecule("Na2O",  density="2.27*g/cc",  elements=(("sodium",2),("oxygen",1)))
         P2O5  = g.matter.Molecule("P2O5",  density="1.562*g/cc", elements=(("phosphorus",2),("oxygen",5)))        
-
+        Layer2Molecule = g.matter.Molecule("Layer2Molecule",
+                                           density="0.09*g/cc",
+                                           elements=(("carbon",17),
+                                                     ("oxygen",4),
+                                                     ("nitrogen",2),
+                                                     ("hydrogen",16)))        
+        Layer3Molecule = g.matter.Molecule("Layer3Molecule",
+                                            density="1.5*g/cc",
+                                            elements=(("carbon",6),
+                                                      ("oxygen",5),
+                                                      ("hydrogen",10)))
+       
         rock  = g.matter.Mixture( "Rock", density = "2.82*g/cc", 
-                                 components = (
-                                     ("SiO2",   0.5267),
-                                     ("FeO",    0.1174),
-                                     ("Al2O3",  0.1025),
-                                     ("oxygen", 0.0771),
-                                     ("MgO",    0.0473),
-                                     ("CO2",    0.0422),
-                                     ("CaO",    0.0382),
-                                     ("carbon", 0.0240),
-                                     ("sulfur", 0.0186),
-                                     ("Na2O",   0.0053),
-                                     ("P2O5",   0.0007),
-                                 ))
+                                  components = (
+                                      ("SiO2",   0.5267),
+                                      ("FeO",    0.1174),
+                                      ("Al2O3",  0.1025),
+                                      ("oxygen", 0.0771),
+                                      ("MgO",    0.0473),
+                                      ("CO2",    0.0422),
+                                      ("CaO",    0.0382),
+                                      ("carbon", 0.0240),
+                                      ("sulfur", 0.0186),
+                                      ("Na2O",   0.0053),
+                                      ("P2O5",   0.0007),
+                                  ))
 
 
         dirt  = g.matter.Mixture( "Dirt", density = "1.7*g/cc", 
-                                 components = (
-                                     ("oxygen",    0.438),
-                                     ("silicon",   0.257),
-                                     ("sodium",    0.222),
-                                     ("aluminum",  0.049),
-                                     ("iron",      0.019),
-                                     ("potassium", 0.015),
-                                 ))
+                                  components = (
+                                      ("oxygen",    0.438),
+                                      ("silicon",   0.257),
+                                      ("sodium",    0.222),
+                                      ("aluminum",  0.049),
+                                      ("iron",      0.019),
+                                      ("potassium", 0.015),
+                                  ))
 
         air   = g.matter.Mixture( "Air", density = "0.001225*g/cc", 
-                                 components = (
-                                     ("nitrogen", 0.781154), 
-                                     ("oxygen",   0.209476),
-                                     ("argon",    0.00934)
-                                 ))
+                                  components = (
+                                      ("nitrogen", 0.781154), 
+                                      ("oxygen",   0.209476),
+                                      ("argon",    0.00934)
+                                  ))
 
         Steel    = g.matter.Mixture( "Steel", density = "7.9300*g/cc", 
                                      components = (
@@ -163,12 +176,26 @@ class WorldBuilder(gegede.builder.Builder):
                                          ("nickel",   0.0900),
                                          ("carbon",   0.0010)
                                      ))
-
-        # Water Steel mixture
+        CuBe    = g.matter.Mixture( "CuBe", density = "8.25g/cc", 
+                                      components = (
+                                          ("copper",    0.98),
+                                          ("beryllium", 0.02)
+                                      ))
+        S460ML    = g.matter.Mixture( "S460ML", density = "7.8*g/cc", 
+                                      components = (
+                                          ("iron",      0.95),
+                                          ("manganese", 0.018),
+                                          ("nickel",    0.0085),
+                                          ("silicon",   0.0065),
+                                          ("copper",    0.006),
+                                          ("carbon",    0.0018)
+                                      ))
         
+        # Layer2Matter = g.matter.Mixture("Layer2Matter",
+        #                                 density = "0.09*g/cc", 
+        #                                 elements = (("Layer1Molecule",1)))
+        # Layer3Matter = g.matter.Mixture("Layer3Matter",
+        #                                 density = "0.5*g/cc", 
+        #                                 elements = (("Layer2Molecule",1)))
         
-        
-
-
-
         LArTarget = g.matter.Molecule("LAr", density="1.4*g/cc", elements=(("argon",1),))

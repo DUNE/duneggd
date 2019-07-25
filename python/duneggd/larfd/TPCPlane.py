@@ -149,7 +149,7 @@ class TPCPlaneBuilder(gegede.builder.Builder):
                                     rmax = 0.5*self.wireDiam, 
                                     dz   = 0.5*self.planeDim[1] )
         
-        zwire_lv = geom.structure.Volume('volTPCWireVertInner', material='Steel', shape=zwire)
+        zwire_lv = geom.structure.Volume('volTPCWireVertInner', material='CuBe', shape=zwire)
         
         for i in range(nWires):       
             wirePos = [ Q('0cm'), Q('0cm'), -0.5 * wireSpan_z + i*self.wirePitch ]
@@ -185,7 +185,7 @@ class TPCPlaneBuilder(gegede.builder.Builder):
                                     rmax = 0.5*self.wireDiam, 
                                     dz   = 0.5*wireLen )
         wire_lv = geom.structure.Volume('volTPCWire' + self.view + str(num)+'Inner', 
-                                        material='Steel', shape=wire)
+                                        material='CuBe', shape=wire)
 
         self.PlaceWire( geom, num, plane_lv, wirePos, wireRot, wire_lv  )
 
