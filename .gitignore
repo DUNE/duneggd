@@ -9,3 +9,5 @@ gegede.egg-info/
 *.pdf
 *.tex
 *.png
+.DS_Store
+*.egg-info
