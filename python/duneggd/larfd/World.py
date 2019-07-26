@@ -29,8 +29,8 @@ class WorldBuilder(gegede.builder.Builder):
         # Get relevant dimensions
         detEncDim     = list(self.detEncBldr.detEncDim)
         encBoundToDet = list(self.detEncBldr.ConcreteBeamGap)
-        detDim        = list(self.detEncBldr.WarmCryostatDim)
-        InsulationBeam= self.cryoBldr.Layer1Thickness + self.cryoBldr.Layer2Thickness + self.cryoBldr.Layer3Thickness + self.cryoBldr.SteelThickness + self.cryoBldr.IPEBeamHeight
+        detDim        = list(self.detEncBldr.CryostatOuterDim)
+        InsulationBeam= self.cryoBldr.TotalCryoLayer
         
 
         ########################### SET THE ORIGIN  #############################

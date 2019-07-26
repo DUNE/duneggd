@@ -64,8 +64,8 @@ class CryostatBuilder(gegede.builder.Builder):
         assert nAPAs[1] <= 2 # can only read out APAs from top or bottom, 2 levels max
         self.CryostatInnerDim     = CryostatInnerDim
         self.CryostatOuterDim     = list(self.CryostatInnerDim)
+        print ('Cryostat inner dimensions: ' + str(self.CryostatInnerDim))
 
-        
         self.Layer1Thickness      = Layer1Thickness
         self.Layer2Thickness      = Layer2Thickness
         self.Layer3Thickness      = Layer3Thickness
@@ -149,18 +149,19 @@ class CryostatBuilder(gegede.builder.Builder):
             AllAPAsDim[0] += self.apaPhysicalDim[0] # half apa on each side 
         else: 
             AllAPAsDim[0] += self.apaFrameDim[0] + 2*self.tpcDim[0] + 2*self.cathodeThickness
-
-
-        # Add dead LAr on all sides to get inner membrane dimensions
-        print ('Cryostat inner dimensions: ' + str(self.membraneInDim))
-        self.cryoOuterDim = list(self.membraneInDimim) 
+        self.ColdInsulationThickness = self.Layer1Thickness + self.Layer2Thickness + self.Layer3Thickness
+        self.WarmCryostatThickness   = self.SteelThickness + self.IPEBeamHeight
+        self.TotalCryoLayer          = self.ColdInsulationThickness + self.WarmCryostatThickness
         
+        self.CryostatOuterDim[0] = self.CryostatInnerDim[0] + 2 * self.TotalCryoLayer
+        self.CryostatOuterDim[1] = self.CryostatInnerDim[1] + 2 * self.TotalCryoLayer
+        self.CryostatOuterDim[2] = self.CryostatInnerDim[2] + 2 * self.TotalCryoLayer
 
         # define cryostat shape and volume, will be placed by a builder owning this builder
         cryoBox = geom.shapes.Box('Cryostat',
-                                  dx=0.5*self.cryoDim[0], 
-                                  dy=0.5*self.cryoDim[1],
-                                  dz=0.5*self.cryoDim[2])
+                                  dx=0.5*self.CryostatOuterDim[0], 
+                                  dy=0.5*self.CryostatOuterDim[1],
+                                  dz=0.5*self.CryostatOuterDim[2])
         cryo_lv = geom.structure.Volume('volCryostat', material='Air', shape=cryoBox)
         self.add_volume(cryo_lv)
 
@@ -196,9 +197,9 @@ class CryostatBuilder(gegede.builder.Builder):
                     outerAPAPos = x_i==self.nAPAs[0]-1 and self.outerAPAs
 
                     # Calculate first APA position
-                    zpos = - 0.5*self.cryoInDim[2] + self.APAToUpstreamWall + 0.5*self.apaPhysicalDim[2]
-                    ypos = - 0.5*self.cryoInDim[1] + self.APAToFloor + 0.5*self.apaPhysicalDim[1]
-                    xpos = - 0.5*self.cryoInDim[0] + self.sideLAr
+                    zpos = - 0.5*self.CryostatInnerDim[2] + self.APAToUpstreamWall + 0.5*self.apaPhysicalDim[2]
+                    ypos = - 0.5*self.CryostatInnerDim[1] + self.APAToFloor + 0.5*self.apaPhysicalDim[1]
+                    xpos = - 0.5*self.CryostatInnerDim[0] + self.sideLAr
                     if self.outerAPAs: 
                         xpos += 0.5*self.apaPhysicalDim[0]
                     else:
@@ -290,72 +291,72 @@ class CryostatBuilder(gegede.builder.Builder):
 
 
     def ConstructOnion(self, geom, cryo_lv):
-        print ("Construct onion cold cryostat")
+        print ("Constructing onion cold cryostat and warm skin")
         # make and place the membranes
         Layer1In  = geom.shapes.Box("ColdCryoLayer1In",
-                                    dx=0.5*self.membraneInDim[0], 
-                                    dy=0.5*self.membraneInDim[1],
-                                    dz=0.5*self.membraneInDim[2])
+                                    dx=0.5*self.CryostatInnerDim[0], 
+                                    dy=0.5*self.CryostatInnerDim[1],
+                                    dz=0.5*self.CryostatInnerDim[2])
         Layer2In  = geom.shapes.Box("ColdCryoLayer2In",
-                                    dx=0.5*self.membraneInDim[0]+self.Layer1Thickness, 
-                                    dy=0.5*self.membraneInDim[1]+self.Layer1Thickness,
-                                    dz=0.5*self.membraneInDim[2]+self.Layer1Thickness)
+                                    dx=0.5*self.CryostatInnerDim[0]+self.Layer1Thickness, 
+                                    dy=0.5*self.CryostatInnerDim[1]+self.Layer1Thickness,
+                                    dz=0.5*self.CryostatInnerDim[2]+self.Layer1Thickness)
         Layer3In  = geom.shapes.Box("ColdCryoLayer3In",
-                                    dx=0.5*self.membraneInDim[0]+self.Layer1Thickness+self.Layer2Thickness, 
-                                    dy=0.5*self.membraneInDim[1]+self.Layer1Thickness+self.Layer2Thickness,
-                                    dz=0.5*self.membraneInDim[2]+self.Layer1Thickness+self.Layer2Thickness)
+                                    dx=0.5*self.CryostatInnerDim[0]+self.Layer1Thickness+self.Layer2Thickness, 
+                                    dy=0.5*self.CryostatInnerDim[1]+self.Layer1Thickness+self.Layer2Thickness,
+                                    dz=0.5*self.CryostatInnerDim[2]+self.Layer1Thickness+self.Layer2Thickness)
         Layer3Out = geom.shapes.Box("ColdCryoLayer3Out",
-                                    dx=0.5*self.membraneInDim[0]+self.Layer1Thickness+self.Layer2Thickness+self.Layer3Thickness, 
-                                    dy=0.5*self.membraneInDim[1]+self.Layer1Thickness+self.Layer2Thickness+self.Layer3Thickness,
-                                    dz=0.5*self.membraneInDim[2]+self.Layer1Thickness+self.Layer2Thickness+self.Layer3Thickness)
+                                    dx=0.5*self.CryostatInnerDim[0]+self.Layer1Thickness+self.Layer2Thickness+self.Layer3Thickness, 
+                                    dy=0.5*self.CryostatInnerDim[1]+self.Layer1Thickness+self.Layer2Thickness+self.Layer3Thickness,
+                                    dz=0.5*self.CryostatInnerDim[2]+self.Layer1Thickness+self.Layer2Thickness+self.Layer3Thickness)
         #Coldcryostat stops here, now its the warm cryostat
         BeamInnerBox = geom.shapes.Box('BeamInner',
-                                       dx=0.5*self.WarmSkinOuterDim[0], 
-                                       dy=0.5*self.WarmSkinOuterDim[1],
-                                       dz=0.5*self.WarmSkinOuterDim[2])
+                                       dx=0.5*self.CryostatInnerDim[0]+self.Layer1Thickness+self.Layer2Thickness+self.Layer3Thickness+self.SteelThickness, 
+                                       dy=0.5*self.CryostatInnerDim[1]+self.Layer1Thickness+self.Layer2Thickness+self.Layer3Thickness+self.SteelThickness,
+                                       dz=0.5*self.CryostatInnerDim[2]+self.Layer1Thickness+self.Layer2Thickness+self.Layer3Thickness+self.SteelThickness)
         BeamOuterBox = geom.shapes.Box('BeamOut',
-                                       dx=0.5*self.BeamOuterDim[0], 
-                                       dy=0.5*self.BeamOuterDim[1],
-                                       dz=0.5*self.BeamOuterDim[2])
+                                       dx=0.5*self.CryostatOuterDim[0], 
+                                       dy=0.5*self.CryostatOuterDim[1],
+                                       dz=0.5*self.CryostatOuterDim[2])
         
-        Layer1InBox = geom.shapes.Boolean('ColdCryoLayer1', type='subtraction', first=Layer2In, second=Layer1In) 
-        Layer1In_lv = geom.structure.Volume('volColdCryoLayer1', material='Steel', shape=Layer1InBox)
-        Layer1In_in_cryo = geom.structure.Position('Layer1In_in_Cryo', 
-                                                   Q('0cm'),Q('0cm'),Q('0cm'))
-        placement_Layer1In_in_C  = geom.structure.Placement('placeLayer1In_in_Cryo',
-                                                            volume = Layer1In_lv,
-                                                            pos = Layer1In_in_cryo)
+        Layer1 = geom.shapes.Boolean('ColdCryoLayer1', type='subtraction', first=Layer2In, second=Layer1In) 
+        Layer1_lv = geom.structure.Volume('volColdCryoLayer1', material='Steel', shape=Layer1)
+        Layer1_in_cryo = geom.structure.Position('Layer1_in_Cryo', 
+                                                 Q('0cm'),Q('0cm'),Q('0cm'))
+        placement_Layer1In_in_C  = geom.structure.Placement('placeLayer1_in_Cryo',
+                                                            volume = Layer1_lv,
+                                                            pos = Layer1_in_cryo)
         cryo_lv.placements.append(placement_Layer1In_in_C.name)
 
         
-        Layer2InBox = geom.shapes.Boolean('ColdCryoLayer2', type='subtraction', first=Layer3In, second=Layer2In) 
-        Layer2In_lv = geom.structure.Volume('volColdCryoLayer2', material='Layer2Molecule', shape=Layer2InBox)
-        Layer2In_in_cryo = geom.structure.Position('Layer2In_in_Cryo', 
+        Layer2 = geom.shapes.Boolean('ColdCryoLayer2', type='subtraction', first=Layer3In, second=Layer2In) 
+        Layer2_lv = geom.structure.Volume('volColdCryoLayer2', material='Layer2Molecule', shape=Layer2)
+        Layer2_in_cryo = geom.structure.Position('Layer2_in_Cryo', 
                                                    Q('0cm'),Q('0cm'),Q('0cm'))
-        placement_Layer2In_in_C  = geom.structure.Placement('placeLayer2In_in_Cryo',
-                                                            volume = Layer2In_lv,
-                                                            pos = Layer2In_in_cryo)
+        placement_Layer2In_in_C  = geom.structure.Placement('placeLayer2_in_Cryo',
+                                                            volume = Layer2_lv,
+                                                            pos = Layer2_in_cryo)
         cryo_lv.placements.append(placement_Layer2In_in_C.name)
 
         
-        Layer3InBox = geom.shapes.Boolean('ColdCryoLayer3', type='subtraction', first=Layer3Out, second=Layer3In) 
-        Layer3In_lv = geom.structure.Volume('volColdCryoLayer3', material='Layer3Molecule', shape=Layer3InBox)
-        Layer3In_in_cryo = geom.structure.Position('Layer3In_in_Cryo', 
+        Layer3 = geom.shapes.Boolean('ColdCryoLayer3', type='subtraction', first=Layer3Out, second=Layer3In) 
+        Layer3_lv = geom.structure.Volume('volColdCryoLayer3', material='Layer3Molecule', shape=Layer3)
+        Layer3_in_cryo = geom.structure.Position('Layer3_in_Cryo', 
                                                    Q('0cm'),Q('0cm'),Q('0cm'))
-        placement_Layer3In_in_C  = geom.structure.Placement('placeLayer3In_in_Cryo',
-                                                            volume = Layer3In_lv,
-                                                            pos = Layer3In_in_cryo)
-        cryo_lv.placements.append(placement_Layer3In_in_C.name)
+        placement_Layer3_in_C  = geom.structure.Placement('placeLayer3_in_Cryo',
+                                                            volume = Layer3_lv,
+                                                            pos = Layer3_in_cryo)
+        cryo_lv.placements.append(placement_Layer3_in_C.name)
 
-        WarmSkinBox = geom.shapes.Boolean('WarmSkin', type='subtraction', first=BeamInnerBox, second=Layer3Out) 
-        WarmSkin_lv = geom.structure.Volume('volWarmSkin', material='S460ML', shape=WarmSkinBox)
-        WarmSkin_in_beam = geom.structure.Position("PositionWarmSkinInBeamStruct",
+        WarmSkin = geom.shapes.Boolean('WarmSkin', type='subtraction', first=BeamInnerBox, second=Layer3Out) 
+        WarmSkin_lv = geom.structure.Volume('volWarmSkin', material='S460ML', shape=WarmSkin)
+        WarmSkin_in_cryo = geom.structure.Position("WarmSkin_in_Cryo",
                                                    Q('0m'), Q('0m'), Q('0m'))
-        placement_WarmSkin_in_beam = geom.structure.Placement('placeWarmSkinInBeamStruct',
-                                                              volume = WarmSkin_lv,
-                                                              pos = WarmSkin_in_beam)
-        box_lv.placements.append(placement_WarmSkin_in_beam)
-        
+        placement_WarmSkin_in_C = geom.structure.Placement('placeWarmSkinInBeamStruct',
+                                                           volume = WarmSkin_lv,
+                                                           pos = WarmSkin_in_cryo)
+        cryo_lv.placements.append(placement_WarmSkin_in_C.name)
+        print ("DONE - Constructing the onion cold cryostat and warm skin")
 
         
     def ConstructDSS(self, geom, cryo_lv):
@@ -369,37 +370,13 @@ class CryostatBuilder(gegede.builder.Builder):
             #self.DSSBeamThickW   
             #self.DSSBeamThickF
             name="DSS"+str(i)
-            DSSLength = self.membraneInDim[2] - 2*self.DSSClearance[2]
-            SurroundingBox = geom.shapes.Box(name+'Box',
-                                             dx=0.5*self.DSSBeamHeight,
-                                             dy=0.5*DSSLength,
-                                             dz=0.5*self.DSSBeamBase)
-            
-            SubBoxDim = [self.DSSBeamHeight-self.DSSBeamThickF*2,
-                         DSSLength,
-                         self.DSSBeamBase/2-self.DSSBeamThickW/2]
-            SubtractionBox = geom.shapes.Box(name+'SubtractionBox',
-                                             dx=0.5*SubBoxDim[0], 
-                                             dy=0.5*SubBoxDim[1],
-                                             dz=0.5*SubBoxDim[2])
-            shift = self.DSSBeamBase/2 - SubBoxDim[2]/2
-            Pos1 = geom.structure.Position(name+'_BeamSubPos1',
-                                           Q('0m'), Q('0m'),  shift)
-            Pos2 = geom.structure.Position(name+'_BeamSubPos2',
-                                           Q('0m'), Q('0m'), -shift)
+            DSSLength = self.CryostatInnerDim[2] - 2*self.DSSClearance[2]
+            FinalSub = self.BuildBeamShape(geom, name, DSSLength,
+                                           self.DSSBeamBase, self.DSSBeamHeight,
+                                           self.DSSBeamThickF, self.DSSBeamThickW)
 
-            FirstSub = geom.shapes.Boolean(name+"_BoolSub1",
-                                           type='subtraction',
-                                           first=SurroundingBox,
-                                           second=SubtractionBox,
-                                           pos=Pos1)
-            FinalSub = geom.shapes.Boolean(name+"_Final",
-                                           type='subtraction',
-                                           first=FirstSub,
-                                           second=SubtractionBox,
-                                           pos=Pos2)
-            pos = [(self.membraneInDim[0]/2-self.DSSClearance[0])/2 * (i-(self.nDSSBeam-1)/2),
-                   self.membraneInDim[1]/2-self.DSSClearance[1],
+            pos = [(self.CryostatInnerDim[0]/2-self.DSSClearance[0])/2 * (i-(self.nDSSBeam-1)/2),
+                   self.CryostatInnerDim[1]/2-self.DSSClearance[1],
                    Q("0m")]
             #x90z90 = geom.structure.Rotation(objname="90x90z",x='90deg',z='90deg')
             Beam_lv = geom.structure.Volume('vol'+name, material='Steel', shape=FinalSub)
@@ -407,6 +384,7 @@ class CryostatBuilder(gegede.builder.Builder):
             Placement_Beam = geom.structure.Placement("place"+name, volume = Beam_lv, pos=Position_Beam,
                                                   rot = "90x90y")
             cryo_lv.placements.append(Placement_Beam.name)
+        print ("DONE - Constructing the Detector Support Structure")
 
         
 
@@ -516,7 +494,7 @@ class CryostatBuilder(gegede.builder.Builder):
                    opposite=False):
         
         if x is not None:
-            pos = [(self.BeamOuterDim[0] + self.BeamInnerDim[0]) / 4,
+            pos = [(self.CryostatOuterDim[0] + self.BeamInnerDim[0]) / 4,
                    Q('0m'),
                    x * self.BeamSeparationX - 0.5 * (self.nBeamX-1) * self.BeamSeparationX]
             if not opposite:
@@ -527,7 +505,7 @@ class CryostatBuilder(gegede.builder.Builder):
             
         if y is not None:
             pos = [Q('0m'),
-                   (self.BeamOuterDim[1] + self.BeamInnerDim[1]) / 4,
+                   (self.CryostatOuterDim[1] + self.BeamInnerDim[1]) / 4,
                    y * self.BeamSeparationY - 0.5 * (self.nBeamY-1) * self.BeamSeparationY]
             if not opposite:
                 return pos
@@ -538,7 +516,7 @@ class CryostatBuilder(gegede.builder.Builder):
         if z is not None:
             pos = [z * self.BeamSeparationZ - 0.5 * (self.nBeamZ-1) * self.BeamSeparationZ,
                    Q('0m'),
-                   (self.BeamOuterDim[2] + self.BeamInnerDim[2]) / 4]
+                   (self.CryostatOuterDim[2] + self.BeamInnerDim[2]) / 4]
             if not opposite:
                 return pos
             else:
@@ -555,7 +533,7 @@ class CryostatBuilder(gegede.builder.Builder):
         if x is not None:
             pos = self.GetPosBeam(x=x,opposite=opposite)
             return [pos[0],
-                    (self.BeamFloors[floor]) - self.BeamOuterDim[1]/2,
+                    (self.BeamFloors[floor]) - self.CryostatOuterDim[1]/2,
                     pos[2]+self.BeamSeparationX/2]
         
         if y is not None:
@@ -567,22 +545,16 @@ class CryostatBuilder(gegede.builder.Builder):
         if z is not None:
             pos = self.GetPosBeam(z=z,opposite=opposite)
             return [pos[0]+self.BeamSeparationZ/2,
-                    (self.BeamFloors[floor]) - self.BeamOuterDim[1]/2,
+                    (self.BeamFloors[floor]) - self.CryostatOuterDim[1]/2,
                     pos[2]]
        
 
     def ConstructAllBeam(self, geom, box_lv):
-        print ("Constructing all the beams")
-        self.WarmCryostatInnerDim = list(self.cryoDim)
-        self.WarmSkinOuterDim = [self.WarmCryostatInnerDim[0]+2*self.SteelThickness,
-                                 self.WarmCryostatInnerDim[1]+2*self.SteelThickness,
-                                 self.WarmCryostatInnerDim[2]+2*self.SteelThickness]
-        self.BeamInnerDim = self.WarmSkinOuterDim
-        self.BeamOuterDim = [self.WarmSkinOuterDim[0]+2*self.IPEBeamHeight,
-                             self.WarmSkinOuterDim[1]+2*self.IPEBeamHeight,
-                             self.WarmSkinOuterDim[2]+2*self.IPEBeamHeight]
+        print ("Constructing all the external beams")
+        self.BeamInnerDim = [self.CryostatInnerDim[0] + 2 * (self.ColdInsulationThickness + self.SteelThickness),
+                             self.CryostatInnerDim[1] + 2 * (self.ColdInsulationThickness + self.SteelThickness),
+                             self.CryostatInnerDim[2] + 2 * (self.ColdInsulationThickness + self.SteelThickness)]
 
-        
         x90 = geom.structure.Rotation(objname="90x",x='90deg')
         y90 = geom.structure.Rotation(objname="90y",y='90deg')
         z90 = geom.structure.Rotation(objname="90z",z='90deg')
@@ -666,6 +638,7 @@ class CryostatBuilder(gegede.builder.Builder):
                     posfloor = self.GetPosBeamFloor(z=-1, floor=ii, opposite=True)
                     self.ConstructBeamFloor(geom, lengthfloor, posfloor, rot, box_lv, 'NegX')  
 
+        print ("DONE - Constructing all the external beams")
 
                     
     def MakeWaterShield(self, geom, detEnc_lv):
