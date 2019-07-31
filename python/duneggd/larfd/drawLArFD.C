@@ -44,52 +44,51 @@ void drawLArFD()
   gSystem->Load("libGeom");
   gSystem->Load("libGdml");
 
-  TGeoManager::Import("larfd.gdml");
+  TGeoManager::Import("dune10kt_v2.gdml");
 
-  std::string topVol ="volDetEnclosure";
-  // topVol ="volWarmCryoBox";
-  topVol ="volCryostat";
+  std::string topVol ="volWorld";
+  // topVol ="volDetEnclosure";
+  // topVol ="volCryostat";
   // topVol ="volTPC";
   // topVol ="volTPCPlaneU";
 
   gGeoManager->SetTopVisible(1);
-  gGeoManager->SetVisLevel(1);
+  gGeoManager->SetVisLevel(0);
   
   TObjArray* list = gGeoManager->GetListOfVolumes();
   TIter next(list);
   TGeoVolume * vol = (TGeoVolume*)next();
   TColor c;
 
-  while(vol) {
-    std::string name = vol->GetName();
-    if (name.find("volBeam") != string::npos) {
-      MakeVisible(name, c.GetColor(33,214,38));
-      if (name.find("Floor") != string::npos) {
-        MakeVisible(name, c.GetColor(179,151,106));
-      }
-    }
-    if (name.find("TPC") != string::npos) {
-      //std::cout << name << "\n";
-      MakeVisible(name, kRed);
-    }
-    if (name.find("DSS") != string::npos) {
-      std::cout << name << "\n";
-
-      MakeVisible(name, kViolet);
-    }
-    if (name.find("Cath") != string::npos) {
-      MakeVisible(name, kCyan);
-    }
+  // while(vol) {
+  //   std::string name = vol->GetName();
+  //   if (name.find("volBeam") != string::npos) {
+  //     MakeVisible(name, c.GetColor(33,214,38));
+  //     if (name.find("Floor") != string::npos) {
+  //       MakeVisible(name, c.GetColor(179,151,106));
+  //     }
+  //   }
+  //   if (name.find("TPC") != string::npos) {
+  //     MakeVisible(name, kRed);
+  //   }
+  //   if (name.find("DSS") != string::npos) {
+  //     MakeVisible(name, kViolet);
+  //   }
+  //   if (name.find("Cath") != string::npos) {
+  //     MakeVisible(name, kCyan);
+  //   }
     
-    vol = (TGeoVolume*)next();
-  }
-  // MakeDaughterVisible("volWarmCryoBox");
+  //   vol = (TGeoVolume*)next();
+  // }
+  // // MakeDaughterVisible("volWarmCryoBox");
 
-  MakeVisible("volDetEnclosure",   kGray);
-  MakeVisible("volWarmSkin",       c.GetColor(95,152,179));
-  MakeVisible("volColdCryoLayer1", kGray);
-  MakeVisible("volColdCryoLayer2", kOrange+3);
-  // MakeVisible("volEmptyCryostat",  kBlack);
+  MakeVisible("volWorld",          kGray);
+  gGeoManager->GetVolume("volCryostat")->Dump();
+      
+  MakeVisible("volDetEnclosure",   kRed);
+  // MakeVisible("volWarmSkin",       kGray);
+  // MakeVisible("volColdCryoLayer1", kGray);
+  // MakeVisible("volColdCryoLayer2", kOrange+3);
   // MakeVisible("volColdCryoLayer3", kWhite+2);
   // MakeInvisible("volColdCryoLayer3");
   // MakeInvisible("volColdCryoLayer1");

@@ -361,14 +361,7 @@ class CryostatBuilder(gegede.builder.Builder):
         
     def ConstructDSS(self, geom, cryo_lv):
         print ("Constructing the Detector Support Structure")
-        x90z90 = geom.structure.Rotation(objname="DSS90x90z",x='90deg',z='90deg')
         for i in range(self.nDSSBeam):
-            #self.DSSClearance    
-            #self.nDSSBeam        
-            #self.DSSBeamHeight   
-            #self.DSSBeamBase     
-            #self.DSSBeamThickW   
-            #self.DSSBeamThickF
             name="DSS"+str(i)
             DSSLength = self.CryostatInnerDim[2] - 2*self.DSSClearance[2]
             FinalSub = self.BuildBeamShape(geom, name, DSSLength,
@@ -382,7 +375,7 @@ class CryostatBuilder(gegede.builder.Builder):
             Beam_lv = geom.structure.Volume('vol'+name, material='Steel', shape=FinalSub)
             Position_Beam  = geom.structure.Position("pos"+name, pos[0], pos[1], pos[2])
             Placement_Beam = geom.structure.Placement("place"+name, volume = Beam_lv, pos=Position_Beam,
-                                                  rot = "90x90y")
+                                                      rot = 'r90aboutX_90aboutY')
             cryo_lv.placements.append(Placement_Beam.name)
         print ("DONE - Constructing the Detector Support Structure")
 
@@ -554,13 +547,6 @@ class CryostatBuilder(gegede.builder.Builder):
         self.BeamInnerDim = [self.CryostatInnerDim[0] + 2 * (self.ColdInsulationThickness + self.SteelThickness),
                              self.CryostatInnerDim[1] + 2 * (self.ColdInsulationThickness + self.SteelThickness),
                              self.CryostatInnerDim[2] + 2 * (self.ColdInsulationThickness + self.SteelThickness)]
-
-        x90 = geom.structure.Rotation(objname="90x",x='90deg')
-        y90 = geom.structure.Rotation(objname="90y",y='90deg')
-        z90 = geom.structure.Rotation(objname="90z",z='90deg')
-        x90z90 = geom.structure.Rotation(objname="90x90z",x='90deg',z='90deg')
-        x90y90 = geom.structure.Rotation(objname="90x90y",x='90deg',y='90deg')
-        x90y90z90 = geom.structure.Rotation(objname="90x90y90z",x='90deg',y='90deg',z='90deg')
         self.num=0
         
         for i in range(self.nBeamX):
@@ -575,7 +561,7 @@ class CryostatBuilder(gegede.builder.Builder):
             for ii in range(len(self.BeamFloors)):
                 posfloor = self.GetPosBeamFloor(x=i, floor=ii)
                 lengthfloor = self.BeamSeparationX - self.IPEBeamBase
-                rot = x90
+                rot = 'r90aboutX'
                 self.ConstructBeamFloor(geom, lengthfloor, posfloor, rot, box_lv, 'PosX')
                     
                 posfloor = self.GetPosBeamFloor(x=i, floor=ii, opposite=True)
@@ -587,11 +573,12 @@ class CryostatBuilder(gegede.builder.Builder):
                     
                     posfloor = self.GetPosBeamFloor(x=-1, floor=ii, opposite=True)
                     self.ConstructBeamFloor(geom, lengthfloor, posfloor, rot, box_lv, 'NegX')
-                
+        print ("DONE - Constructing the X external beams")
+
         for i in range(self.nBeamY):
             pos = self.GetPosBeam(y=i)
             length = self.BeamInnerDim[0]
-            rot = z90
+            rot = 'r90aboutZ'
             self.ConstructBeam(geom, length, pos, rot, box_lv, 'PosY')
             
             pos = self.GetPosBeam(y=i, opposite=True)
@@ -601,7 +588,7 @@ class CryostatBuilder(gegede.builder.Builder):
                 if ii in self.TopBeam:
                     posfloor = self.GetPosBeamFloor(y=i, floor=ii)
                     lengthfloor = self.BeamSeparationY-self.IPEBeamBase
-                    rot = x90y90
+                    rot = 'r90aboutX_90aboutY'
                     self.ConstructSmallBeam(geom, lengthfloor, posfloor, rot, box_lv, 'PosY')
                         
                     posfloor = self.GetPosBeamFloor(y=i, floor=ii, opposite=True)
@@ -613,11 +600,12 @@ class CryostatBuilder(gegede.builder.Builder):
                     
                         posfloor = self.GetPosBeamFloor(y=-1, floor=ii, opposite=True)
                         self.ConstructBeamFloor(geom, lengthfloor, posfloor, rot, box_lv, 'NegX')  
+        print ("DONE - Constructing the Y external beams")
 
         for i in range(self.nBeamZ):
             pos = self.GetPosBeam(z=i)
             length = self.BeamInnerDim[1]+2*self.IPEBeamHeight
-            rot = y90
+            rot = 'r90aboutY'
             self.ConstructBeam(geom, length, pos, rot, box_lv, 'PosZ')
 
             pos = self.GetPosBeam(z=i,opposite=True)
@@ -626,7 +614,7 @@ class CryostatBuilder(gegede.builder.Builder):
             for ii in range(len(self.BeamFloors)):
                 posfloor = self.GetPosBeamFloor(z=i, floor=ii)
                 lengthfloor = self.BeamSeparationX - self.IPEBeamBase
-                rot = x90y90
+                rot = 'r90aboutX_90aboutZ'
                 self.ConstructBeamFloor(geom, lengthfloor, posfloor, rot, box_lv, 'PosX')
            
                 posfloor = self.GetPosBeamFloor(z=i, floor=ii, opposite=True)
@@ -637,6 +625,7 @@ class CryostatBuilder(gegede.builder.Builder):
                     
                     posfloor = self.GetPosBeamFloor(z=-1, floor=ii, opposite=True)
                     self.ConstructBeamFloor(geom, lengthfloor, posfloor, rot, box_lv, 'NegX')  
+        print ("DONE - Constructing the Z external beams")
 
         print ("DONE - Constructing all the external beams")
 

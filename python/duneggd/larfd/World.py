@@ -60,15 +60,15 @@ class WorldBuilder(gegede.builder.Builder):
 
         ########################### Above is math, below is GGD ###########################
         self.define_materials(geom)
-        r90aboutX      = geom.structure.Rotation( 'r90aboutX',      '90deg',  '0deg',  '0deg'  )
-        r180aboutX     = geom.structure.Rotation( 'r180aboutX',     '180deg', '0deg',  '0deg'  )
-        r180aboutY     = geom.structure.Rotation( 'r180aboutY',     '0deg',   '180deg','0deg'  )
-        r180aboutXY    = geom.structure.Rotation( 'r180aboutX_180aboutY', '180deg', '180deg', '0deg')
-        # rminus90aboutX = geom.structure.Rotation( 'rminus90aboutX', '-90deg', '0deg',  '0deg'  )
-        # r90aboutY      = geom.structure.Rotation( 'r90aboutY',      '0deg',   '90deg', '0deg'  )
-        # rminus90aboutY = geom.structure.Rotation( 'rminus90aboutY', '0deg', '-90deg',  '0deg'  )
-        # r90aboutZ      = geom.structure.Rotation( 'r90aboutZ',      '0deg',   '0deg',  '90deg' )
-        # r90aboutXZ     = geom.structure.Rotation( 'r90aboutXZ', '90deg',  '0deg', '90deg'  )
+        r90aboutX   = geom.structure.Rotation('r90aboutX',                   x='90deg',  y='0deg',   z='0deg'  )
+        r90aboutY   = geom.structure.Rotation('r90aboutY',                   x='0deg',   y='90deg',  z='0deg'  )
+        r90aboutZ   = geom.structure.Rotation('r90aboutZ',                   x='0deg',   y='0deg',   z='90deg' )
+        r90aboutXZ  = geom.structure.Rotation('r90aboutX_90aboutZ',          x='90deg',  y='0deg',   z='90deg' )
+        r90aboutXY  = geom.structure.Rotation('r90aboutX_90aboutY',          x='90deg',  y='90deg',  z='0deg'  )
+        r90aboutXYZ = geom.structure.Rotation('r90aboutX_90aboutY_90aboutZ', x='90deg', y='90deg',   z='90deg' )
+        r180aboutX  = geom.structure.Rotation('r180aboutX',                  x='180deg', y='0deg',   z='0deg'  )
+        r180aboutY  = geom.structure.Rotation('r180aboutY',                  x='0deg',   y='180deg', z='0deg'  )
+        r180aboutXY = geom.structure.Rotation('r180aboutX_180aboutY',        x='180deg', y='180deg', z='0deg'  )
 
 
         worldBox = geom.shapes.Box( self.name,               dx=0.5*self.worldDim[0], 
@@ -183,7 +183,7 @@ class WorldBuilder(gegede.builder.Builder):
                                       ))
         S460ML    = g.matter.Mixture( "S460ML", density = "7.8*g/cc", 
                                       components = (
-                                          ("iron",      0.95),
+                                          ("iron",      0.96),
                                           ("manganese", 0.018),
                                           ("nickel",    0.0085),
                                           ("silicon",   0.0065),
