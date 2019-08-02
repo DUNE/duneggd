@@ -36,7 +36,7 @@ class TPCBuilder(gegede.builder.Builder):
     def construct(self, geom):
 
         self.apaPhysicalDim  = list(self.planeBldrZ.apaPhysicalDim)
-        self.apaFrameDim  = list(self.planeBldrZ.apaFrameDim)
+        self.apaFrameDim  = list(self.planeBldrZ.APAFrameDim)
         self.apaPhysicalDim[0] += 2*3*self.wirePlanePitch
         self.g10Thickness = self.planeBldrZ.g10Thickness
         self.wrapCover    = self.planeBldrZ.wrapCover
@@ -52,7 +52,6 @@ class TPCBuilder(gegede.builder.Builder):
         readPlaneV_lv = self.planeBldrV.get_volume('volTPCPlaneV')
         readPlaneU_lv = self.planeBldrU.get_volume('volTPCPlaneU')
 
-
         self.tpcDim = [ self.driftDistance + 2*self.wirePlanePitch + plane_x,
                         self.apaPhysicalDim[1]+self.APAGap_y,
                         self.apaPhysicalDim[2]+self.APAGap_z ]
@@ -61,8 +60,10 @@ class TPCBuilder(gegede.builder.Builder):
         # define TPC Active shape and volume
         tpcActiveDim = [ self.driftDistance, self.tpcDim[1], self.tpcDim[2] ]
         #if self.name=='TPCOuter': tpcActiveDim[0] = Q('.1mm') # make active negligible on outside
-        tpcActiveBox = geom.shapes.Box( self.name+'Active',            dx=0.5*tpcActiveDim[0], 
-                                        dy=0.5*tpcActiveDim[1], dz=0.5*tpcActiveDim[2]  )
+        tpcActiveBox = geom.shapes.Box(self.name+'Active',
+                                       dx=0.5*tpcActiveDim[0], 
+                                       dy=0.5*tpcActiveDim[1],
+                                       dz=0.5*tpcActiveDim[2])
         activename = 'volTPCActive'
         if self.name=='TPCOuter': activename = 'volTPCActiveOuter'
         tpcActive_lv = geom.structure.Volume(activename, material='LAr', shape=tpcActiveBox)

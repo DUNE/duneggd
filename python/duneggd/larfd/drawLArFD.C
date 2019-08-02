@@ -48,7 +48,8 @@ void drawLArFD()
 
   std::string topVol ="volWorld";
   // topVol ="volDetEnclosure";
-  // topVol ="volCryostat";
+  topVol ="volCryostat";
+  topVol ="volAPAFrame";
   // topVol ="volTPC";
   // topVol ="volTPCPlaneU";
 
@@ -93,7 +94,6 @@ void drawLArFD()
   // MakeInvisible("volColdCryoLayer3");
   // MakeInvisible("volColdCryoLayer1");
 
-                                         
   // gGeoManager->GetVolume("volBeamPlanePosX")->DrawOnly("ogl");
   // gGeoManager->GetVolume("volWaterBoxTop")->SetLineColor(kBlue);
   // gGeoManager->GetVolume("volWaterBoxTop")->SetVisibility(1);
@@ -119,14 +119,12 @@ void drawLArFD()
   // gGeoManager->GetVolume("volWaterBoxBack")->SetVisibility(1);
   // gGeoManager->GetVolume("volWaterBoxBack")->SetTransparency(20);
 
-
   // gGeoManager->GetVolume("volEmptyCryostat")->SetLineColor(kRed);
   // gGeoManager->GetVolume("volEmptyCryostat")->SetTransparency(20);
   
   // gGeoManager->GetVolume("volMembrane")->SetLineColor(kGray);
   // gGeoManager->GetVolume("volMembrane")->SetVisibility(1);
   // gGeoManager->GetVolume("volMembrane")->SetTransparency(20);
-
 
   // gGeoManager->GetVolume("volTPCPlaneU")->SetLineColor(kRed-3);
   // gGeoManager->GetVolume("volTPCPlaneU")->SetVisibility(1);
@@ -141,8 +139,8 @@ void drawLArFD()
 
 
  // gGeoManager->GetTopNode();
- // gGeoManager->CheckOverlaps(1e-5,"d");
- // gGeoManager->PrintOverlaps();
+ gGeoManager->CheckOverlaps(1e-5,"d");
+ gGeoManager->PrintOverlaps();
  // gGeoManager->FindVolumeFast(topVol)->CheckOverlaps(1e-5,"d");
  // gGeoManager->FindVolumeFast(topVol)->GetNode(0)->PrintOverlaps();
  gGeoManager->SetMaxVisNodes(70000);

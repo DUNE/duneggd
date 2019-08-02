@@ -36,7 +36,7 @@ int drawTPC()
   gSystem->Load("libGeom");
   gSystem->Load("libGdml");
 
-  TGeoManager::Import("larfd.gdml");
+  TGeoManager::Import("dune10kt_v2.gdml");
 
   std::string topVol ="volTPC";
 
@@ -54,8 +54,9 @@ int drawTPC()
   }
 
   MakeVisible("volTPC", kGreen);
-  gGeoManager->CheckOverlaps(1e-5,"d");
-  gGeoManager->PrintOverlaps();
+  MakeVisible("volAPAFrame", kMagent);
+  // gGeoManager->CheckOverlaps(1e-5,"d");
+  // gGeoManager->PrintOverlaps();
   // gGeoManager->FindVolumeFast(topVol.c_str())->CheckOverlaps(1e-5,"d");
   // gGeoManager->FindVolumeFast(topVol.c_str())->GetNode(0)->PrintOverlaps();
   gGeoManager->SetMaxVisNodes(70000);

@@ -65,7 +65,7 @@ class WorldBuilder(gegede.builder.Builder):
         r90aboutZ   = geom.structure.Rotation('r90aboutZ',                   x='0deg',   y='0deg',   z='90deg' )
         r90aboutXZ  = geom.structure.Rotation('r90aboutX_90aboutZ',          x='90deg',  y='0deg',   z='90deg' )
         r90aboutXY  = geom.structure.Rotation('r90aboutX_90aboutY',          x='90deg',  y='90deg',  z='0deg'  )
-        r90aboutXYZ = geom.structure.Rotation('r90aboutX_90aboutY_90aboutZ', x='90deg', y='90deg',   z='90deg' )
+        r90aboutXYZ = geom.structure.Rotation('r90aboutX_90aboutY_90aboutZ', x='90deg',  y='90deg',  z='90deg' )
         r180aboutX  = geom.structure.Rotation('r180aboutX',                  x='180deg', y='0deg',   z='0deg'  )
         r180aboutY  = geom.structure.Rotation('r180aboutY',                  x='0deg',   y='180deg', z='0deg'  )
         r180aboutXY = geom.structure.Rotation('r180aboutX_180aboutY',        x='180deg', y='180deg', z='0deg'  )

@@ -20,13 +20,13 @@ class TPCPlaneBuilder(gegede.builder.Builder):
                   wireAngle           = None,
                   nChannels           = None,
                   nowires             = False,
-                  apaFrameDim         = None,
+                  APAFrameDim         = None,
                   g10Thickness        = Q('0.125in'),
                   wrapCover           = Q('0.0625in'),
                   view                = None,
                   **kwds):
 
-        if apaFrameDim is None:
+        if APAFrameDim is None:
             raise ValueError("No value given for apaFrameDim")
         if view is None:
             raise ValueError("No value given for view") 
@@ -42,7 +42,7 @@ class TPCPlaneBuilder(gegede.builder.Builder):
         self.wireAngle          = wireAngle
         self.nChannels          = nChannels
         self.nowires            = nowires
-        self.apaFrameDim        = apaFrameDim
+        self.APAFrameDim        = APAFrameDim
         self.g10Thickness       = g10Thickness 
         self.wrapCover          = wrapCover
         self.view               = view
@@ -64,11 +64,11 @@ class TPCPlaneBuilder(gegede.builder.Builder):
         # TODO: rework configuration of frame vs phys dimensions
         #       
         # apaFameDim config: z dim includes g10 plastic, y doesn't 
-        self.apaPhysicalDim = list(self.apaFrameDim)
+        self.apaPhysicalDim = list(self.APAFrameDim)
         self.apaPhysicalDim[1] += (4*g10 + g10wrap)  # 4x from Z, V, U, gridplane
-        self.apaFrameDim[2] -= (4*g10 + 2*g10wrap)  # V & U g10, and cover on both sides
+        self.APAFrameDim[2] -= (4*g10 + 2*g10wrap)  # V & U g10, and cover on both sides
 
-        self.planeDim = list(self.apaFrameDim)
+        self.planeDim = list(self.APAFrameDim)
         self.planeDim[0] = self.wireDiam;
 
         if self.view == 'Z': 

@@ -117,7 +117,7 @@ class CryostatBuilder(gegede.builder.Builder):
         self.tpcBldr       = self.get_builder('TPC')
         if outerAPAs:
             self.tpcOuterBldr  = self.get_builder('TPCOuter')
-        
+        self.APAFrameBldr = self.get_builder('APAFrame')
 
 
 
@@ -179,7 +179,7 @@ class CryostatBuilder(gegede.builder.Builder):
 
         if self.outerAPAs:
             tpcOuter_lv = self.tpcOuterBldr.get_volume('volTPCOuter')
-
+        APAFrame_lv =self.APAFrameBldr.get_volume('volAPAFrame')
 
         # Position both TPCs, APA Frame volumes for each module, and CPAs around 
         CPANum = 0
@@ -226,10 +226,13 @@ class CryostatBuilder(gegede.builder.Builder):
                     # Calculate volTPC positions around module center
                     tpc0Pos = [ xpos - 0.5*self.apaFrameDim[0] - 0.5*tpc0Dim[0], ypos, zpos ]
                     tpc1Pos = [ xpos + 0.5*self.apaFrameDim[0] + 0.5*tpc1Dim[0], ypos, zpos ]
+                    FramePos = [ xpos , ypos, zpos ]
                     pos0Name = 'TPC-'+ str(2*APANum)     + '_in_Cryo'
                     pos1Name = 'TPC-'+ str(2*APANum + 1) + '_in_Cryo'
+                    pos2Name = 'Frame-'+ str(2*APANum)     + '_in_Cryo'
                     tpc0_in_cryo = geom.structure.Position(pos0Name, tpc0Pos[0], tpc0Pos[1], tpc0Pos[2])
                     tpc1_in_cryo = geom.structure.Position(pos1Name, tpc1Pos[0], tpc1Pos[1], tpc1Pos[2])
+                    APAFrame_in_cryo = geom.structure.Position(pos2Name, FramePos[0], FramePos[1], FramePos[2])
                     
                     if y_i == self.nAPAs[1]-1: # readout at top, no X rotation
                         rot0 = 'identity'
@@ -247,8 +250,13 @@ class CryostatBuilder(gegede.builder.Builder):
                                                           volume = tpc1_lv,
                                                           pos = tpc1_in_cryo,
                                                           rot = rot1 )
+                    pAPAFrame_in_C = geom.structure.Placement('place'+pos2Name,
+                                                              volume = APAFrame_lv,
+                                                              pos = APAFrame_in_cryo,
+                                                              rot='identity')
                     cryo_lv.placements.append(pTPC0_in_C.name)
                     cryo_lv.placements.append(pTPC1_in_C.name)
+                    cryo_lv.placements.append(pAPAFrame_in_C.name)
 
 
                     # Place Photon Detecors
