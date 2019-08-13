@@ -29,7 +29,7 @@ void MakeInvisible(std::string volume) {
   }
 }
 
-int drawTPC()
+int drawWires()
 {
   // DEFINE YOUR MAIN FUNCTION HERE
   
@@ -38,7 +38,7 @@ int drawTPC()
 
   TGeoManager::Import("dune10kt_v2.gdml");
 
-  std::string topVol ="volTPCPlaneZ";
+  std::string topVol ="volTPCPlaneV";
 
   gGeoManager->SetTopVisible(1);
   gGeoManager->SetVisLevel(3);
@@ -50,11 +50,13 @@ int drawTPC()
 
   while(vol) {
     std::string name = vol->GetName();
+    size_t found = name.find("Wire-"); 
+    if (found != string::npos) 
+      MakeVisible(name, kBlack);
     vol = (TGeoVolume*)next();
   }
 
   MakeVisible("volTPC", kGreen);
-  MakeVisible("volAPAFrame", kMagenta);
   // gGeoManager->CheckOverlaps(1e-5,"d");
   // gGeoManager->PrintOverlaps();
   // gGeoManager->FindVolumeFast(topVol.c_str())->CheckOverlaps(1e-5,"d");
@@ -67,7 +69,7 @@ int drawTPC()
 #ifndef __CINT__
 int main(int argc, char** argv)
 {
-  return drawTPC();
+  return drawWires();
 }
 #endif
 

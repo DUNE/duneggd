@@ -1,23 +1,21 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-data = np.loadtxt("U-low-wires.txt")
+def MakeWirePlot(view):
+    data = np.loadtxt("WirePos"+view+".txt")
 
-detDim = [0, 606.635, 229.685]
+    wires = len(data[:, 0])
+    xstart = data[:, 1]
+    ystart = data[:, 2]
+    zstart = data[:, 3]
+    xend   = data[:, 4]
+    yend   = data[:, 5]
+    zend   = data[:, 6]
 
-plt.figure()
-plt.plot([-0.5*detDim[2], -0.5*detDim[2]], [-0.5*detDim[1], 0.5*detDim[1]], "k-")
-plt.plot([ 0.5*detDim[2],  0.5*detDim[2]], [-0.5*detDim[1], 0.5*detDim[1]], "k-")
-plt.plot([-0.5*detDim[2],  0.5*detDim[2]], [-0.5*detDim[1],-0.5*detDim[1]], "k-")
-plt.plot([-0.5*detDim[2],  0.5*detDim[2]], [ 0.5*detDim[1], 0.5*detDim[1]], "k-")
+    for i in range(wires):
+        # print (str(zstart[i]) + " " + str(ystart[i]) + " " + str(zend[i]) + " " + str(yend[i]))
+        plt.plot([zstart[i],zend[i]], [ystart[i],yend[i]], "k-")
 
 
-wires = len(data[:, 0])
-x = data[:, 0]
-y = data[:, 1]
-z = data[:, 2]
-
-for i in range(wires):
-    plt.plot([-0.5*detDim[2], -0.5*detDim[2] + abs(z[i])], [-0.5*detDim[1] + abs(y[i]), -0.5*detDim[1]], "k-")
-
+MakeWirePlot('V')
 plt.show()

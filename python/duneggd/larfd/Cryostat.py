@@ -124,11 +124,9 @@ class CryostatBuilder(gegede.builder.Builder):
     #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
     def construct(self, geom):
 
-        self.g10Thickness         = self.tpcBldr.g10Thickness        
-        self.wrapCover            = self.tpcBldr.wrapCover
         self.APAGap_y             = self.tpcBldr.APAGap_y
         self.APAGap_z             = self.tpcBldr.APAGap_z
-        self.apaPhysicalDim       = list(self.tpcBldr.apaPhysicalDim)
+        self.apaPhysicalDim       = list(self.tpcBldr.apaFrameDim)
         self.apaFrameDim          = list(self.tpcBldr.apaFrameDim)
         
         # Using volTPC dimensions, calculate module dimensions
@@ -253,7 +251,7 @@ class CryostatBuilder(gegede.builder.Builder):
                     pAPAFrame_in_C = geom.structure.Placement('place'+pos2Name,
                                                               volume = APAFrame_lv,
                                                               pos = APAFrame_in_cryo,
-                                                              rot='identity')
+                                                              rot=rot0)
                     cryo_lv.placements.append(pTPC0_in_C.name)
                     cryo_lv.placements.append(pTPC1_in_C.name)
                     cryo_lv.placements.append(pAPAFrame_in_C.name)

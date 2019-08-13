@@ -17,6 +17,7 @@ class APAFrameBuilder(gegede.builder.Builder):
     def configure(self, 
                   size          = None,
                   footsize      = None,
+                  headsize      = None,
                   footthickness = None,
                   nribs         = None,
                   ribsize       = None,
@@ -25,6 +26,7 @@ class APAFrameBuilder(gegede.builder.Builder):
 
         self.size          = size
         self.footsize      = footsize
+        self.headsize      = headsize
         self.footthickness = footthickness
         self.nribs         = nribs
         self.ribsize       = ribsize
@@ -63,8 +65,9 @@ class APAFrameBuilder(gegede.builder.Builder):
 
 
          Foot_lv = self.ConstructHollowBeam(geom, 'APAFrameFoot', self.footsize, self.footthickness)
+         Head_lv = self.ConstructHollowBeam(geom, 'APAFrameHead', self.headsize, self.footthickness)
 
-         size_middle = [self.footsize[0], self.footsize[1], self.size[1]-2*self.footsize[0]]
+         size_middle = [self.footsize[0], self.footsize[1], self.size[1]-self.footsize[1]-self.headsize[1]]
          Middle_lv = self.ConstructHollowBeam(geom, 'APAFrameMiddle',  size_middle, self.footthickness)
 
          size_rib    = [self.ribsize[0], self.ribsize[1], 0.5*self.size[2]-1.5*self.footsize[0]]
@@ -74,24 +77,25 @@ class APAFrameBuilder(gegede.builder.Builder):
          FootPosition = geom.structure.Position('APAFrameFootPos',
                                                 Q('0m'),0.5*(-self.size[1]+self.footsize[1]), Q('0m'))
 
-         TopPosition  = geom.structure.Position('APAFrameTopPos',
-                                                Q('0m'),0.5*(self.size[1]-self.footsize[1]), Q('0m'))
+         HeadPosition  = geom.structure.Position('APAFrameHeadPos',
+                                                 Q('0m'),0.5*(self.size[1]-self.headsize[1]), Q('0m'))
 
+         yoffset = 0.5*(self.footsize[1]-self.headsize[1])
          MiddlePosition = geom.structure.Position('APAFrameMiddlePos',
-                                                  Q('0m'), Q('0m'), Q('0m'))
+                                                  Q('0m'), yoffset, Q('0m'))
 
          LeftPosition = geom.structure.Position('APAFrameLeftPos',
-                                                Q('0m'), Q('0m'), 0.5*(-self.size[2]+self.footsize[1]))
+                                                Q('0m'), yoffset, 0.5*(-self.size[2]+self.footsize[1]))
 
          RightPosition = geom.structure.Position('APAFrameRightPos',
-                                                Q('0m'), Q('0m'), 0.5*(self.size[2]-self.footsize[1]))
+                                                 Q('0m'), yoffset, 0.5*(self.size[2]-self.footsize[1]))
 
 
 
          Placement_Foot = geom.structure.Placement("placeAPAFrameFoot", volume=Foot_lv, pos=FootPosition,
                                                    rot='identity')
 
-         Placement_Top = geom.structure.Placement("placeAPAFrameTop", volume=Foot_lv, pos=TopPosition,
+         Placement_Head = geom.structure.Placement("placeAPAFrameHead", volume=Head_lv, pos=HeadPosition,
                                                    rot='identity')
 
          Placement_Middle = geom.structure.Placement("placeAPAFrameMiddle", volume=Middle_lv, pos=MiddlePosition,
@@ -106,31 +110,29 @@ class APAFrameBuilder(gegede.builder.Builder):
 
          
          frame_lv.placements.append(Placement_Foot  .name)
-         frame_lv.placements.append(Placement_Top   .name)
+         frame_lv.placements.append(Placement_Head  .name)
          frame_lv.placements.append(Placement_Middle.name)
          frame_lv.placements.append(Placement_Left  .name)
          frame_lv.placements.append(Placement_Right .name)
 
          print("low "+str(-0.5*self.size[1]))
-         print("hig "+str(0.5*self.size[1]))
+         print("hig "+str( 0.5*self.size[1]))
          
          for iRib in range(self.nribs):
              #posy = -0.5*self.size[1] + self.footsize[1] + (iRib+1) * (self.size[1] - 2*self.footsize[1]) / self.nribs
-             posy = -0.5 * size_middle[2] + (1+iRib) * size_middle[2] / (self.nribs+1)
+             posy = -0.5 * size_middle[2] + (1+iRib) * size_middle[2] / (self.nribs+1) + yoffset
              print("Rib "+str(posy))
              name = 'APAFrameRib'+str(2*iRib+1)
              RibPosition = geom.structure.Position(name+'Pos',
                                                    Q('0m'), posy, 0.25*(self.size[2]-self.footsize[1]))
              Placement_Rib = geom.structure.Placement("place"+name, volume=Rib_lv, pos=RibPosition,
                                                       rot='r90aboutZ')
-
              frame_lv.placements.append(Placement_Rib.name)
-
+             
+             
              name = 'APAFrameRib'+str(2*iRib)
              RibPosition = geom.structure.Position(name+'Pos',
                                                    Q('0m'), posy, -0.25*(self.size[2]-self.footsize[1]))
              Placement_Rib = geom.structure.Placement("place"+name, volume=Rib_lv, pos=RibPosition,
                                                       rot='r90aboutZ')
              frame_lv.placements.append(Placement_Rib.name)
-             
-             

@@ -49,7 +49,7 @@ void drawLArFD()
   std::string topVol ="volWorld";
   // topVol ="volDetEnclosure";
   topVol ="volCryostat";
-  topVol ="volAPAFrame";
+  // topVol ="volAPAFrame";
   // topVol ="volTPC";
   // topVol ="volTPCPlaneU";
 
@@ -84,8 +84,6 @@ void drawLArFD()
   // // MakeDaughterVisible("volWarmCryoBox");
 
   MakeVisible("volWorld",          kGray);
-  gGeoManager->GetVolume("volCryostat")->Dump();
-      
   MakeVisible("volDetEnclosure",   kRed);
   // MakeVisible("volWarmSkin",       kGray);
   // MakeVisible("volColdCryoLayer1", kGray);
@@ -139,8 +137,8 @@ void drawLArFD()
 
 
  // gGeoManager->GetTopNode();
- gGeoManager->CheckOverlaps(1e-5,"d");
- gGeoManager->PrintOverlaps();
+ // gGeoManager->CheckOverlaps(1e-5,"d");
+ // gGeoManager->PrintOverlaps();
  // gGeoManager->FindVolumeFast(topVol)->CheckOverlaps(1e-5,"d");
  // gGeoManager->FindVolumeFast(topVol)->GetNode(0)->PrintOverlaps();
  gGeoManager->SetMaxVisNodes(70000);
