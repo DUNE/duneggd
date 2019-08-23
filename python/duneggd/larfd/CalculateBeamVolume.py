@@ -21,9 +21,9 @@ volume_layer2  =0
 volume_layer3  =0
 volume_warmskin=0
 
-density_membrane=Q('7.93g*cm^-3')
-density_layer2  =Q('0.09g*cm^-3')
-density_layer3  =Q('1.5g*cm^-3')
+density_membrane=density
+density_layer2  =Q('545.91*kg*m^-3')
+density_layer3  =Q('90*kg*m^-3')
 density_warmskin=density
 
 

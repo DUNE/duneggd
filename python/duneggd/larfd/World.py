@@ -125,16 +125,16 @@ class WorldBuilder(gegede.builder.Builder):
         Na2O  = g.matter.Molecule("Na2O",  density="2.27*g/cc",  elements=(("sodium",2),("oxygen",1)))
         P2O5  = g.matter.Molecule("P2O5",  density="1.562*g/cc", elements=(("phosphorus",2),("oxygen",5)))        
         Layer2Molecule = g.matter.Molecule("Layer2Molecule",
-                                           density="0.09*g/cc",
+                                           density="545.91*kg*m^-3",
+                                           elements=(("carbon",6),
+                                                     ("oxygen",5),
+                                                     ("hydrogen",10)))
+        Layer3Molecule = g.matter.Molecule("Layer3Molecule",
+                                           density="90*kg*m^-3",
                                            elements=(("carbon",17),
                                                      ("oxygen",4),
                                                      ("nitrogen",2),
                                                      ("hydrogen",16)))        
-        Layer3Molecule = g.matter.Molecule("Layer3Molecule",
-                                            density="1.5*g/cc",
-                                            elements=(("carbon",6),
-                                                      ("oxygen",5),
-                                                      ("hydrogen",10)))
        
         rock  = g.matter.Mixture( "Rock", density = "2.82*g/cc", 
                                   components = (

@@ -355,7 +355,7 @@ class CryostatBuilder(gegede.builder.Builder):
                                        dz=0.5*self.CryostatOuterDim[2])
         
         Layer1 = geom.shapes.Boolean('ColdCryoLayer1', type='subtraction', first=Layer2In, second=Layer1In) 
-        Layer1_lv = geom.structure.Volume('volColdCryoLayer1', material='Steel', shape=Layer1)
+        Layer1_lv = geom.structure.Volume('volColdCryoLayer1', material='S460ML', shape=Layer1)
         Layer1_in_cryo = geom.structure.Position('Layer1_in_Cryo', 
                                                  Q('0cm'),Q('0cm'),Q('0cm'))
         placement_Layer1In_in_C  = geom.structure.Placement('placeLayer1_in_Cryo',
