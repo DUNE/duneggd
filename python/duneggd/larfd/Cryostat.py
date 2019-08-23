@@ -4,8 +4,10 @@ Subbuilder of DetEncBuilder
 '''
 
 import gegede.builder
+import math
 from gegede import Quantity as Q
-
+from pint import UnitRegistry
+ureg = UnitRegistry()
 
 class CryostatBuilder(gegede.builder.Builder):
     '''
@@ -119,9 +121,8 @@ class CryostatBuilder(gegede.builder.Builder):
             self.tpcOuterBldr  = self.get_builder('TPCOuter')
         self.APAFrameBldr = self.get_builder('APAFrame')
 
-
-
-    #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
+        self.volume_beam_file = open('volume_beam.txt','w') 
+     #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
     def construct(self, geom):
 
         self.APAGap_y             = self.tpcBldr.APAGap_y
@@ -320,6 +321,34 @@ class CryostatBuilder(gegede.builder.Builder):
                                        dx=0.5*self.CryostatInnerDim[0]+self.Layer1Thickness+self.Layer2Thickness+self.Layer3Thickness+self.SteelThickness, 
                                        dy=0.5*self.CryostatInnerDim[1]+self.Layer1Thickness+self.Layer2Thickness+self.Layer3Thickness+self.SteelThickness,
                                        dz=0.5*self.CryostatInnerDim[2]+self.Layer1Thickness+self.Layer2Thickness+self.Layer3Thickness+self.SteelThickness)
+
+
+        vol_cryostat = ((self.CryostatInnerDim[0]) *
+                        (self.CryostatInnerDim[1]) *
+                        (self.CryostatInnerDim[2]))
+        
+        vol_membrane = ((self.CryostatInnerDim[0]+2*self.Layer1Thickness) * 
+                        (self.CryostatInnerDim[1]+2*self.Layer1Thickness) *
+                        (self.CryostatInnerDim[2]+2*self.Layer1Thickness))
+        
+        vol_layer2 = ((self.CryostatInnerDim[0]+2*(self.Layer1Thickness+self.Layer2Thickness)) * 
+                      (self.CryostatInnerDim[1]+2*(self.Layer1Thickness+self.Layer2Thickness)) *
+                      (self.CryostatInnerDim[2]+2*(self.Layer1Thickness+self.Layer2Thickness)))
+
+        vol_layer3 = ((self.CryostatInnerDim[0]+2*(self.Layer1Thickness+self.Layer2Thickness+self.Layer3Thickness)) * 
+                      (self.CryostatInnerDim[1]+2*(self.Layer1Thickness+self.Layer2Thickness+self.Layer3Thickness)) *
+                      (self.CryostatInnerDim[2]+2*(self.Layer1Thickness+self.Layer2Thickness+self.Layer3Thickness)))
+
+        vol_warm_skin = ((self.CryostatInnerDim[0]+2*(self.Layer1Thickness+self.Layer2Thickness+self.Layer3Thickness+self.SteelThickness)) * 
+                         (self.CryostatInnerDim[1]+2*(self.Layer1Thickness+self.Layer2Thickness+self.Layer3Thickness+self.SteelThickness)) *
+                         (self.CryostatInnerDim[2]+2*(self.Layer1Thickness+self.Layer2Thickness+self.Layer3Thickness+self.SteelThickness)))
+        
+        self.volume_beam_file.write("membrane "+str((vol_membrane -vol_cryostat).to('m^3').magnitude)+"\n")
+        self.volume_beam_file.write("layer2 "  +str((vol_layer2   -vol_membrane).to('m^3').magnitude)+"\n")
+        self.volume_beam_file.write("layer3 "  +str((vol_layer3   -vol_layer2  ).to('m^3').magnitude)+"\n")
+        self.volume_beam_file.write("warmskin "+str((vol_warm_skin-vol_layer3  ).to('m^3').magnitude)+"\n")
+
+
         BeamOuterBox = geom.shapes.Box('BeamOut',
                                        dx=0.5*self.CryostatOuterDim[0], 
                                        dy=0.5*self.CryostatOuterDim[1],
@@ -354,6 +383,7 @@ class CryostatBuilder(gegede.builder.Builder):
                                                             pos = Layer3_in_cryo)
         cryo_lv.placements.append(placement_Layer3_in_C.name)
 
+        
         WarmSkin = geom.shapes.Boolean('WarmSkin', type='subtraction', first=BeamInnerBox, second=Layer3Out) 
         WarmSkin_lv = geom.structure.Volume('volWarmSkin', material='S460ML', shape=WarmSkin)
         WarmSkin_in_cryo = geom.structure.Position("WarmSkin_in_Cryo",
@@ -435,6 +465,9 @@ class CryostatBuilder(gegede.builder.Builder):
                                        first=FirstSub,
                                        second=SubtractionBox,
                                        pos=Pos2)
+
+        volume = length * base * height - 2 * (SubBoxDim[0] * SubBoxDim[1] * SubBoxDim[2])
+        self.volume_beam_file.write(name+" "+str(volume.to('m^3').magnitude)+"\n")
         return FinalSub
         
     def ConstructBeam(self, geom, length, pos, rot, box_lv, plane):
@@ -466,6 +499,8 @@ class CryostatBuilder(gegede.builder.Builder):
                                        first=Beam,
                                        second=SubtractionTub,
                                        pos=Pos)
+        volume=math.pi*(0.5*self.HoleDiam)**2*self.IPEBeamThickW
+        self.volume_beam_file.write(name+"_hole "+str(volume.to('m^3').magnitude)+"\n")
         Beam_lv        = geom.structure.Volume("vol"+name, material="S460ML", shape=FinalSub)
         Position_Beam  = geom.structure.Position("pos"+name, pos[0], pos[1], pos[2])
         Placement_Beam = geom.structure.Placement("place"+name, volume=Beam_lv, pos=Position_Beam,
@@ -474,7 +509,7 @@ class CryostatBuilder(gegede.builder.Builder):
         self.num = self.num+1
 
     def ConstructSmallBeam(self, geom, length, pos, rot, box_lv, plane):
-        name = "Beam_"+str(self.num)+plane
+        name = "BeamSmall_"+str(self.num)+plane
         FinalSub = self.BuildBeamShape(geom, name, length,
                                        self.IPEBeamRoofBase,   self.IPEBeamRoofHeight,
                                        self.IPEBeamRoofThickF, self.IPEBeamRoofThickW)
@@ -563,7 +598,6 @@ class CryostatBuilder(gegede.builder.Builder):
 
             pos = self.GetPosBeam(x=i, opposite=True)
             self.ConstructBeam(geom, length, pos, rot, box_lv, 'NegX')
-            
             for ii in range(len(self.BeamFloors)):
                 posfloor = self.GetPosBeamFloor(x=i, floor=ii)
                 lengthfloor = self.BeamSeparationX - self.IPEBeamBase
@@ -683,6 +717,33 @@ class CryostatBuilder(gegede.builder.Builder):
                                               self.detCenter[0] - 0.5*(self.detDim[0]+self.thickness),
                                               self.detCenter[1],
                                               self.detCenter[2]) 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         posCenter_5 = geom.structure.Position(posName_5,
                                               self.detCenter[0],
                                               self.detCenter[1],
