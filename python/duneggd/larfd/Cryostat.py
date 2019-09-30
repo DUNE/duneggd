@@ -24,7 +24,7 @@ class CryostatBuilder(gegede.builder.Builder):
                   IgnoredAPAs         = None,
                   sideLAr             = Q('15cm'),
                   APAToFloor          = Q('49.2cm'),
-                  APAToGAr            = Q('40.7cm'),
+                  LArLevel            = None,
                   APAToUpstreamWall   = Q('301.2cm'),
                   APAToDownstreamWall = Q('49.2cm'),
                   Layer1Thickness     = Q('0.745m'),
@@ -77,7 +77,7 @@ class CryostatBuilder(gegede.builder.Builder):
         self.IgnoredAPAs          = IgnoredAPAs
         self.sideLAr              = sideLAr
         self.APAToFloor           = APAToFloor
-        self.APAToGAr             = APAToGAr
+        self.LArLevel             = LArLevel
         self.APAToUpstreamWall    = APAToUpstreamWall
         self.APAToDownstreamWall  = APAToDownstreamWall
         self.DSSClearance         = DSSClearance        
@@ -122,12 +122,14 @@ class CryostatBuilder(gegede.builder.Builder):
         self.APAFrameBldr = self.get_builder('APAFrame')
 
         self.volume_beam_file = open('volume_beam.txt','w') 
-     #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
+
+
+
+    #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
     def construct(self, geom):
 
         self.APAGap_y             = self.tpcBldr.APAGap_y
         self.APAGap_z             = self.tpcBldr.APAGap_z
-        self.apaPhysicalDim       = list(self.tpcBldr.apaFrameDim)
         self.apaFrameDim          = list(self.tpcBldr.apaFrameDim)
         
         # Using volTPC dimensions, calculate module dimensions
@@ -136,18 +138,10 @@ class CryostatBuilder(gegede.builder.Builder):
             self.tpcOuterDim = list(self.tpcOuterBldr.tpcDim)
            
         # Using module dimensions, calculate cryostat dimensions
-        APAToAPA     = [ self.apaFrameDim[0] + 2*self.tpcDim[0] + self.cathodeThickness,
-                         self.tpcDim[1],
-                         self.tpcDim[2]  ]
+        APAToAPA = [self.apaFrameDim[0] + 2*self.tpcDim[0] + self.cathodeThickness,
+                    self.tpcDim[1],
+                    self.tpcDim[2]]
 
-        # Cryostat dimensions, less the dead LAr on all sides 
-        AllAPAsDim   = [ (self.nAPAs[0]-1)*APAToAPA[0],
-                         self.nAPAs[1] * self.tpcDim[1],
-                         self.nAPAs[2] * self.tpcDim[2]  ]
-        if self.outerAPAs:
-            AllAPAsDim[0] += self.apaPhysicalDim[0] # half apa on each side 
-        else: 
-            AllAPAsDim[0] += self.apaFrameDim[0] + 2*self.tpcDim[0] + 2*self.cathodeThickness
         self.ColdInsulationThickness = self.Layer1Thickness + self.Layer2Thickness + self.Layer3Thickness
         self.WarmCryostatThickness   = self.SteelThickness + self.IPEBeamHeight
         self.TotalCryoLayer          = self.ColdInsulationThickness + self.WarmCryostatThickness
@@ -156,6 +150,7 @@ class CryostatBuilder(gegede.builder.Builder):
         self.CryostatOuterDim[1] = self.CryostatInnerDim[1] + 2 * self.TotalCryoLayer
         self.CryostatOuterDim[2] = self.CryostatInnerDim[2] + 2 * self.TotalCryoLayer
 
+        
         # define cryostat shape and volume, will be placed by a builder owning this builder
         cryoBox = geom.shapes.Box('Cryostat',
                                   dx=0.5*self.CryostatOuterDim[0], 
@@ -183,11 +178,14 @@ class CryostatBuilder(gegede.builder.Builder):
         # Position both TPCs, APA Frame volumes for each module, and CPAs around 
         CPANum = 0
         APANum = 0   # 2xAPANum(+1) meant to mimic TPC numbering in LArSoft:
+        
+        betweenAPA = []
+        
         for z_i in range(self.nAPAs[2]):         # lastly z
             for y_i in range(self.nAPAs[1]):     # then in y
                 cpalist = {}
                 for x_i in range(self.nAPAs[0]): # increase TPC # first in x
-
+                    
                     if self.IsIgnoredAPAs(APANum):
                         APANum += 1
                         continue
@@ -196,39 +194,46 @@ class CryostatBuilder(gegede.builder.Builder):
                     outerAPAPos = x_i==self.nAPAs[0]-1 and self.outerAPAs
 
                     # Calculate first APA position
-                    zpos = - 0.5*self.CryostatInnerDim[2] + self.APAToUpstreamWall + 0.5*self.apaPhysicalDim[2]
-                    ypos = - 0.5*self.CryostatInnerDim[1] + self.APAToFloor + 0.5*self.apaPhysicalDim[1]
-                    xpos = - 0.5*self.CryostatInnerDim[0] + self.sideLAr
-                    if self.outerAPAs: 
-                        xpos += 0.5*self.apaPhysicalDim[0]
+                    xpos = - 0.5*self.CryostatInnerDim[0]
+                    ypos = - 0.5*self.CryostatInnerDim[1] + self.APAToFloor + 0.5*self.tpcDim[1]
+                    zpos = - 0.5*self.CryostatInnerDim[2] + self.APAToUpstreamWall + 0.5*self.tpcDim[2]
+                    
+                    if self.outerAPAs:
+                        xpos += self.tpcOuterDim[0] + 0.5*self.apaFrameDim[0]
                     else:
                         xpos += 0.5*self.cathodeThickness + self.tpcDim[0] + 0.5*self.apaFrameDim[0]
 
                     # all APA positions relative to first
                     xpos += x_i*APAToAPA[0]
-                    ypos += y_i*APAToAPA[1]
-                    zpos += z_i*APAToAPA[2]
-
-
+                    ypos += y_i*(APAToAPA[1] + self.APAGap_y)
+                    zpos += z_i*(APAToAPA[2] + self.APAGap_z)
+                    
+                    betweenAPA.append([xpos,ypos,zpos])
+                    
                     # Outer APA version needs smaller TPCs on outside
                     tpc0_lv = tpc_lv
                     tpc1_lv = tpc_lv
                     tpc0Dim = list(self.tpcDim)
                     tpc1Dim = list(self.tpcDim)
+                    
                     if outerAPANeg:
                         tpc0Dim = list(self.tpcOuterDim)
                         tpc0_lv = tpcOuter_lv
                     if outerAPAPos:
                         tpc1Dim = list(self.tpcOuterDim)
                         tpc1_lv = tpcOuter_lv
-
+                    
                     # Calculate volTPC positions around module center
-                    tpc0Pos = [ xpos - 0.5*self.apaFrameDim[0] - 0.5*tpc0Dim[0], ypos, zpos ]
-                    tpc1Pos = [ xpos + 0.5*self.apaFrameDim[0] + 0.5*tpc1Dim[0], ypos, zpos ]
-                    FramePos = [ xpos , ypos, zpos ]
-                    pos0Name = 'TPC-'+ str(2*APANum)     + '_in_Cryo'
-                    pos1Name = 'TPC-'+ str(2*APANum + 1) + '_in_Cryo'
-                    pos2Name = 'Frame-'+ str(2*APANum)     + '_in_Cryo'
+                    tpc0Pos  = [xpos - 0.5*self.apaFrameDim[0] - 0.5*tpc0Dim[0], ypos, zpos]
+                    tpc1Pos  = [xpos + 0.5*self.apaFrameDim[0] + 0.5*tpc1Dim[0], ypos, zpos]
+                    FramePos = [xpos, ypos, zpos]
+                    
+                    # if (x_i==0)              : print(0.5*self.CryostatInnerDim[0],tpc0Pos[0], tpc0Dim[0])
+                    # if (x_i==self.nAPAs[0]-1): print(0.5*self.CryostatInnerDim[0],tpc1Pos[0], tpc1Dim[0])
+
+                    pos0Name = 'TPC-'   + str(2*APANum)     + '_in_Cryo'
+                    pos1Name = 'TPC-'   + str(2*APANum + 1) + '_in_Cryo'
+                    pos2Name = 'Frame-' + str(2*APANum)     + '_in_Cryo'
                     tpc0_in_cryo = geom.structure.Position(pos0Name, tpc0Pos[0], tpc0Pos[1], tpc0Pos[2])
                     tpc1_in_cryo = geom.structure.Position(pos1Name, tpc1Pos[0], tpc1Pos[1], tpc1Pos[2])
                     APAFrame_in_cryo = geom.structure.Position(pos2Name, FramePos[0], FramePos[1], FramePos[2])
@@ -285,6 +290,43 @@ class CryostatBuilder(gegede.builder.Builder):
                     #print("Constructed APA: " + str(APANum))
 
         print ("Cryostat: Built "+str(self.nAPAs[0])+" wide by "+str(self.nAPAs[1])+" high by "+str(self.nAPAs[2])+" long modules.")
+        zpos = - 0.5*self.CryostatInnerDim[2] + self.APAToUpstreamWall + 0.5*self.tpcDim[2]
+        ypos = - 0.5*self.CryostatInnerDim[1] + self.APAToFloor + 0.5*self.tpcDim[1]
+        xpos = - 0.5*self.CryostatInnerDim[0] + self.sideLAr
+
+        LArUpstream_box = geom.shapes.Box('LArCryoUpstream',
+                                          dx=0.5*self.CryostatInnerDim[0],
+                                          dy=0.5*self.LArLevel,
+                                          dz=0.5*self.APAToUpstreamWall) 
+        LArUpstream_lv = geom.structure.Volume('volLArCryoUpstream', material='LAr', shape=LArUpstream_box)
+        LArUpstream_in_cryo = geom.structure.Position('LArUpstream_in_Cryo', 
+                                                      Q('0cm'),
+                                                      0.5*(-self.CryostatInnerDim[1]+self.LArLevel),
+                                                      0.5*(-self.CryostatInnerDim[2] + self.APAToUpstreamWall))
+        placement_LArUpstream_in_C  = geom.structure.Placement('placeLArUpstream_in_Cryo',
+                                                               volume = LArUpstream_lv,
+                                                               pos = LArUpstream_in_cryo)
+        cryo_lv.placements.append(placement_LArUpstream_in_C.name)
+
+        LArDownstream_box = geom.shapes.Box('LArCryoDownstream',
+                                            dx=0.5*self.CryostatInnerDim[0],
+                                            dy=0.5*self.LArLevel,
+                                            dz=0.5*(self.CryostatInnerDim[2] - self.APAToDownstreamWall + self.nAPAs[2]*(APAToAPA[2]+self.APAGap_z)))
+        
+        LArDownstream_lv = geom.structure.Volume('volLArCryoDownstream', material='LAr', shape=LArDownstream_box)
+        LArDownstream_in_cryo = geom.structure.Position('LArDownstream_in_Cryo', 
+                                                        Q('0cm'),
+                                                        0.5*(-self.CryostatInnerDim[1]+self.LArLevel),
+                                                        0.5*(self.CryostatInnerDim[2] - self.APAToDownstreamWall + self.nAPAs[2]*(APAToAPA[2]+self.APAGap_z)))
+        placement_LArDownstream_in_C  = geom.structure.Placement('placeLArDownstream_in_Cryo',
+                                                               volume = LArDownstream_lv,
+                                                               pos = LArDownstream_in_cryo)
+        cryo_lv.placements.append(placement_LArDownstream_in_C.name)
+        
+
+        for i in betweenAPA:
+            print (i[0], i[1], i[2])
+            
         
         if (self.Layer1Thickness != None):
             self.ConstructOnion(geom, cryo_lv)
@@ -717,33 +759,6 @@ class CryostatBuilder(gegede.builder.Builder):
                                               self.detCenter[0] - 0.5*(self.detDim[0]+self.thickness),
                                               self.detCenter[1],
                                               self.detCenter[2]) 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         posCenter_5 = geom.structure.Position(posName_5,
                                               self.detCenter[0],
                                               self.detCenter[1],
