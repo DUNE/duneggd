@@ -45,7 +45,7 @@ class WorldBuilder(gegede.builder.Builder):
         # Bring y=0 to halfway between the top&bototm APAs                      #
         setYCenter    =   0.5*detEncDim[1] - encBoundToDet[1]                   #
         setYCenter    -=  InsulationBeam + self.cryoBldr.APAToFloor             #
-        setYCenter    -=  self.cryoBldr.apaPhysicalDim[1]                       #
+        setYCenter    -=  self.cryoBldr.tpcDim[1]                               #
         setYCenter    -=  0.5*self.cryoBldr.APAGap_y                            #
                                                                                 #
         # Bring z=0 to back of detEnc, then to upstream face of detector.       #
