@@ -9,7 +9,7 @@ setup(name = 'duneggd',
       license = 'GPLv2',
       url = 'https://github.com/DUNE/duneggd',
       package_dir = {'':'python'},
-      packages = ['duneggd', 'duneggd.larfd', 'duneggd.LocalTools', 'duneggd.Booleans'],
+      packages = ['duneggd', 'duneggd.larfd'],
       install_requires = [l for l in open("requirements.txt").readlines() if l.strip()],
       # implicitly depends on ROOT
 )
