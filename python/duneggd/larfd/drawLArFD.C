@@ -44,7 +44,7 @@ void drawLArFD()
   gSystem->Load("libGeom");
   gSystem->Load("libGdml");
 
-  TGeoManager::Import("dune10kt_v2.gdml");
+  TGeoManager::Import("test.gdml");
 
   std::string topVol ="volWorld";
   // topVol ="volDetEnclosure";
@@ -83,62 +83,94 @@ void drawLArFD()
   // }
   // // MakeDaughterVisible("volWarmCryoBox");
 
-  MakeVisible("volWorld",          kGray);
-  MakeVisible("volDetEnclosure",   kRed);
-  // MakeVisible("volWarmSkin",       kGray);
-  // MakeVisible("volColdCryoLayer1", kGray);
-  // MakeVisible("volColdCryoLayer2", kOrange+3);
-  // MakeVisible("volColdCryoLayer3", kWhite+2);
-  // MakeInvisible("volColdCryoLayer3");
-  // MakeInvisible("volColdCryoLayer1");
+  /* MakeVisible("volWorld",          kGray); */
+  /* MakeVisible("volDetEnclosure",   kRed); */
+  /* MakeVisible("volWarmSkin",       kGray); */
+  /* MakeVisible("volColdCryoLayer1", kGray); */
+  /* MakeVisible("volColdCryoLayer2", kOrange+3); */
+  /* MakeVisible("volColdCryoLayer3", kWhite+2); */
+  /* MakeInvisible("volColdCryoLayer3"); */
+  /* MakeInvisible("volColdCryoLayer1"); */
 
-  // gGeoManager->GetVolume("volBeamPlanePosX")->DrawOnly("ogl");
-  // gGeoManager->GetVolume("volWaterBoxTop")->SetLineColor(kBlue);
-  // gGeoManager->GetVolume("volWaterBoxTop")->SetVisibility(1);
-  // gGeoManager->GetVolume("volWaterBoxTop")->SetTransparency(20);
-  //
-  // gGeoManager->GetVolume("volWaterBoxBottom")->SetLineColor(kBlue);
-  // gGeoManager->GetVolume("volWaterBoxBottom")->SetVisibility(1);
-  // gGeoManager->GetVolume("volWaterBoxBottom")->SetTransparency(20);
-  //
-  // gGeoManager->GetVolume("volWaterBoxLeft")->SetLineColor(kBlue);
-  // gGeoManager->GetVolume("volWaterBoxLeft")->SetVisibility(1);
-  // gGeoManager->GetVolume("volWaterBoxLeft")->SetTransparency(20);
-  //
-  // gGeoManager->GetVolume("volWaterBoxRight")->SetLineColor(kBlue);
-  // gGeoManager->GetVolume("volWaterBoxRight")->SetVisibility(1);
-  // gGeoManager->GetVolume("volWaterBoxRight")->SetTransparency(20);
-  //
-  // gGeoManager->GetVolume("volWaterBoxFront")->SetLineColor(kBlue);
-  // gGeoManager->GetVolume("volWaterBoxFront")->SetVisibility(1);
-  // gGeoManager->GetVolume("volWaterBoxFront")->SetTransparency(20);
-  //
-  // gGeoManager->GetVolume("volWaterBoxBack")->SetLineColor(kBlue);
-  // gGeoManager->GetVolume("volWaterBoxBack")->SetVisibility(1);
-  // gGeoManager->GetVolume("volWaterBoxBack")->SetTransparency(20);
-
-  // gGeoManager->GetVolume("volEmptyCryostat")->SetLineColor(kRed);
-  // gGeoManager->GetVolume("volEmptyCryostat")->SetTransparency(20);
+  /* gGeoManager->GetVolume("volBeamPlanePosX")->DrawOnly("ogl"); */
+  /* gGeoManager->GetVolume("volWaterBoxTop")->SetLineColor(kBlue); */
+  /* gGeoManager->GetVolume("volWaterBoxTop")->SetVisibility(1); */
+  /* gGeoManager->GetVolume("volWaterBoxTop")->SetTransparency(20); */
   
-  // gGeoManager->GetVolume("volMembrane")->SetLineColor(kGray);
-  // gGeoManager->GetVolume("volMembrane")->SetVisibility(1);
-  // gGeoManager->GetVolume("volMembrane")->SetTransparency(20);
+  /* gGeoManager->GetVolume("volWaterBoxBottom")->SetLineColor(kBlue); */
+  /* gGeoManager->GetVolume("volWaterBoxBottom")->SetVisibility(1); */
+  /* gGeoManager->GetVolume("volWaterBoxBottom")->SetTransparency(20); */
+  
+  /* gGeoManager->GetVolume("volWaterBoxLeft")->SetLineColor(kBlue); */
+  /* gGeoManager->GetVolume("volWaterBoxLeft")->SetVisibility(1); */
+  /* gGeoManager->GetVolume("volWaterBoxLeft")->SetTransparency(20); */
+  
+  /* gGeoManager->GetVolume("volWaterBoxRight")->SetLineColor(kBlue); */
+  /* gGeoManager->GetVolume("volWaterBoxRight")->SetVisibility(1); */
+  /* gGeoManager->GetVolume("volWaterBoxRight")->SetTransparency(20); */
+  
+  /* gGeoManager->GetVolume("volWaterBoxFront")->SetLineColor(kBlue); */
+  /* gGeoManager->GetVolume("volWaterBoxFront")->SetVisibility(1); */
+  /* gGeoManager->GetVolume("volWaterBoxFront")->SetTransparency(20); */
+  
+  /* gGeoManager->GetVolume("volWaterBoxBack")->SetLineColor(kBlue); */
+  /* gGeoManager->GetVolume("volWaterBoxBack")->SetVisibility(1); */
+  /* gGeoManager->GetVolume("volWaterBoxBack")->SetTransparency(20); */
 
-  // gGeoManager->GetVolume("volTPCPlaneU")->SetLineColor(kRed-3);
-  // gGeoManager->GetVolume("volTPCPlaneU")->SetVisibility(1);
+  /* gGeoManager->GetVolume("volEmptyCryostat")->SetLineColor(kRed); */
+  /* gGeoManager->GetVolume("volEmptyCryostat")->SetTransparency(20); */
+  
+  /* gGeoManager->GetVolume("volMembrane")->SetLineColor(kGray); */
+  /* gGeoManager->GetVolume("volMembrane")->SetVisibility(1); */
+  /* gGeoManager->GetVolume("volMembrane")->SetTransparency(20); */
 
-  // gGeoManager->FindVolumeFast("volTPCActive")->SetVisibility(1);
-  // gGeoManager->FindVolumeFast("volTPCActive")->SetTransparency(31);
-  // gGeoManager->FindVolumeFast("volTPCActive")->SetLineColor(3);
+  /* gGeoManager->GetVolume("volTPCPlaneU")->SetLineColor(kRed-3); */
+  /* gGeoManager->GetVolume("volTPCPlaneU")->SetVisibility(1); */
 
-  // gGeoManager->FindVolumeFast("volCathode")->SetVisibility(1);
-  // gGeoManager->FindVolumeFast("volCathode")->SetTransparency(31);
-  // gGeoManager->FindVolumeFast("volCathode")->SetLineColor(kGreen+3);
+  /* gGeoManager->FindVolumeFast("volTPCActive")->SetVisibility(1); */
+  /* gGeoManager->FindVolumeFast("volTPCActive")->SetTransparency(31); */
+  /* gGeoManager->FindVolumeFast("volTPCActive")->SetLineColor(3); */
 
+  /* gGeoManager->FindVolumeFast("volCathode")->SetVisibility(1); */
+  /* gGeoManager->FindVolumeFast("volCathode")->SetTransparency(31); */
+  /* gGeoManager->FindVolumeFast("volCathode")->SetLineColor(kGreen+3); */
 
+  gGeoManager->FindVolumeFast("volLArInCryo")->SetVisibility(1);
+  gGeoManager->FindVolumeFast("volLArInCryo")->SetTransparency(31);
+  gGeoManager->FindVolumeFast("volLArInCryo")->SetLineColor(kGreen);
+  
+  gGeoManager->FindVolumeFast("volDSS0")->SetVisibility(1);
+  gGeoManager->FindVolumeFast("volDSS0")->SetTransparency(31);
+  gGeoManager->FindVolumeFast("volDSS0")->SetLineColor(kRed);
+
+  gGeoManager->FindVolumeFast("volDSS1")->SetVisibility(1);
+  gGeoManager->FindVolumeFast("volDSS1")->SetTransparency(31);
+  gGeoManager->FindVolumeFast("volDSS1")->SetLineColor(kRed);
+
+  gGeoManager->FindVolumeFast("volDSS2")->SetVisibility(1);
+  gGeoManager->FindVolumeFast("volDSS2")->SetTransparency(31);
+  gGeoManager->FindVolumeFast("volDSS2")->SetLineColor(kRed);
+
+  gGeoManager->FindVolumeFast("volDSS3")->SetVisibility(1);
+  gGeoManager->FindVolumeFast("volDSS3")->SetTransparency(31);
+  gGeoManager->FindVolumeFast("volDSS3")->SetLineColor(kRed);
+
+  gGeoManager->FindVolumeFast("volDSS4")->SetVisibility(1);
+  gGeoManager->FindVolumeFast("volDSS4")->SetTransparency(31);
+  gGeoManager->FindVolumeFast("volDSS4")->SetLineColor(kRed);
+
+  
+  /* gGeoManager->FindVolumeFast("volLArCryoDownstream")->SetVisibility(1); */
+  /* gGeoManager->FindVolumeFast("volLArCryoDownstream")->SetTransparency(31); */
+  /* gGeoManager->FindVolumeFast("volLArCryoDownstream")->SetLineColor(kGreen); */
+
+  /* gGeoManager->FindVolumeFast("volLArCryoUpstream")->SetVisibility(1); */
+  /* gGeoManager->FindVolumeFast("volLArCryoUpstream")->SetTransparency(31); */
+  /* gGeoManager->FindVolumeFast("volLArCryoUpstream")->SetLineColor(kGreen+2); */
+  
  // gGeoManager->GetTopNode();
- // gGeoManager->CheckOverlaps(1e-5,"d");
- // gGeoManager->PrintOverlaps();
+ /* gGeoManager->CheckOverlaps(1e-5,"d"); */
+ /* gGeoManager->PrintOverlaps(); */
  // gGeoManager->FindVolumeFast(topVol)->CheckOverlaps(1e-5,"d");
  // gGeoManager->FindVolumeFast(topVol)->GetNode(0)->PrintOverlaps();
  gGeoManager->SetMaxVisNodes(70000);

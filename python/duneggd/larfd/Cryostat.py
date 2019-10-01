@@ -7,6 +7,7 @@ import gegede.builder
 import math
 from gegede import Quantity as Q
 from pint import UnitRegistry
+import pandas as pd
 ureg = UnitRegistry()
 
 class CryostatBuilder(gegede.builder.Builder):
@@ -159,6 +160,12 @@ class CryostatBuilder(gegede.builder.Builder):
         cryo_lv = geom.structure.Volume('volCryostat', material='Air', shape=cryoBox)
         self.add_volume(cryo_lv)
 
+        LArBox = geom.shapes.Box('LiquidArgon',
+                                 dx=0.5*self.CryostatInnerDim[0],
+                                 dy=0.5*self.LArLevel,
+                                 dz=0.5*self.CryostatInnerDim[2])
+
+        
         # define the cathode volume 
         cathodeBox = geom.shapes.Box('Cathode',
                                      dx=0.5*self.cathodeThickness, 
@@ -170,6 +177,7 @@ class CryostatBuilder(gegede.builder.Builder):
 
         # Get the TPC volume from its builder so we can position and place it
         tpc_lv = self.tpcBldr.get_volume('volTPC')
+        # print(self.tpcBldr.tpcDim)
 
         if self.outerAPAs:
             tpcOuter_lv = self.tpcOuterBldr.get_volume('volTPCOuter')
@@ -180,6 +188,7 @@ class CryostatBuilder(gegede.builder.Builder):
         APANum = 0   # 2xAPANum(+1) meant to mimic TPC numbering in LArSoft:
         
         betweenAPA = []
+        volumesInLAr = {'position':[], 'rotation':[], 'volume':[]}
         
         for z_i in range(self.nAPAs[2]):         # lastly z
             for y_i in range(self.nAPAs[1]):     # then in y
@@ -263,13 +272,52 @@ class CryostatBuilder(gegede.builder.Builder):
                     cryo_lv.placements.append(pAPAFrame_in_C.name)
 
 
-                    # Place Photon Detecors
-                    
+                    # Define temporary box shapes for the different objects
+                    tpc0TempBox = geom.shapes.Box('%s_%s_%s_TPC0_box' % (x_i, y_i, z_i),
+                                                  dx=0.5*self.tpcBldr.tpcDim[0],
+                                                  dy=0.5*self.tpcBldr.tpcDim[1],
+                                                  dz=0.5*self.tpcBldr.tpcDim[2])
+                    tpc1TempBox = geom.shapes.Box('%s_%s_%s_TPC1_box' % (x_i, y_i, z_i),
+                                                  dx=0.5*self.tpcBldr.tpcDim[0],
+                                                  dy=0.5*self.tpcBldr.tpcDim[1],
+                                                  dz=0.5*self.tpcBldr.tpcDim[2])
+                    APATempBox  = geom.shapes.Box('%s_%s_%s_APA_box' % (x_i, y_i, z_i),
+                                                  dx=0.5*self.apaFrameDim[0],
+                                                  dy=0.5*self.apaFrameDim[1],
+                                                  dz=0.5*self.apaFrameDim[2])
 
+                    # Make the subtractions from the LAr Volume
+                    LArBox = geom.shapes.Boolean('%s_%s_%s_TPC0_subtraction' % (x_i, y_i, z_i),
+                                                 type   = 'subtraction',
+                                                 first  = LArBox,
+                                                 second = tpc0TempBox,
+                                                 pos    = tpc0_in_cryo,
+                                                 rot    = rot0)
+                    
+                    LArBox = geom.shapes.Boolean('%s_%s_%s_TPC1_subtraction' % (x_i, y_i, z_i),
+                                                 type   = 'subtraction',
+                                                 first  = LArBox,
+                                                 second = tpc1TempBox,
+                                                 pos    = tpc1_in_cryo,
+                                                 rot    = rot1)
+                    
+                    LArBox = geom.shapes.Boolean('%s_%s_%s_APA_subtraction' % (x_i, y_i, z_i),
+                                                 type   = 'subtraction',
+                                                 first  = LArBox,
+                                                 second = APATempBox,
+                                                 pos    = APAFrame_in_cryo,
+                                                 rot    = rot0)
+
+
+
+
+                    
+                    #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
+                    # Place Photon Detecors
                     # Place steel frames and plastic around it
                     # Sould probably write a function to do this
                     # Around modCenter
-                    
+                    #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
 
                     # place CPAs depending on outer APA configuration
                     if not outerAPANeg: 
@@ -288,54 +336,42 @@ class CryostatBuilder(gegede.builder.Builder):
 
                     APANum += 1
                     #print("Constructed APA: " + str(APANum))
-
-        print ("Cryostat: Built "+str(self.nAPAs[0])+" wide by "+str(self.nAPAs[1])+" high by "+str(self.nAPAs[2])+" long modules.")
-        zpos = - 0.5*self.CryostatInnerDim[2] + self.APAToUpstreamWall + 0.5*self.tpcDim[2]
-        ypos = - 0.5*self.CryostatInnerDim[1] + self.APAToFloor + 0.5*self.tpcDim[1]
-        xpos = - 0.5*self.CryostatInnerDim[0] + self.sideLAr
-
-        LArUpstream_box = geom.shapes.Box('LArCryoUpstream',
-                                          dx=0.5*self.CryostatInnerDim[0],
-                                          dy=0.5*self.LArLevel,
-                                          dz=0.5*self.APAToUpstreamWall) 
-        LArUpstream_lv = geom.structure.Volume('volLArCryoUpstream', material='LAr', shape=LArUpstream_box)
-        LArUpstream_in_cryo = geom.structure.Position('LArUpstream_in_Cryo', 
-                                                      Q('0cm'),
-                                                      0.5*(-self.CryostatInnerDim[1]+self.LArLevel),
-                                                      0.5*(-self.CryostatInnerDim[2] + self.APAToUpstreamWall))
-        placement_LArUpstream_in_C  = geom.structure.Placement('placeLArUpstream_in_Cryo',
-                                                               volume = LArUpstream_lv,
-                                                               pos = LArUpstream_in_cryo)
-        cryo_lv.placements.append(placement_LArUpstream_in_C.name)
-
-        LArDownstream_box = geom.shapes.Box('LArCryoDownstream',
-                                            dx=0.5*self.CryostatInnerDim[0],
-                                            dy=0.5*self.LArLevel,
-                                            dz=0.5*(self.CryostatInnerDim[2] - self.APAToDownstreamWall + self.nAPAs[2]*(APAToAPA[2]+self.APAGap_z)))
-        
-        LArDownstream_lv = geom.structure.Volume('volLArCryoDownstream', material='LAr', shape=LArDownstream_box)
-        LArDownstream_in_cryo = geom.structure.Position('LArDownstream_in_Cryo', 
-                                                        Q('0cm'),
-                                                        0.5*(-self.CryostatInnerDim[1]+self.LArLevel),
-                                                        0.5*(self.CryostatInnerDim[2] - self.APAToDownstreamWall + self.nAPAs[2]*(APAToAPA[2]+self.APAGap_z)))
-        placement_LArDownstream_in_C  = geom.structure.Placement('placeLArDownstream_in_Cryo',
-                                                               volume = LArDownstream_lv,
-                                                               pos = LArDownstream_in_cryo)
-        cryo_lv.placements.append(placement_LArDownstream_in_C.name)
-        
-
-        for i in betweenAPA:
-            print (i[0], i[1], i[2])
-            
+                                        
+        print ("Cryostat: Built "+str(self.nAPAs[0])
+               +" wide by "+str(self.nAPAs[1])
+               +" high by "+str(self.nAPAs[2])
+               +" long modules.")
+ 
+        beamInfo = {'shape':[], 'pos':[]}
         
         if (self.Layer1Thickness != None):
             self.ConstructOnion(geom, cryo_lv)
 
         if (self.nDSSBeam != None):
-            self.ConstructDSS(geom, cryo_lv)
+            self.ConstructDSS(geom, cryo_lv, beamInfo) 
             
         if (self.nBeamX != None):
             self.ConstructAllBeam(geom, cryo_lv)
+
+        # r90aboutX_90aboutY
+
+        for i in beamInfo['shape']:
+            print(i)
+        print('')
+        for i in beamInfo['pos']:
+            print(i)
+
+        LAr_lv       = geom.structure.Volume('volLArInCryo', material='LAr', shape=LArBox)
+        pLAr_in_cryo = geom.structure.Position('posLArInCryo',
+                                               Q('0cm'),
+                                               Q('0cm'),
+                                               Q('0cm'))
+        placement_LAr_in_C  = geom.structure.Placement('placeLAr_in_Cryo',
+                                                       volume = LAr_lv,
+                                                       pos = pLAr_in_cryo)
+        cryo_lv.placements.append(placement_LAr_in_C.name)
+        print('Placed the Liquid Argon volume in the cryostat')
+
 
 
 
@@ -409,7 +445,7 @@ class CryostatBuilder(gegede.builder.Builder):
         Layer2 = geom.shapes.Boolean('ColdCryoLayer2', type='subtraction', first=Layer3In, second=Layer2In) 
         Layer2_lv = geom.structure.Volume('volColdCryoLayer2', material='Layer2Molecule', shape=Layer2)
         Layer2_in_cryo = geom.structure.Position('Layer2_in_Cryo', 
-                                                   Q('0cm'),Q('0cm'),Q('0cm'))
+                                                 Q('0cm'),Q('0cm'),Q('0cm'))
         placement_Layer2In_in_C  = geom.structure.Placement('placeLayer2_in_Cryo',
                                                             volume = Layer2_lv,
                                                             pos = Layer2_in_cryo)
@@ -437,7 +473,8 @@ class CryostatBuilder(gegede.builder.Builder):
         print ("DONE - Constructing the onion cold cryostat and warm skin")
 
         
-    def ConstructDSS(self, geom, cryo_lv):
+    def ConstructDSS(self, geom, cryo_lv, beamInfo):
+
         print ("Constructing the Detector Support Structure")
         for i in range(self.nDSSBeam):
             name="DSS"+str(i)
@@ -445,16 +482,26 @@ class CryostatBuilder(gegede.builder.Builder):
             FinalSub = self.BuildBeamShape(geom, name, DSSLength,
                                            self.DSSBeamBase, self.DSSBeamHeight,
                                            self.DSSBeamThickF, self.DSSBeamThickW)
-
+        
             pos = [(self.CryostatInnerDim[0]/2-self.DSSClearance[0])/2 * (i-(self.nDSSBeam-1)/2),
                    self.CryostatInnerDim[1]/2-self.DSSClearance[1],
                    Q("0m")]
+
+            beamInfo['shape'].append(geom.shapes.Box('temp'+name,
+                                                     dx=0.5*self.DSSBeamHeight,
+                                                     dy=0.5*DSSLength,
+                                                     dz=0.5*self.DSSBeamBase))
+            beamInfo['pos']  .append(pos)
+
+            
             #x90z90 = geom.structure.Rotation(objname="90x90z",x='90deg',z='90deg')
             Beam_lv = geom.structure.Volume('vol'+name, material='Steel', shape=FinalSub)
+
             Position_Beam  = geom.structure.Position("pos"+name, pos[0], pos[1], pos[2])
             Placement_Beam = geom.structure.Placement("place"+name, volume = Beam_lv, pos=Position_Beam,
                                                       rot = 'r90aboutX_90aboutY')
             cryo_lv.placements.append(Placement_Beam.name)
+
         print ("DONE - Constructing the Detector Support Structure")
 
         

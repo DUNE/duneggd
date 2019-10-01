@@ -16,7 +16,7 @@ int checkOverlaps()
     gSystem->Load("libGeom");
   gSystem->Load("libGdml");
 
-  TGeoManager::Import("dune10kt_v2_nowires.gdml");
+  TGeoManager::Import("test.gdml");
   gGeoManager->GetTopNode();
   gGeoManager->CheckOverlaps(1e-5,"d");
   gGeoManager->PrintOverlaps();
