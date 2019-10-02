@@ -60,6 +60,10 @@ class CryostatBuilder(gegede.builder.Builder):
                   waterBoxDim         = None,
                   blockSpacing        = Q('30cm'),
                   thickness           = Q('10cm'),
+                  LightPaddle_x       = Q('0.476cm'),
+                  LightPaddle_y       = Q('10.16cm'),
+                  LightPaddle_z       = Q('219.8425cm'),
+                  nLightPaddlePerAPA  = None,
                   **kwds):
 
         if nAPAs is None:
@@ -113,6 +117,10 @@ class CryostatBuilder(gegede.builder.Builder):
         self.blockSpacing     = blockSpacing
         self.thickness        = thickness
 
+        self.LightPaddle_x      = LightPaddle_x
+        self.LightPaddle_y      = LightPaddle_y
+        self.LightPaddle_z      = LightPaddle_z
+        self.nLightPaddlePerAPA = nLightPaddlePerAPA
 
         if makeWaterShield and waterBoxDim is None:
             raise ValueError("No value given for waterBoxDim")
@@ -122,6 +130,8 @@ class CryostatBuilder(gegede.builder.Builder):
             self.tpcOuterBldr  = self.get_builder('TPCOuter')
         self.APAFrameBldr = self.get_builder('APAFrame')
 
+        self.LightPaddleBldr = self.get_builder('LightPaddle')
+        
         self.volume_beam_file = open('volume_beam.txt','w') 
 
 
@@ -131,7 +141,14 @@ class CryostatBuilder(gegede.builder.Builder):
 
         self.APAGap_y             = self.tpcBldr.APAGap_y
         self.APAGap_z             = self.tpcBldr.APAGap_z
+        self.LightPaddle_y        = self.LightPaddleBldr.LightPaddle_y
+        self.APAFrameZSide_y      = self.LightPaddleBldr.APAFrameZSide_y
         self.apaFrameDim          = list(self.tpcBldr.apaFrameDim)
+        self.PaddleYInterval      = (2*self.apaFrameDim[1] +
+                                     self.APAGap_y -
+                                     self.LightPaddle_y -
+                                     2*self.APAFrameZSide_y) / (2*self.nLightPaddlePerAPA - 1)
+        self.FrameToPaddleSpace   = (self.PaddleYInterval - self.APAGap_y)/2
         
         # Using volTPC dimensions, calculate module dimensions
         self.tpcDim = list(self.tpcBldr.tpcDim)
@@ -177,11 +194,12 @@ class CryostatBuilder(gegede.builder.Builder):
 
         # Get the TPC volume from its builder so we can position and place it
         tpc_lv = self.tpcBldr.get_volume('volTPC')
-        # print(self.tpcBldr.tpcDim)
 
         if self.outerAPAs:
             tpcOuter_lv = self.tpcOuterBldr.get_volume('volTPCOuter')
-        APAFrame_lv =self.APAFrameBldr.get_volume('volAPAFrame')
+        APAFrame_lv = self.APAFrameBldr.get_volume('volAPAFrame')
+
+        LightPaddle_lv= self.LightPaddleBldr.get_volume('volLightPaddle') 
 
         # Position both TPCs, APA Frame volumes for each module, and CPAs around 
         CPANum = 0
@@ -308,12 +326,12 @@ class CryostatBuilder(gegede.builder.Builder):
                                                  pos    = APAFrame_in_cryo,
                                                  rot    = rot0)
 
-
-
-
                     
                     #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
                     # Place Photon Detecors
+                    self.PlaceLightPaddle(geom, cryo_lv, LightPaddle_lv, xpos, ypos, zpos, APANum)
+
+                    
                     # Place steel frames and plastic around it
                     # Sould probably write a function to do this
                     # Around modCenter
@@ -336,7 +354,8 @@ class CryostatBuilder(gegede.builder.Builder):
 
                     APANum += 1
                     #print("Constructed APA: " + str(APANum))
-                                        
+
+        print("Number of APAs: ", APANum)
         print ("Cryostat: Built "+str(self.nAPAs[0])
                +" wide by "+str(self.nAPAs[1])
                +" high by "+str(self.nAPAs[2])
@@ -504,9 +523,32 @@ class CryostatBuilder(gegede.builder.Builder):
 
         print ("DONE - Constructing the Detector Support Structure")
 
-        
+    # $APAphys_y    = $APAFrame_y + 4*$G10thickness + $WrapCover;
 
     #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
+    def PlaceLightPaddle(self, geom, cryo_lv, LightPaddle_lv, APACenter_x, APACenter_y, APACenter_z, APA_i):
+        for i in range(0, self.nLightPaddlePerAPA):
+
+            Paddle_y = (APACenter_y
+                        - self.apaFrameDim[1]/2
+                        + self.FrameToPaddleSpace
+                        + self.LightPaddle_y/2 + self.APAFrameZSide_y
+                        + self.PaddleYInterval * i)
+
+            # Alternate the paddle orientations
+            rot = ''
+            if (i%2 == 0) : rot = 'identity'
+            else               : rot = 'r180aboutY'
+        
+            lPos_name           = 'volOpDetSensitive_%s-%s' % (APA_i, i)
+            LightPaddle_in_cryo = geom.structure.Position(lPos_name, APACenter_x, Paddle_y, APACenter_z)
+            pLightPaddle_in_C   = geom.structure.Placement('place'+lPos_name,
+                                                           volume = LightPaddle_lv,
+                                                           pos    = LightPaddle_in_cryo)
+            cryo_lv.placements.append(pLightPaddle_in_C.name)
+                        
+
+    
     def PlaceCPA( self, geom, cryo_lv, cathode_lv, CPANum, cpaPos, **kwds):
 
         # CPA is more than just a cathode sheet, TODO: come back to that
