@@ -190,6 +190,12 @@ class WorldBuilder(gegede.builder.Builder):
                                           ("copper",    0.006),
                                           ("carbon",    0.0018)
                                       ))
+        Acrylic = g.matter.Mixture( "Acrylic", density = "1.19*g/cc",
+                                    components = (
+                                        ("carbon"  , 0.600),
+                                        ("oxygen"  , 0.320),
+                                        ("hydrogen", 0.080)
+                                    ))
         
         # Layer2Matter = g.matter.Mixture("Layer2Matter",
         #                                 density = "0.09*g/cc", 
