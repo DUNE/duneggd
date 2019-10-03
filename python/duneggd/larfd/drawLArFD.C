@@ -48,12 +48,12 @@ void drawLArFD()
 
   std::string topVol ="volWorld";
   // topVol ="volDetEnclosure";
-  topVol ="volCryostat";
+  /* topVol ="volCryostat"; */
   // topVol ="volAPAFrame";
   // topVol ="volTPC";
   // topVol ="volTPCPlaneU";
 
-  gGeoManager->SetTopVisible(1);
+  gGeoManager->SetTopVisible(0);
   gGeoManager->SetVisLevel(0);
   
   TObjArray* list = gGeoManager->GetListOfVolumes();
@@ -139,25 +139,41 @@ void drawLArFD()
   gGeoManager->FindVolumeFast("volLArInCryo")->SetTransparency(31);
   gGeoManager->FindVolumeFast("volLArInCryo")->SetLineColor(kGreen);
   
-  gGeoManager->FindVolumeFast("volDSS0")->SetVisibility(1);
-  gGeoManager->FindVolumeFast("volDSS0")->SetTransparency(31);
-  gGeoManager->FindVolumeFast("volDSS0")->SetLineColor(kRed);
+  gGeoManager->FindVolumeFast("volGaseousArgon")->SetVisibility(1);
+  gGeoManager->FindVolumeFast("volGaseousArgon")->SetTransparency(31);
+  gGeoManager->FindVolumeFast("volGaseousArgon")->SetLineColor(kViolet);
 
-  gGeoManager->FindVolumeFast("volDSS1")->SetVisibility(1);
-  gGeoManager->FindVolumeFast("volDSS1")->SetTransparency(31);
-  gGeoManager->FindVolumeFast("volDSS1")->SetLineColor(kRed);
+  gGeoManager->FindVolumeFast("volLightPaddle")->SetVisibility(1);
+  gGeoManager->FindVolumeFast("volLightPaddle")->SetTransparency(31);
+  gGeoManager->FindVolumeFast("volLightPaddle")->SetLineColor(kRed);  
+  
+  /* gGeoManager->FindVolumeFast("volDSS0")->SetVisibility(1); */
+  /* gGeoManager->FindVolumeFast("volDSS0")->SetTransparency(31); */
+  /* gGeoManager->FindVolumeFast("volDSS0")->SetLineColor(kRed); */
 
-  gGeoManager->FindVolumeFast("volDSS2")->SetVisibility(1);
-  gGeoManager->FindVolumeFast("volDSS2")->SetTransparency(31);
-  gGeoManager->FindVolumeFast("volDSS2")->SetLineColor(kRed);
+  /* gGeoManager->FindVolumeFast("volDSS1")->SetVisibility(1); */
+  /* gGeoManager->FindVolumeFast("volDSS1")->SetTransparency(31); */
+  /* gGeoManager->FindVolumeFast("volDSS1")->SetLineColor(kRed); */
 
-  gGeoManager->FindVolumeFast("volDSS3")->SetVisibility(1);
-  gGeoManager->FindVolumeFast("volDSS3")->SetTransparency(31);
-  gGeoManager->FindVolumeFast("volDSS3")->SetLineColor(kRed);
+  /* gGeoManager->FindVolumeFast("volDSS2")->SetVisibility(1); */
+  /* gGeoManager->FindVolumeFast("volDSS2")->SetTransparency(31); */
+  /* gGeoManager->FindVolumeFast("volDSS2")->SetLineColor(kRed); */
 
-  gGeoManager->FindVolumeFast("volDSS4")->SetVisibility(1);
-  gGeoManager->FindVolumeFast("volDSS4")->SetTransparency(31);
-  gGeoManager->FindVolumeFast("volDSS4")->SetLineColor(kRed);
+  /* gGeoManager->FindVolumeFast("volDSS3")->SetVisibility(1); */
+  /* gGeoManager->FindVolumeFast("volDSS3")->SetTransparency(31); */
+  /* gGeoManager->FindVolumeFast("volDSS3")->SetLineColor(kRed); */
+
+  /* gGeoManager->FindVolumeFast("volDSS4")->SetVisibility(1); */
+  /* gGeoManager->FindVolumeFast("volDSS4")->SetTransparency(31); */
+  /* gGeoManager->FindVolumeFast("volDSS4")->SetLineColor(kRed); */
+
+  /* gGeoManager->FindVolumeFast("volLightPaddle")->SetVisibility(1); */
+  /* gGeoManager->FindVolumeFast("volLightPaddle")->SetTransparency(31); */
+  /* gGeoManager->FindVolumeFast("volLightPaddle")->SetLineColor(kRed); */
+  
+  /* gGeoManager->FindVolumeFast("volDSS4")->SetVisibility(1); */
+  /* gGeoManager->FindVolumeFast("volDSS4")->SetTransparency(31); */
+  /* gGeoManager->FindVolumeFast("volDSS4")->SetLineColor(kRed); */
 
   
   /* gGeoManager->FindVolumeFast("volLArCryoDownstream")->SetVisibility(1); */
@@ -169,12 +185,12 @@ void drawLArFD()
   /* gGeoManager->FindVolumeFast("volLArCryoUpstream")->SetLineColor(kGreen+2); */
   
  // gGeoManager->GetTopNode();
- /* gGeoManager->CheckOverlaps(1e-5,"d"); */
- /* gGeoManager->PrintOverlaps(); */
+ gGeoManager->CheckOverlaps(1e-5,"d");
+ gGeoManager->PrintOverlaps();
  // gGeoManager->FindVolumeFast(topVol)->CheckOverlaps(1e-5,"d");
  // gGeoManager->FindVolumeFast(topVol)->GetNode(0)->PrintOverlaps();
  gGeoManager->SetMaxVisNodes(70000);
- gGeoManager->FindVolumeFast(topVol.c_str())->Draw("ogl");
+ gGeoManager->FindVolumeFast("volWorld")->Draw("ogl");
 
 }
 

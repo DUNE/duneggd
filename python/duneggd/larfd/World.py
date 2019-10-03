@@ -204,4 +204,5 @@ class WorldBuilder(gegede.builder.Builder):
         #                                 density = "0.5*g/cc", 
         #                                 elements = (("Layer2Molecule",1)))
         
-        LArTarget = g.matter.Molecule("LAr", density="1.4*g/cc", elements=(("argon",1),))
+        LArTarget = g.matter.Molecule("LAr", density="1.4*g/cc"    , elements=(("argon", 1),))
+        ArGas     = g.matter.Molecule("GAr", density="0.00166*g/cc", elements=(("argon", 1),))
