@@ -137,7 +137,7 @@ class CryostatBuilder(gegede.builder.Builder):
         self.apaFrameDim          = list(self.tpcBldr.apaFrameDim)
         
         # Using volTPC dimensions, calculate module dimensions
-        self.tpcDim = list(self.tpcBldr.tpcDim)
+        self.tpcDim =  list(self.tpcBldr.tpcDim)
         if self.outerAPAs:
             self.tpcOuterDim = list(self.tpcOuterBldr.tpcDim)
            
@@ -154,6 +154,9 @@ class CryostatBuilder(gegede.builder.Builder):
         self.CryostatOuterDim[1] = self.CryostatInnerDim[1] + 2 * self.TotalCryoLayer
         self.CryostatOuterDim[2] = self.CryostatInnerDim[2] + 2 * self.TotalCryoLayer
 
+        print(self.CryostatInnerDim[0])
+        print(self.CryostatInnerDim[1])
+        print(self.CryostatInnerDim[2])
         
         # define cryostat shape and volume, will be placed by a builder owning this builder
         cryoBox = geom.shapes.Box('Cryostat',
@@ -201,15 +204,19 @@ class CryostatBuilder(gegede.builder.Builder):
 
         if self.outerAPAs:
             tpcOuter_lv = self.tpcOuterBldr.get_volume('volTPCOuter')
-        APAFrame_lv = self.APAFrameBldr.get_volume('volAPAFrame')
-
+            APAFrame_lv = self.APAFrameBldr.get_volume('volAPAFrame')
+            
         # Position both TPCs, APA Frame volumes for each module, and CPAs around 
         CPANum = 0
         APANum = 0   # 2xAPANum(+1) meant to mimic TPC numbering in LArSoft:
         
         betweenAPA = []
         volumesInLAr = {'position':[], 'rotation':[], 'volume':[]}
-        
+
+
+    
+
+        # ~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~
         for z_i in range(self.nAPAs[2]):         # lastly z
             for y_i in range(self.nAPAs[1]):     # then in y
                 cpalist = {}
@@ -219,24 +226,18 @@ class CryostatBuilder(gegede.builder.Builder):
                         APANum += 1
                         continue
                     
-                    outerAPANeg = x_i==0 and self.outerAPAs
-                    outerAPAPos = x_i==self.nAPAs[0]-1 and self.outerAPAs
+                    outerAPANeg = x_i == 0               and self.outerAPAs
+                    outerAPAPos = x_i == self.nAPAs[0]-1 and self.outerAPAs
 
-                    # Calculate first APA position
-                    xpos = - 0.5*self.CryostatInnerDim[0]
+                    if self.nAPAs[0]%2==1:
+                        xpos = Q('0m') - ((self.nAPAs[0]-1)/2)*APAToAPA[0]                        
                     ypos = - 0.5*self.CryostatInnerDim[1] + self.APAToFloor + 0.5*self.tpcDim[1]
                     zpos = - 0.5*self.CryostatInnerDim[2] + self.APAToUpstreamWall + 0.5*self.tpcDim[2]
-                    
-                    if self.outerAPAs:
-                        xpos += self.tpcOuterDim[0] + 0.5*self.apaFrameDim[0]
-                    else:
-                        xpos += 0.5*self.cathodeThickness + self.tpcDim[0] + 0.5*self.apaFrameDim[0]
 
-                    # all APA positions relative to first
                     xpos += x_i*APAToAPA[0]
                     ypos += y_i*(APAToAPA[1] + self.APAGap_y)
                     zpos += z_i*(APAToAPA[2] + self.APAGap_z)
-                    
+                         
                     betweenAPA.append([xpos,ypos,zpos])
                     
                     # Outer APA version needs smaller TPCs on outside
@@ -251,7 +252,7 @@ class CryostatBuilder(gegede.builder.Builder):
                     if outerAPAPos:
                         tpc1Dim = list(self.tpcOuterDim)
                         tpc1_lv = tpcOuter_lv
-                    
+                
                     # Calculate volTPC positions around module center
                     tpc0Pos  = [xpos - 0.5*self.apaFrameDim[0] - 0.5*tpc0Dim[0], ypos, zpos]
                     tpc1Pos  = [xpos + 0.5*self.apaFrameDim[0] + 0.5*tpc1Dim[0], ypos, zpos]
@@ -259,13 +260,17 @@ class CryostatBuilder(gegede.builder.Builder):
                     
                     # if (x_i==0)              : print(0.5*self.CryostatInnerDim[0],tpc0Pos[0], tpc0Dim[0])
                     # if (x_i==self.nAPAs[0]-1): print(0.5*self.CryostatInnerDim[0],tpc1Pos[0], tpc1Dim[0])
-
+                    
                     pos0Name = 'TPC-'   + str(2*APANum)     + '_in_Cryo'
                     pos1Name = 'TPC-'   + str(2*APANum + 1) + '_in_Cryo'
                     pos2Name = 'Frame-' + str(2*APANum)     + '_in_Cryo'
-                    tpc0_in_cryo = geom.structure.Position(pos0Name, tpc0Pos[0], tpc0Pos[1], tpc0Pos[2])
-                    tpc1_in_cryo = geom.structure.Position(pos1Name, tpc1Pos[0], tpc1Pos[1], tpc1Pos[2])
-                    APAFrame_in_cryo = geom.structure.Position(pos2Name, FramePos[0], FramePos[1], FramePos[2])
+
+                    tpc0_in_cryo     = geom.structure.Position(pos0Name, tpc0Pos[0],
+                                                               tpc0Pos[1], tpc0Pos[2])
+                    tpc1_in_cryo     = geom.structure.Position(pos1Name, tpc1Pos[0],
+                                                               tpc1Pos[1], tpc1Pos[2])
+                    APAFrame_in_cryo = geom.structure.Position(pos2Name, FramePos[0],
+                                                               FramePos[1], FramePos[2])
                     
                     if y_i == self.nAPAs[1]-1: # readout at top, no X rotation
                         rot0 = 'identity'
@@ -324,17 +329,12 @@ class CryostatBuilder(gegede.builder.Builder):
                                                  pos    = APAFrame_in_cryo,
                                                  rot    = rot0)
 
-
-
-
                     cryo_lv.placements.append(pTPC0_in_C.name)
                     cryo_lv.placements.append(pTPC1_in_C.name)
                     cryo_lv.placements.append(pAPAFrame_in_C.name)
 
-                    
-                    #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
-                    # Place Photon Detecors
-                    # Handled in the APA construction
+                    APANum += 1
+        # ~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~
 
                     
                     # Place steel frames and plastic around it
@@ -342,24 +342,26 @@ class CryostatBuilder(gegede.builder.Builder):
                     # Around modCenter
                     #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
 
-                    # place CPAs depending on outer APA configuration
-                    if not outerAPANeg: 
-                        cpa0Pos = ( tpc0Pos[0] - 0.5*self.tpcDim[0] - 0.5*self.cathodeThickness,
-                                    ypos, zpos ) # make tuple instead of list so it can be key in a dict
-                        if not cpa0Pos in cpalist: self.PlaceCPA( geom, cryo_lv, cathode_lv, CPANum, cpa0Pos )
-                        cpalist[cpa0Pos] = 'moot'
-                        CPANum += 1                            
-                    if not outerAPAPos: 
-                        cpa1Pos = ( tpc1Pos[0] + 0.5*self.tpcDim[0] + 0.5*self.cathodeThickness,
-                                    ypos, zpos )
-                        if not cpa1Pos in cpalist: self.PlaceCPA( geom, cryo_lv, cathode_lv, CPANum, cpa1Pos )
-                        cpalist[cpa1Pos] = 'moot'
-                        CPANum += 1
+                    # # place CPAs depending on outer APA configuration
+                    # if not outerAPANeg: 
+                    #     cpa0Pos = ( tpc0Pos[0] - 0.5*self.tpcDim[0] - 0.5*self.cathodeThickness,
+                    #                 ypos, zpos ) # make tuple instead of list so it can be key in a dict
+                    #     if not cpa0Pos in cpalist: self.PlaceCPA( geom, cryo_lv, cathode_lv, CPANum, cpa0Pos, cathodeBox, LArBox )
+                    #     cpalist[cpa0Pos] = 'moot'
+                    #     CPANum += 1                            
+                    # if not outerAPAPos: 
+                    #     cpa1Pos = ( tpc1Pos[0] + 0.5*self.tpcDim[0] + 0.5*self.cathodeThickness,
+                    #                 ypos, zpos )
+                    #     if not cpa1Pos in cpalist: self.PlaceCPA( geom, cryo_lv, cathode_lv, CPANum, cpa1Pos, cathodeBox, LArBox )
+                    #     cpalist[cpa1Pos] = 'moot'
+                    #     CPANum += 1
                   
 
-                    APANum += 1
+                # APANum += 1
                     #print("Constructed APA: " + str(APANum))
 
+        print("Small Drift Gap", 0.5*(self.CryostatInnerDim[0]-2*APAToAPA[0] - self.apaFrameDim[0]))
+                    
         print("Number of APAs: ", APANum)
         print ("Cryostat: Built "+str(self.nAPAs[0])
                +" wide by "+str(self.nAPAs[1])
@@ -394,7 +396,6 @@ class CryostatBuilder(gegede.builder.Builder):
                                                        volume = LAr_lv,
                                                        pos = pLAr_in_cryo)
         cryo_lv.placements.append(placement_LAr_in_C.name)
-        print('Placed the Liquid Argon volume in the cryostat')
 
 
 
@@ -532,7 +533,7 @@ class CryostatBuilder(gegede.builder.Builder):
 
     #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
     
-    def PlaceCPA( self, geom, cryo_lv, cathode_lv, CPANum, cpaPos, **kwds):
+    def PlaceCPA( self, geom, cryo_lv, cathode_lv, CPANum, cpaPos, cathodeBox, LArBox, **kwds):
 
         # CPA is more than just a cathode sheet, TODO: come back to that
         # 
@@ -541,7 +542,15 @@ class CryostatBuilder(gegede.builder.Builder):
         pCathode_in_C = geom.structure.Placement('place'+posCPAName,
                                                  volume = cathode_lv,
                                                  pos = cathode_in_cryo)
+
+        LArBox = geom.shapes.Boolean('cathode_%s_subtraction_from_LAr' %CPANum,
+                                     type='subtraction',
+                                     first=LArBox,
+                                     second=cathodeBox,
+                                     pos=cathode_in_cryo)
+        
         cryo_lv.placements.append(pCathode_in_C.name)
+
 
     def IsIgnoredAPAs(self, APANum):
         for rge in self.IgnoredAPAs:

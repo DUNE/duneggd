@@ -15,38 +15,42 @@ class APAFrameBuilder(gegede.builder.Builder):
 
     # ^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
     def configure(self, 
-                  size               = None,
-                  footsize           = None,
-                  headsize           = None,
-                  footthickness      = None,
-                  nribs              = None,
-                  ribsize            = None,
-                  ribthickness       = None,
-                  APAGap_y           = None,
-                  APAGap_z           = None,
-                  APAFrameZSide_y    = None,
-                  APAFrameZSide_z    = None,
-                  LightPaddle_x      = None,
-                  LightPaddle_y      = None,
-                  LightPaddle_z      = None,
-                  nLightPaddlePerAPA = None,
+                  size                       = None,
+                  footsize                   = None,
+                  headsize                   = None,
+                  footthickness              = None,
+                  nribs                      = None,
+                  ribsize                    = None,
+                  ribthickness               = None,
+                  APAGap_y                   = None,
+                  APAGap_z                   = None,
+                  APAFrameZSide_y            = None,
+                  APAFrameZSide_z            = None,
+                  LightPaddle_x              = None,
+                  LightPaddle_y              = None,
+                  LightPaddle_z              = None,
+                  nLightPaddlePerAPA         = None,
+                  LightPaddleHeadOffset      = None,
+                  LightPaddleVerticalSpacing = None,
                   **kwds):
 
-        self.size               = size
-        self.footsize           = footsize
-        self.headsize           = headsize
-        self.footthickness      = footthickness
-        self.nribs              = nribs
-        self.ribsize            = ribsize
-        self.ribthickness       = ribthickness
-        self.APAGap_y           = APAGap_y
-        self.APAGap_z           = APAGap_z
-        self.APAFrameZSide_y    = APAFrameZSide_y
-        self.APAFrameZSide_z    = APAFrameZSide_z
-        self.LightPaddle_x      = LightPaddle_x  
-        self.LightPaddle_y      = LightPaddle_y  
-        self.LightPaddle_z      = LightPaddle_z
-        self.nLightPaddlePerAPA = nLightPaddlePerAPA
+        self.size                       = size
+        self.footsize                   = footsize
+        self.headsize                   = headsize
+        self.footthickness              = footthickness
+        self.nribs                      = nribs
+        self.ribsize                    = ribsize
+        self.ribthickness               = ribthickness
+        self.APAGap_y                   = APAGap_y
+        self.APAGap_z                   = APAGap_z
+        self.APAFrameZSide_y            = APAFrameZSide_y
+        self.APAFrameZSide_z            = APAFrameZSide_z
+        self.LightPaddle_x              = LightPaddle_x  
+        self.LightPaddle_y              = LightPaddle_y  
+        self.LightPaddle_z              = LightPaddle_z
+        self.nLightPaddlePerAPA         = nLightPaddlePerAPA
+        self.LightPaddleHeadOffset      = LightPaddleHeadOffset
+        self.LightPaddleVerticalSpacing = LightPaddleVerticalSpacing
 
     # ^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
     def ConstructHollowBeam(self, geom, name, sizeouter, thickness):
@@ -89,22 +93,16 @@ class APAFrameBuilder(gegede.builder.Builder):
                                      first=SurroundingBox,
                                      second=SubtractionBox,
                                      pos=Pos)
-        
-        for i in range(self.nLightPaddlePerAPA / 2):
-            paddlePosition_p     = (Q('0m') + 0.5*self.PaddleYInterval) + self.PaddleYInterval*(i)
-            paddlePosition_n     = (Q('0m') - 0.5*self.PaddleYInterval) - self.PaddleYInterval*(i)
-            Pos_p = geom.structure.Position('paddleSubtractionBox_'+str( i+1), Q('0m'), Q('0m'), paddlePosition_p)
-            Pos_n = geom.structure.Position('paddleSubtractionBox_'+str(-i-1), Q('0m'), Q('0m'), paddlePosition_n)
+
+        paddlePosition = 0.5*sizeouter[1] - self.LightPaddleHeadOffset - 0.5*paddle.dz
+        for i in range(self.nLightPaddlePerAPA):
+            pos = geom.structure.Position('paddleSubtractionBox_'+str(i), Q('0m'),
+                                          Q('0m'), paddlePosition - i*self.LightPaddleVerticalSpacing)
             SubVol = geom.shapes.Boolean(name+'PaddleSubtraction_'+str(i+1),
                                          type='subtraction',
                                          first=SubVol,
                                          second=paddle,
-                                         pos=Pos_p)
-            SubVol = geom.shapes.Boolean(name+'PaddleSubtraction_'+str(-i-1),
-                                         type='subtraction',
-                                         first=SubVol,
-                                         second=paddle,
-                                         pos=Pos_n)
+                                         pos=pos)
 
         Vol_lv = geom.structure.Volume('vol'+name, material='Steel', shape=SubVol)
         return Vol_lv
@@ -137,7 +135,12 @@ class APAFrameBuilder(gegede.builder.Builder):
 
         # Middle strut of the APA Frame
         size_middle = [self.footsize[0], self.footsize[1], self.size[1]-self.footsize[1]-self.headsize[1]]
-        Middle_lv   = self.ConstructMiddleBeam(geom, 'APAFrameMiddle',  size_middle, self.footthickness, LightPaddle_box, self.PaddleYInterval)
+        Middle_lv   = self.ConstructMiddleBeam(geom,
+                                               'APAFrameMiddle',
+                                               size_middle,
+                                               self.footthickness,
+                                               LightPaddle_box,
+                                               self.PaddleYInterval)
         
         size_rib    = [self.ribsize[0], self.ribsize[1], 0.5*self.size[2]-1.5*self.footsize[0]]
         Rib_lv    = self.ConstructHollowBeam(geom, 'APAFrameRib',     size_rib   , self.ribthickness)
@@ -161,11 +164,16 @@ class APAFrameBuilder(gegede.builder.Builder):
         
         
         
-        Placement_Foot   = geom.structure.Placement("placeAPAFrameFoot",   volume=Foot_lv,   pos=FootPosition,   rot='identity')
-        Placement_Head   = geom.structure.Placement("placeAPAFrameHead",   volume=Head_lv,   pos=HeadPosition,   rot='identity')        
-        Placement_Middle = geom.structure.Placement("placeAPAFrameMiddle", volume=Middle_lv, pos=MiddlePosition, rot='r90aboutX')        
-        Placement_Left   = geom.structure.Placement("placeAPAFrameLeft",   volume=Side_lv,   pos=LeftPosition,   rot='r90aboutX')
-        Placement_Right  = geom.structure.Placement("placeAPAFrameRight",  volume=Side_lv,   pos=RightPosition,  rot='r90aboutX')
+        Placement_Foot   = geom.structure.Placement("placeAPAFrameFoot",
+                                                    volume=Foot_lv,   pos=FootPosition,   rot='identity')
+        Placement_Head   = geom.structure.Placement("placeAPAFrameHead",
+                                                    volume=Head_lv,   pos=HeadPosition,   rot='identity')        
+        Placement_Middle = geom.structure.Placement("placeAPAFrameMiddle",
+                                                    volume=Middle_lv, pos=MiddlePosition, rot='r90aboutX')        
+        Placement_Left   = geom.structure.Placement("placeAPAFrameLeft",
+                                                    volume=Side_lv,   pos=LeftPosition,   rot='r90aboutX')
+        Placement_Right  = geom.structure.Placement("placeAPAFrameRight",
+                                                    volume=Side_lv,   pos=RightPosition,  rot='r90aboutX')
         
         frame_lv.placements.append(Placement_Foot  .name)
         frame_lv.placements.append(Placement_Head  .name)
@@ -175,25 +183,24 @@ class APAFrameBuilder(gegede.builder.Builder):
         
         print("low "+str(-0.5*self.size[1]))
         print("hig "+str( 0.5*self.size[1]))
-        print("Placing the " + str(self.nLightPaddlePerAPA) + " light paddles")
 
         LightPaddleBox = geom.shapes.Box('LightPaddle',
                                          dx=0.5*self.LightPaddle_x,
                                          dy=0.5*self.LightPaddle_y,
                                          dz=0.5*(self.size[2] - 2*Q('4in')))
         LightPaddle_lv = geom.structure.Volume('volLightPaddle', material='Acrylic', shape=LightPaddleBox)
-        for i in range(self.nLightPaddlePerAPA / 2):
 
-            paddlePosition_p     = (yoffset + 0.5*self.PaddleYInterval) + self.PaddleYInterval*(i)
-            paddlePosition_n     = (yoffset - 0.5*self.PaddleYInterval) - self.PaddleYInterval*(i)
-            pos_pve              = geom.structure.Position ('LightPaddlePosition_'+str(i+1)   , Q('0m'), paddlePosition_p, Q('0m'))
-            pos_nve              = geom.structure.Position ('LightPaddlePosition_'+str(-(i+1)), Q('0m'), paddlePosition_n, Q('0m'))
-            Placement_paddle_pve = geom.structure.Placement('placeLightPaddle_'+str(i+1)   , volume=LightPaddle_lv, pos=pos_pve)
-            Placement_paddle_nve = geom.structure.Placement('placeLightPaddle_'+str(-(i+1)), volume=LightPaddle_lv, pos=pos_nve)
-            frame_lv.placements.append(Placement_paddle_pve.name)
-            frame_lv.placements.append(Placement_paddle_nve.name)
+        paddlePosition = 0.5*size_middle[2] - self.LightPaddleHeadOffset - 0.5*self.LightPaddle_y
 
-
+        for i in range(self.nLightPaddlePerAPA):
+            pos = geom.structure.Position('LightPaddlePosition_'+str(i),
+                                          Q('0m'),
+                                          paddlePosition - i*self.LightPaddleVerticalSpacing,
+                                          Q('0m'))
+            place = geom.structure.Placement('placeLightPaddle_'+str(i),
+                                             volume = LightPaddle_lv,
+                                             pos    = pos)
+            frame_lv.placements.append(place.name)
         
         #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
         for iRib in range(self.nribs):
@@ -214,6 +221,5 @@ class APAFrameBuilder(gegede.builder.Builder):
             Placement_Rib = geom.structure.Placement("place"+name, volume=Rib_lv, pos=RibPosition,
                                                      rot='r90aboutZ')
             frame_lv.placements.append(Placement_Rib.name)
-
 
 

@@ -111,7 +111,7 @@ class TPCPlaneBuilder(gegede.builder.Builder):
             self.XEndIndex   is None or
             self.YEndIndex   is None or
             self.FrontOrBack is None):
-            string = ("There was a problem while parsing the excel file: \""+filename+"\", sheet: \""+sheet_name+"\". Make sure the file exist in PWD and that the code in TPCPlane.py is correct. Columns are:" +
+            string = ("There was a problem while parsing the excel file: \""+filename+"\", sheet: \""+sheet_name+"\". Make sure the file exist in PWD and that the code in TPCPlanepy is correct. Columns are:" +
                       "\nself.XStartIndex = " + str(self.XStartIndex) + 
                       "\nself.YStartIndex = " + str(self.YStartIndex) + 
                       "\nself.XEndIndex   = " + str(self.XEndIndex  ) + 

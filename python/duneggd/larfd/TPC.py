@@ -15,16 +15,24 @@ class TPCBuilder(gegede.builder.Builder):
 
     #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
     def configure(self, 
-                  driftDistance  = Q('1m'),             # <-- just default values,
-                  APAGap_y       = Q('0.4cm'),
-                  APAGap_z       = Q('0.8cm'),
-                  wirePlanePitch = Q('0.476cm'),
+                  driftDistance    = Q('1m'),             # <-- just default values,
+                  APAGap_y         = Q('0.4cm'),
+                  APAGap_z         = Q('0.8cm'),
+                  wirePlanePitch   = Q('0.476cm'),
+                  cryoInnerDim     = None,
+                  APAFrameDim      = None,
+                  cathodeThickness = None,
+                  nAPAs            = None,
                   **kwds):
         
         self.driftDistance      = driftDistance
         self.APAGap_y           = APAGap_y     
         self.APAGap_z           = APAGap_z
         self.wirePlanePitch     = wirePlanePitch
+        self.cryoInnerDim       = cryoInnerDim
+        self.APAFrameDim        = APAFrameDim
+        self.cathodeThickness   = cathodeThickness
+        self.nAPAs              = nAPAs
         
         self.planeBldrZ  =      self.get_builder('TPCPlaneZ')
         self.planeBldrV  =      self.get_builder('TPCPlaneV')
@@ -48,16 +56,20 @@ class TPCBuilder(gegede.builder.Builder):
                         self.apaFrameDim[1],
                         self.apaFrameDim[2] ]
 
-
+        APAToAPA_x = self.APAFrameDim[0] + 2*self.tpcDim[0] + self.cathodeThickness
+        smallDriftDistance = 0.5*(self.cryoInnerDim[0] - (self.nAPAs[0]-1)*APAToAPA_x)
+        
         # define TPC Active shape and volume
         tpcActiveDim = [ self.driftDistance, self.tpcDim[1], self.tpcDim[2] ]
         #if self.name=='TPCOuter': tpcActiveDim[0] = Q('.1mm') # make active negligible on outside
+        activename = 'volTPCActive'
+        if self.name=='TPCOuter': activename = 'volTPCActiveOuter'
+            
         tpcActiveBox = geom.shapes.Box(self.name+'Active',
                                        dx=0.5*tpcActiveDim[0], 
                                        dy=0.5*tpcActiveDim[1],
                                        dz=0.5*tpcActiveDim[2])
-        activename = 'volTPCActive'
-        if self.name=='TPCOuter': activename = 'volTPCActiveOuter'
+        
         tpcActive_lv = geom.structure.Volume(activename, material='LAr', shape=tpcActiveBox)
 
 
