@@ -21,22 +21,22 @@ void MakeInvisible(std::string volume) {
   }
 }
 
-// void MakeDaughterVisible(std::string volume) {
-//   try {
-//     gGeoManager->GetVolume(volume.c_str())->SetVisibility(1);
-//     TObjArray* list = gGeoManager->GetVolume(volume.c_str())->GetNodes();
-//     TIter next(list);
-//     TGeoNode* vol = (TGeoNode*)next();
+void MakeDaughterVisible(std::string volume) {
+  try {
+    gGeoManager->GetVolume(volume.c_str())->SetVisibility(1);
+    TObjArray* list = gGeoManager->GetVolume(volume.c_str())->GetNodes();
+    TIter next(list);
+    TGeoNode* vol = (TGeoNode*)next();
 
-//     while(vol) {
-//       std::string name = vol->GetName();
-//       std::cout << name << "\n";
-//       vol = (TGeoNode*)next();
-//     }
-//   } catch (...){
-//     std::cout << volume << " doesnt exist, so skipping.\n";
-//   }
-// }
+    while(vol) {
+      std::string name = vol->GetName();
+      std::cout << name << "\n";
+      vol = (TGeoNode*)next();
+    }
+  } catch (...){
+    std::cout << volume << " doesnt exist, so skipping.\n";
+  }
+}
 
 
 void drawLArFD()
@@ -44,7 +44,7 @@ void drawLArFD()
   gSystem->Load("libGeom");
   gSystem->Load("libGdml");
 
-  TGeoManager::Import("test.gdml");
+  TGeoManager::Import("larfd_50cm.gdml");
 
   std::string topVol ="volWorld";
   // topVol ="volDetEnclosure";
@@ -61,30 +61,30 @@ void drawLArFD()
   TGeoVolume * vol = (TGeoVolume*)next();
   TColor c;
 
-  // while(vol) {
-  //   std::string name = vol->GetName();
-  //   if (name.find("volBeam") != string::npos) {
-  //     MakeVisible(name, c.GetColor(33,214,38));
-  //     if (name.find("Floor") != string::npos) {
-  //       MakeVisible(name, c.GetColor(179,151,106));
-  //     }
-  //   }
-  //   if (name.find("TPC") != string::npos) {
-  //     MakeVisible(name, kRed);
-  //   }
-  //   if (name.find("DSS") != string::npos) {
-  //     MakeVisible(name, kViolet);
-  //   }
-  //   if (name.find("Cath") != string::npos) {
-  //     MakeVisible(name, kCyan);
-  //   }
+  /* while(vol) { */
+  /*   std::string name = vol->GetName(); */
+  /*   if (name.find("volBeam") != string::npos) { */
+  /*     MakeVisible(name, c.GetColor(33,214,38)); */
+  /*     if (name.find("Floor") != string::npos) { */
+  /*       MakeVisible(name, c.GetColor(179,151,106)); */
+  /*     } */
+  /*   } */
+  /*   if (name.find("TPC") != string::npos) { */
+  /*     MakeVisible(name, kRed); */
+  /*   } */
+  /*   if (name.find("DSS") != string::npos) { */
+  /*     MakeVisible(name, kViolet); */
+  /*   } */
+  /*   if (name.find("Cath") != string::npos) { */
+  /*     MakeVisible(name, kCyan); */
+  /*   } */
     
-  //   vol = (TGeoVolume*)next();
-  // }
-  // // MakeDaughterVisible("volWarmCryoBox");
+  /*   vol = (TGeoVolume*)next(); */
+  /* } */
+  /* MakeDaughterVisible("volWarmCryoBox"); */
 
   /* MakeVisible("volWorld",          kGray); */
-  /* MakeVisible("volDetEnclosure",   kRed); */
+  MakeVisible("volDetEnclosure",   kRed);
   /* MakeVisible("volWarmSkin",       kGray); */
   /* MakeVisible("volColdCryoLayer1", kGray); */
   /* MakeVisible("volColdCryoLayer2", kOrange+3); */
@@ -93,9 +93,9 @@ void drawLArFD()
   /* MakeInvisible("volColdCryoLayer1"); */
 
   /* gGeoManager->GetVolume("volBeamPlanePosX")->DrawOnly("ogl"); */
-  /* gGeoManager->GetVolume("volWaterBoxTop")->SetLineColor(kBlue); */
-  /* gGeoManager->GetVolume("volWaterBoxTop")->SetVisibility(1); */
-  /* gGeoManager->GetVolume("volWaterBoxTop")->SetTransparency(20); */
+  gGeoManager->GetVolume("volWaterShielding")->SetLineColor(kBlue);
+  gGeoManager->GetVolume("volWaterShielding")->SetVisibility(1);
+  gGeoManager->GetVolume("volWaterShielding")->SetTransparency(20);
   
   /* gGeoManager->GetVolume("volWaterBoxBottom")->SetLineColor(kBlue); */
   /* gGeoManager->GetVolume("volWaterBoxBottom")->SetVisibility(1); */
@@ -135,17 +135,31 @@ void drawLArFD()
   /* gGeoManager->FindVolumeFast("volCathode")->SetTransparency(31); */
   /* gGeoManager->FindVolumeFast("volCathode")->SetLineColor(kGreen+3); */
 
-  gGeoManager->FindVolumeFast("volLArInCryo")->SetVisibility(1);
-  gGeoManager->FindVolumeFast("volLArInCryo")->SetTransparency(31);
-  gGeoManager->FindVolumeFast("volLArInCryo")->SetLineColor(kGreen);
+  /* gGeoManager->FindVolumeFast("volLArInCryo")->SetVisibility(1); */
+  /* gGeoManager->FindVolumeFast("volLArInCryo")->SetTransparency(31); */
+  /* gGeoManager->FindVolumeFast("volLArInCryo")->SetLineColor(kGreen); */
   
-  gGeoManager->FindVolumeFast("volGaseousArgon")->SetVisibility(1);
-  gGeoManager->FindVolumeFast("volGaseousArgon")->SetTransparency(31);
-  gGeoManager->FindVolumeFast("volGaseousArgon")->SetLineColor(kViolet);
+  /* gGeoManager->FindVolumeFast("volGaseousArgon")->SetVisibility(1); */
+  /* gGeoManager->FindVolumeFast("volGaseousArgon")->SetTransparency(31); */
+  /* gGeoManager->FindVolumeFast("volGaseousArgon")->SetLineColor(kViolet); */
 
   gGeoManager->FindVolumeFast("volLightPaddle")->SetVisibility(1);
   gGeoManager->FindVolumeFast("volLightPaddle")->SetTransparency(31);
-  gGeoManager->FindVolumeFast("volLightPaddle")->SetLineColor(kRed);  
+  gGeoManager->FindVolumeFast("volLightPaddle")->SetLineColor(kRed);
+
+  gGeoManager->FindVolumeFast("volTPCActive")->SetVisibility(1);
+  gGeoManager->FindVolumeFast("volTPCActive")->SetTransparency(31);
+  gGeoManager->FindVolumeFast("volTPCActive")->SetLineColor(kCyan);
+
+  gGeoManager->FindVolumeFast("volTPCActiveOuter")->SetVisibility(1);
+  gGeoManager->FindVolumeFast("volTPCActiveOuter")->SetTransparency(31);
+  gGeoManager->FindVolumeFast("volTPCActiveOuter")->SetLineColor(kBlue);  
+
+  
+  /* gGeoManager->FindVolumeFast("volFieldCage")->SetVisibility(1); */
+  /* gGeoManager->FindVolumeFast("volFieldCage")->SetTransparency(31); */
+  /* gGeoManager->FindVolumeFast("volFieldCage")->SetLineColor(kRed);   */
+
   
   /* gGeoManager->FindVolumeFast("volDSS0")->SetVisibility(1); */
   /* gGeoManager->FindVolumeFast("volDSS0")->SetTransparency(31); */
@@ -190,7 +204,7 @@ void drawLArFD()
  // gGeoManager->FindVolumeFast(topVol)->CheckOverlaps(1e-5,"d");
  // gGeoManager->FindVolumeFast(topVol)->GetNode(0)->PrintOverlaps();
  gGeoManager->SetMaxVisNodes(70000);
- gGeoManager->FindVolumeFast("volWorld")->Draw("ogl");
+ gGeoManager->FindVolumeFast(topVol.c_str())->Draw("ogl");
 
 }
 

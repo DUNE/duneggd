@@ -73,6 +73,7 @@ class DetEncLArBuilder(gegede.builder.Builder):
         self.MainDetCenter = [Q('0m'), 
                               -0.5*self.detEncDim[1] + self.ConcreteBeamGap[1] + 0.5*self.CryostatOuterDim[1], 
                               -0.5*self.detEncDim[2] + self.ConcreteBeamGap[2] + 0.5*self.CryostatOuterDim[2]]
+        print("I NEED TO BE READ ", self.MainDetCenter)
 
         # Place Cryostat
         posName = 'Cryo_in_enc'

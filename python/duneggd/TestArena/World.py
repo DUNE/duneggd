@@ -1,65 +1,39 @@
 #!/usr/bin/env python
-'''
-Top level builder of LAr FD modules at Homestake Mines
+'''An example GeGeDe module.
+
+This provides some builder classes to build a Rubik's cube.
+
+Warning: any resemblance between the result and an actual Rubik's cube
+is purely accidental.  It's really just a 3x3x3 stack of blocks less
+one at the origin.
 '''
 
 import gegede.builder
-import math
 from gegede import Quantity as Q
-
 
 class WorldBuilder(gegede.builder.Builder):
     '''
-    Build a big box world volume.
-    N.B. -- Global convention: index 0,1,2 = x,y,z
+    Build a simple box world of given material and size.
     '''
+    def configure(self, material = 'Air', size = Q("10m"), **kwds):
+        self.material, self.size = (material, size)
+        pass
 
-    #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
-    def configure(self, worldDim  =  [Q('100m'),Q('100m'),Q('100m')], 
-                  worldMat='Rock', **kwds):
-        self.worldDim = worldDim
-        self.material   = worldMat
-        self.detEncBldr = self.get_builder("DetEnclosure")
-        self.cryoBldr   = self.detEncBldr.get_builder("Cryostat")
-
-
-    #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
     def construct(self, geom):
+        dim = (0.5*self.size,)*3
+        shape = geom.shapes.Box(self.name + '_box_shape', *dim)
+        lv = geom.structure.Volume(self.name+'_volume', material=self.material, shape=shape)
+        self.add_volume(lv)
 
-        # Get relevant dimensions
-        detEncDim     = list(self.detEncBldr.detEncDim)
-        encBoundToDet = list(self.detEncBldr.ConcreteBeamGap)
-        detDim        = list(self.detEncBldr.CryostatOuterDim)
-        InsulationBeam= self.cryoBldr.TotalCryoLayer
-        
+        # Note: this block adds all LVs of all sub builders at default
+        # position/rotation which is probably not what is wanted in
+        # general.
+        for sbname, sbld in self.builders.items():
+            for svname, svol in sbld.volumes.items():
+                pname = '%s_in_%s' % (svol.name, self.name)
+                p = geom.structure.Placement(pname, volume = svol)
+                lv.placements.append(pname)
 
-        ########################### SET THE ORIGIN  #############################
-        #                                                                       #
-        # Position volDetEnclosure in the World Volume, displacing the world    #
-        #  origin relative to the detector enclosure, thereby putting it        #
-        #  anywhere in or around the detector we need.                          #
-        #                                                                       #
-        # Bring x=0 to -x of detEnc, then to det face, then to center of det    #
-        setXCenter    =   0.5*detEncDim[0] - encBoundToDet[0] - 0.5*detDim[0]   #
-                                                                                #
-        # Bring y=0 to halfway between the top&bototm APAs                      #
-        setYCenter    =   0.5*detEncDim[1] - encBoundToDet[1]                   #
-        setYCenter    -=  InsulationBeam + self.cryoBldr.APAToFloor             #
-        setYCenter    -=  self.cryoBldr.tpcDim[1]                               #
-        setYCenter    -=  0.5*self.cryoBldr.APAGap_y                            #
-                                                                                #
-        # Bring z=0 to back of detEnc, then to upstream face of detector.       #
-        setZCenter    =   0.5*detEncDim[2] - encBoundToDet[2]                   #
-        #  then through cryo steel and upstream dead LAr                        #
-        setZCenter    -=  InsulationBeam                                        #
-        setZCenter    -=  self.cryoBldr.APAToUpstreamWall                       #
-                                                                                #
-        detEncPos     = [ setXCenter, setYCenter, setZCenter ]                  #
-        print("READ ME SEYMORE ", detEncPos)
-        #########################################################################
-
-
-        ########################### Above is math, below is GGD ###########################
         self.define_materials(geom)
         r90aboutX   = geom.structure.Rotation('r90aboutX',                   x='90deg',  y='0deg',   z='0deg'  )
         r90aboutY   = geom.structure.Rotation('r90aboutY',                   x='0deg',   y='90deg',  z='0deg'  )
@@ -70,23 +44,7 @@ class WorldBuilder(gegede.builder.Builder):
         r180aboutX  = geom.structure.Rotation('r180aboutX',                  x='180deg', y='0deg',   z='0deg'  )
         r180aboutY  = geom.structure.Rotation('r180aboutY',                  x='0deg',   y='180deg', z='0deg'  )
         r180aboutXY = geom.structure.Rotation('r180aboutX_180aboutY',        x='180deg', y='180deg', z='0deg'  )
-
-
-        worldBox = geom.shapes.Box( self.name,               dx=0.5*self.worldDim[0], 
-                                    dy=0.5*self.worldDim[1], dz=0.5*self.worldDim[2])
-        world_lv = geom.structure.Volume('vol'+self.name, material=self.material, shape=worldBox)
-        self.add_volume(world_lv)
-
-        # Get volDetEnclosure and place it
-        detEnc_lv = self.detEncBldr.get_volume("volDetEnclosure")
-        detEnc_in_world = geom.structure.Position('DetEnc_in_World', detEncPos[0], detEncPos[1], detEncPos[2])
-        pD_in_W = geom.structure.Placement('placeDetEnc_in_World',
-                                           volume = detEnc_lv,
-                                           pos = detEnc_in_world)
-        world_lv.placements.append(pD_in_W.name)
-        return
-
-
+        
     #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
     def define_materials(self, g):
         h  = g.matter.Element("hydrogen",   "H",  1,  "1.0791*g/mole" )
@@ -117,33 +75,26 @@ class WorldBuilder(gegede.builder.Builder):
 
 
         # Molecules for Rock and fibrous_glass Mixtures 
-        SiO2  = g.matter.Molecule("SiO2",  density="2.2*g/cc",   elements=(("silicon",1)   ,("oxygen",2)))
-        FeO   = g.matter.Molecule("FeO",   density="5.745*g/cc", elements=(("iron",1)      ,("oxygen",1)))
-        Al2O3 = g.matter.Molecule("Al2O3", density="3.97*g/cc",  elements=(("aluminum",2)  ,("oxygen",3)))
-        MgO   = g.matter.Molecule("MgO",   density="3.58*g/cc",  elements=(("magnesium",1) ,("oxygen",1)))
-        CO2   = g.matter.Molecule("CO2",   density="1.562*g/cc", elements=(("carbon",1)    ,("oxygen",2)))
-        CaO   = g.matter.Molecule("CaO",   density="3.35*g/cc",  elements=(("calcium",1)   ,("oxygen",1)))
-        NaO2  = g.matter.Molecule("Na2O",  density="2.27*g/cc",  elements=(("sodium",2)    ,("oxygen",1)))
+        SiO2  = g.matter.Molecule("SiO2",  density="2.2*g/cc",   elements=(("silicon",1),("oxygen",2)))
+        FeO   = g.matter.Molecule("FeO",   density="5.745*g/cc", elements=(("iron",1),("oxygen",1)))
+        Al2O3 = g.matter.Molecule("Al2O3", density="3.97*g/cc",  elements=(("aluminum",2),("oxygen",3)))
+        MgO   = g.matter.Molecule("MgO",   density="3.58*g/cc",  elements=(("magnesium",1),("oxygen",1)))
+        CO2   = g.matter.Molecule("CO2",   density="1.562*g/cc", elements=(("carbon",1),("oxygen",2)))
+        CaO   = g.matter.Molecule("CaO",   density="3.35*g/cc",  elements=(("calcium",1),("oxygen",1)))
+        Na2O  = g.matter.Molecule("Na2O",  density="2.27*g/cc",  elements=(("sodium",2),("oxygen",1)))
         P2O5  = g.matter.Molecule("P2O5",  density="1.562*g/cc", elements=(("phosphorus",2),("oxygen",5)))        
-
-        Water = g.matter.Molecule("Water",
-                                  density="1*g/cc",
-                                  elements=(("hydrogen", 2),
-                                            ("oxygen"  , 1)))
-
-        Cellulose = g.matter.Molecule("Cellulose",
-                                      density="545.91*kg*m^-3",
-                                      elements=(("carbon"   ,6),
-                                                ("oxygen"   ,5),
-                                                ("hydrogen" ,10)))
-        
-        PolyurethaneFoam = g.matter.Molecule("PolyurethaneFoam",
-                                             density="0.13*g/cc",
-                                             elements=(("carbon"  , 54),
-                                                       ("oxygen"  , 15),
-                                                       ("nitrogen", 4),
-                                                       ("hydrogen", 60)))        
-        
+        Layer2Molecule = g.matter.Molecule("Layer2Molecule",
+                                           density="545.91*kg*m^-3",
+                                           elements=(("carbon",6),
+                                                     ("oxygen",5),
+                                                     ("hydrogen",10)))
+        Layer3Molecule = g.matter.Molecule("Layer3Molecule",
+                                           density="90*kg*m^-3",
+                                           elements=(("carbon",17),
+                                                     ("oxygen",4),
+                                                     ("nitrogen",2),
+                                                     ("hydrogen",16)))        
+       
         rock  = g.matter.Mixture( "Rock", density = "2.82*g/cc", 
                                   components = (
                                       ("SiO2",   0.5267),
@@ -160,17 +111,6 @@ class WorldBuilder(gegede.builder.Builder):
                                   ))
 
 
-        # fibrous_glass = g.matter.Mixture("fibrous_glass", density = "2.74351*g/cc",
-        #                                  components = (
-        #                                      ("SiO2",  0.600),
-        #                                      ("Al2O3", 0.118),
-        #                                      ("FeO"  , 0.001),
-        #                                      ("CaO",   0.224),
-        #                                      ("MgO",   0.034),
-        #                                      ("NaO2",  0.010),
-        #                                      ("TiO2",  0.013),
-        #                                  ))
-        
         dirt  = g.matter.Mixture( "Dirt", density = "1.7*g/cc", 
                                   components = (
                                       ("oxygen",    0.438),
@@ -223,5 +163,5 @@ class WorldBuilder(gegede.builder.Builder):
         #                                 density = "0.5*g/cc", 
         #                                 elements = (("Layer2Molecule",1)))
         
-        LArTarget = g.matter.Molecule("LAr", density="1.39*g/cc"   , elements=(("argon", 1),))
+        LArTarget = g.matter.Molecule("LAr", density="1.4*g/cc"    , elements=(("argon", 1),))
         ArGas     = g.matter.Molecule("GAr", density="0.00166*g/cc", elements=(("argon", 1),))
