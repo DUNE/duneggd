@@ -12,3 +12,4 @@ gegede.egg-info/
 .DS_Store
 *.egg-info
 *.gdml
+*.txt
