@@ -15,9 +15,11 @@ class WorldBuilder(gegede.builder.Builder):
     '''
 
     #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
-    def configure(self, worldDim  =  [Q('100m'),Q('100m'),Q('100m')], 
-                  worldMat='Rock', **kwds):
-        self.worldDim = worldDim
+    def configure(self,
+                  worldDim = [Q('100m'),Q('100m'),Q('100m')], 
+                  worldMat = 'Rock',
+                  **kwds):
+        self.worldDim   = worldDim
         self.material   = worldMat
         self.detEncBldr = self.get_builder("DetEnclosure")
         self.cryoBldr   = self.detEncBldr.get_builder("Cryostat")
@@ -27,10 +29,10 @@ class WorldBuilder(gegede.builder.Builder):
     def construct(self, geom):
 
         # Get relevant dimensions
-        detEncDim     = list(self.detEncBldr.detEncDim)
-        encBoundToDet = list(self.detEncBldr.ConcreteBeamGap)
-        detDim        = list(self.detEncBldr.CryostatOuterDim)
-        InsulationBeam= self.cryoBldr.TotalCryoLayer
+        detEncDim      = list(self.detEncBldr.detEncDim)
+        encBoundToDet  = list(self.detEncBldr.ConcreteBeamGap)
+        detDim         = list(self.detEncBldr.CryostatOuterDim)
+        InsulationBeam = self.cryoBldr.TotalCryoLayer
         
 
         ########################### SET THE ORIGIN  #############################
@@ -72,47 +74,50 @@ class WorldBuilder(gegede.builder.Builder):
         r180aboutXY = geom.structure.Rotation('r180aboutX_180aboutY',        x='180deg', y='180deg', z='0deg'  )
 
 
-        worldBox = geom.shapes.Box( self.name,               dx=0.5*self.worldDim[0], 
-                                    dy=0.5*self.worldDim[1], dz=0.5*self.worldDim[2])
+        worldBox = geom.shapes.Box( self.name,
+                                    dx=0.5*self.worldDim[0], 
+                                    dy=0.5*self.worldDim[1],
+                                    dz=0.5*self.worldDim[2])
+        
         world_lv = geom.structure.Volume('vol'+self.name, material=self.material, shape=worldBox)
         self.add_volume(world_lv)
 
         # Get volDetEnclosure and place it
-        detEnc_lv = self.detEncBldr.get_volume("volDetEnclosure")
+        detEnc_lv       = self.detEncBldr.get_volume("volDetEnclosure")
         detEnc_in_world = geom.structure.Position('DetEnc_in_World', detEncPos[0], detEncPos[1], detEncPos[2])
-        pD_in_W = geom.structure.Placement('placeDetEnc_in_World',
-                                           volume = detEnc_lv,
-                                           pos = detEnc_in_world)
+        pD_in_W         = geom.structure.Placement('placeDetEnc_in_World',
+                                                   volume = detEnc_lv,
+                                                   pos    = detEnc_in_world)
         world_lv.placements.append(pD_in_W.name)
         return
 
 
     #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
     def define_materials(self, g):
-        h  = g.matter.Element("hydrogen",   "H",  1,  "1.0791*g/mole" )
-        be = g.matter.Element("beryllium",  "Be", 4,  "9.012182*g/mole" )
-        c  = g.matter.Element("carbon",     "C",  6,  "12.0107*g/mole")
-        n  = g.matter.Element("nitrogen",   "N",  7,  "14.0671*g/mole")
-        o  = g.matter.Element("oxygen",     "O",  8,  "15.999*g/mole" )
-        f  = g.matter.Element("fluorine",   "F",  9,  "18.9984*g/mole")
-        na = g.matter.Element("sodium",     "Na", 11, "22.99*g/mole"  )
-        mg = g.matter.Element("magnesium",  "Mg", 12, "24.305*g/mole" )
-        al = g.matter.Element("aluminum",   "Al", 13, "26.9815*g/mole")
-        si = g.matter.Element("silicon",    "Si", 14, "28.0855*g/mole")
-        p  = g.matter.Element("phosphorus", "P",  15, "30.973*g/mole" )
-        s  = g.matter.Element("sulfur",     "S",  16, "32.065*g/mole" )
-        ar = g.matter.Element("argon",      "Ar", 18, "39.948*g/mole" )
-        ar = g.matter.Element("potassium",  "K",  19, "39.0983*g/mole")
-        ca = g.matter.Element("calcium",    "Ca", 20, "40.078*g/mole" )
-        ti = g.matter.Element("titanium",   "Ti", 22, "47.867*g/mole" )
-        cr = g.matter.Element("chromium",   "Cr", 24, "51.9961*g/mole")
-        mn = g.matter.Element("manganese",  "Mn", 25, "54.9380*g/mole")
-        fe = g.matter.Element("iron",       "Fe", 26, "55.8450*g/mole")
-        ni = g.matter.Element("nickel",     "Ni", 28, "58.6934*g/mole")
-        cu = g.matter.Element("copper",     "Cu", 29, "63.55*g/mole"  )
-        br = g.matter.Element("bromine",    "Br", 35, "79.904*g/mole" )
-        xe = g.matter.Element("xenon",      "Xe", 54, "131.293*g/mole")
-        pb = g.matter.Element("lead",       "Pb", 82, "207.20*g/mole" )
+        h  = g.matter.Element("hydrogen",   "H",  1,  "1.0791*g/mole"  )
+        be = g.matter.Element("beryllium",  "Be", 4,  "9.012182*g/mole")
+        c  = g.matter.Element("carbon",     "C",  6,  "12.0107*g/mole" )
+        n  = g.matter.Element("nitrogen",   "N",  7,  "14.0671*g/mole" )
+        o  = g.matter.Element("oxygen",     "O",  8,  "15.999*g/mole"  )
+        f  = g.matter.Element("fluorine",   "F",  9,  "18.9984*g/mole" )
+        na = g.matter.Element("sodium",     "Na", 11, "22.99*g/mole"   )
+        mg = g.matter.Element("magnesium",  "Mg", 12, "24.305*g/mole"  )
+        al = g.matter.Element("aluminum",   "Al", 13, "26.9815*g/mole" )
+        si = g.matter.Element("silicon",    "Si", 14, "28.0855*g/mole" )
+        p  = g.matter.Element("phosphorus", "P",  15, "30.973*g/mole"  )
+        s  = g.matter.Element("sulfur",     "S",  16, "32.065*g/mole"  )
+        ar = g.matter.Element("argon",      "Ar", 18, "39.948*g/mole"  )
+        ar = g.matter.Element("potassium",  "K",  19, "39.0983*g/mole" )
+        ca = g.matter.Element("calcium",    "Ca", 20, "40.078*g/mole"  )
+        ti = g.matter.Element("titanium",   "Ti", 22, "47.867*g/mole"  )
+        cr = g.matter.Element("chromium",   "Cr", 24, "51.9961*g/mole" )
+        mn = g.matter.Element("manganese",  "Mn", 25, "54.9380*g/mole" )
+        fe = g.matter.Element("iron",       "Fe", 26, "55.8450*g/mole" )
+        ni = g.matter.Element("nickel",     "Ni", 28, "58.6934*g/mole" )
+        cu = g.matter.Element("copper",     "Cu", 29, "63.55*g/mole"   )
+        br = g.matter.Element("bromine",    "Br", 35, "79.904*g/mole"  )
+        xe = g.matter.Element("xenon",      "Xe", 54, "131.293*g/mole" )
+        pb = g.matter.Element("lead",       "Pb", 82, "207.20*g/mole"  )
 
 
 
@@ -215,13 +220,6 @@ class WorldBuilder(gegede.builder.Builder):
                                         ("oxygen"  , 0.320),
                                         ("hydrogen", 0.080)
                                     ))
-        
-        # Layer2Matter = g.matter.Mixture("Layer2Matter",
-        #                                 density = "0.09*g/cc", 
-        #                                 elements = (("Layer1Molecule",1)))
-        # Layer3Matter = g.matter.Mixture("Layer3Matter",
-        #                                 density = "0.5*g/cc", 
-        #                                 elements = (("Layer2Molecule",1)))
-        
+                
         LArTarget = g.matter.Molecule("LAr", density="1.39*g/cc"   , elements=(("argon", 1),))
         ArGas     = g.matter.Molecule("GAr", density="0.00166*g/cc", elements=(("argon", 1),))
