@@ -15,14 +15,14 @@ class WorldBuilder(gegede.builder.Builder):
     '''
     Build a simple box world of given material and size.
     '''
-    def configure(self, material = 'Air', size = Q("10m"), **kwds):
+    def configure(self, material = 'Air', size = Q("100m"), **kwds):
         self.material, self.size = (material, size)
         pass
 
     def construct(self, geom):
         dim = (0.5*self.size,)*3
         shape = geom.shapes.Box(self.name + '_box_shape', *dim)
-        lv = geom.structure.Volume(self.name+'_volume', material=self.material, shape=shape)
+        lv = geom.structure.Volume('vol'+self.name, material=self.material, shape=shape)
         self.add_volume(lv)
 
         # Note: this block adds all LVs of all sub builders at default

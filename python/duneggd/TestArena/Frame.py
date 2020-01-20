@@ -19,6 +19,7 @@ class FrameBuilder(gegede.builder.Builder):
                   footsize                   = None,
                   headsize                   = None,
                   footthickness              = None,
+                  wireDiam                   = None,
                   nribs                      = None,
                   ribsize                    = None,
                   ribthickness               = None,
@@ -38,6 +39,7 @@ class FrameBuilder(gegede.builder.Builder):
         self.footsize                   = footsize
         self.headsize                   = headsize
         self.footthickness              = footthickness
+        self.wireDiam                   = wireDiam
         self.nribs                      = nribs
         self.ribsize                    = ribsize
         self.ribthickness               = ribthickness
@@ -51,6 +53,8 @@ class FrameBuilder(gegede.builder.Builder):
         self.nLightPaddlePerAPA         = nLightPaddlePerAPA
         self.LightPaddleHeadOffset      = LightPaddleHeadOffset
         self.LightPaddleVerticalSpacing = LightPaddleVerticalSpacing
+
+        self.ZPlaneBldr = self.get_builder('WirePlaneZ')
 
     # ^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
     def ConstructHollowBeam(self, geom, name, sizeouter, thickness):
@@ -180,6 +184,40 @@ class FrameBuilder(gegede.builder.Builder):
         frame_lv.placements.append(Placement_Middle.name)
         frame_lv.placements.append(Placement_Left  .name)
         frame_lv.placements.append(Placement_Right .name)
+
+
+   
+        
+        ZPlane_lv = self.ZPlaneBldr.get_volume('volTPCPlaneZ')
+
+        pos = geom.structure.Position("ZPlanePosition",
+                                      2.0*FrameBox.dx,
+                                      2.0*FrameBox.dy,
+                                      2.0*FrameBox.dz)
+        
+        place_plane = geom.structure.Placement("placeZPlane", volume=ZPlane_lv, pos=pos, rot="r90aboutX")
+        frame_lv.placements.append(place_plane.name)
+
+
+
+        
+        # place_plane = geom.structure.Placement("placeZPlane",
+        #                                        volume=ZPlane_lv, pos=pos)
+        # frame_lv.placements.append(place_plane.name)
+        # pZPlaneOnFrame = geom.structure.Placement('placeZPlane', volume=ZPlane_lv, pos=zPlanePos)
+        # frame_lv.placements.append(pZPlaneOnFrame.name)
+
+        # for i in range(2):
+        #     posName   = 'ZWirePlaneInFrame_'+str(i)
+        #     pPlaneInFrame = geom.structure.Placement('place_'+posName,
+        #                                              volume = ZPlane_lv,
+        #                                              pos    = zPlanePos)
+        #     frame_lv.placements.append(pPlaneInFrame.name)
+        #     zPlanePos[2] *= -1
+        
+            
+
+        
         
         print("low "+str(-0.5*self.size[1]))
         print("hig "+str( 0.5*self.size[1]))
@@ -222,4 +260,4 @@ class FrameBuilder(gegede.builder.Builder):
                                                      rot='r90aboutZ')
             frame_lv.placements.append(Placement_Rib.name)
 
-
+        
