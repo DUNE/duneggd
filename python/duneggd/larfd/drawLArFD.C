@@ -205,7 +205,7 @@ void drawLArFD()
  // gGeoManager->FindVolumeFast(topVol)->CheckOverlaps(1e-5,"d");
  // gGeoManager->FindVolumeFast(topVol)->GetNode(0)->PrintOverlaps();
  gGeoManager->SetMaxVisNodes(70000);
- /* gGeoManager->FindVolumeFast(topVol.c_str())->Draw("ogl"); */
+ gGeoManager->FindVolumeFast(topVol.c_str())->Draw("ogl");
 
  TFile *tf = new TFile("draw.root", "RECREATE");
  gGeoManager->Write();
