@@ -30,6 +30,9 @@ class CryostatBuilder(gegede.builder.Builder):
                   Layer1Thickness     = Q('0.745m'),
                   Layer2Thickness     = Q('0.045m'),
                   Layer3Thickness     = Q('0.010m'),
+                  Layer1Material      = None,
+                  Layer2Material      = None,
+                  Layer3Material      = None,
                   DSSClearance        = None,
                   nDSSBeam            = None,
                   DSSBeamHeight       = None,
@@ -63,11 +66,14 @@ class CryostatBuilder(gegede.builder.Builder):
         assert nAPAs[1] <= 2 # can only read out APAs from top or bottom, 2 levels max
         self.CryostatInnerDim     = CryostatInnerDim
         self.CryostatOuterDim     = list(self.CryostatInnerDim)
-        print ('Cryostat inner dimensions: ' + str(self.CryostatInnerDim))
+        # print ('Cryostat inner dimensions: ' + str(self.CryostatInnerDim))
 
         self.Layer1Thickness      = Layer1Thickness
         self.Layer2Thickness      = Layer2Thickness
         self.Layer3Thickness      = Layer3Thickness
+        self.Layer1Material       = Layer1Material
+        self.Layer2Material       = Layer2Material
+        self.Layer3Material       = Layer3Material
         self.cathodeThickness     = cathodeThickness
         self.outerAPAs            = outerAPAs
         self.nAPAs                = nAPAs
@@ -121,7 +127,7 @@ class CryostatBuilder(gegede.builder.Builder):
 
         self.APAGap_y    = self.tpcBldr.APAGap_y
         self.APAGap_z    = self.tpcBldr.APAGap_z
-        self.apaFrameDim = list(self.tpcBldr.apaFrameDim)
+        self.apaFrameDim = list(self.tpcBldr.APAFrameDim)
         
         # Using volTPC dimensions, calculate module dimensions
         self.tpcDim = list(self.tpcBldr.tpcDim)
@@ -191,13 +197,13 @@ class CryostatBuilder(gegede.builder.Builder):
         CPANum = 0
         APANum = 0   # 2xAPANum(+1) meant to mimic TPC numbering in LArSoft:
         
-        for i in range(3):
-            print(self.CryostatInnerDim[i] - 2*self.DSSClearance[i])
+        # for i in range(3):
+            # print(self.CryostatInnerDim[i] - 2*self.DSSClearance[i])
         
         betweenAPA = []
         volumesInLAr = {'position':[], 'rotation':[], 'volume':[]}
 
-        print(self.IPEBeamBase,self.IPEBeamHeight, self.IPEBeamThickF, self.IPEBeamThickW)    
+        # print(self.IPEBeamBase,self.IPEBeamHeight, self.IPEBeamThickF, self.IPEBeamThickW)    
 
         # ~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~
         for z_i in range(self.nAPAs[2]):         # lastly z
@@ -336,9 +342,9 @@ class CryostatBuilder(gegede.builder.Builder):
                 # APANum += 1
                     #print("Constructed APA: " + str(APANum))
 
-        print("Small Drift Gap", 0.5*(self.CryostatInnerDim[0]-2*APAToAPA[0] - self.apaFrameDim[0]))
+        # print("Small Drift Gap", 0.5*(self.CryostatInnerDim[0]-2*APAToAPA[0] - self.apaFrameDim[0]))
                     
-        print("Number of APAs: ", APANum)
+        # print("Number of APAs: ", APANum)
         print ("Cryostat: Built "+str(self.nAPAs[0])
                +" wide by "+str(self.nAPAs[1])
                +" high by "+str(self.nAPAs[2])
@@ -433,7 +439,7 @@ class CryostatBuilder(gegede.builder.Builder):
                                              first  = Layer2In,
                                              second = Layer1In)
         
-        Layer1_lv      = geom.structure.Volume('volColdCryoLayer1', material='S460ML', shape=Layer1)
+        Layer1_lv      = geom.structure.Volume('volColdCryoLayer1', material=self.Layer1Material, shape=Layer1)
         Layer1_in_cryo = geom.structure.Position('Layer1_in_Cryo', 
                                                  Q('0cm'),Q('0cm'),Q('0cm'))
         placement_Layer1In_in_C  = geom.structure.Placement('placeLayer1_in_Cryo',
@@ -443,7 +449,7 @@ class CryostatBuilder(gegede.builder.Builder):
 
         
         Layer2    = geom.shapes.Boolean  ('ColdCryoLayer2', type='subtraction', first=Layer3In, second=Layer2In) 
-        Layer2_lv = geom.structure.Volume('volColdCryoLayer2', material='PolyurethaneFoam', shape=Layer2)
+        Layer2_lv = geom.structure.Volume('volColdCryoLayer2', material=self.Layer2Material, shape=Layer2)
         Layer2_in_cryo = geom.structure.Position('Layer2_in_Cryo', 
                                                  Q('0cm'),Q('0cm'),Q('0cm'))
         placement_Layer2In_in_C  = geom.structure.Placement('placeLayer2_in_Cryo',
@@ -452,7 +458,7 @@ class CryostatBuilder(gegede.builder.Builder):
         cryo_lv.placements.append(placement_Layer2In_in_C.name)
 
         Layer3    = geom.shapes.Boolean  ('ColdCryoLayer3', type='subtraction', first=Layer3Out, second=Layer3In)
-        Layer3_lv = geom.structure.Volume('volColdCryoLayer3', material='Cellulose', shape=Layer3)
+        Layer3_lv = geom.structure.Volume('volColdCryoLayer3', material=self.Layer3Material, shape=Layer3)
         Layer3_in_cryo = geom.structure.Position('Layer3_in_Cryo', Q('0cm'), Q('0cm'), Q('0cm'))
         placement_Layer3_in_C  = geom.structure.Placement('placeLayer3_in_Cryo',
                                                           volume = Layer3_lv,
@@ -461,7 +467,7 @@ class CryostatBuilder(gegede.builder.Builder):
 
         
         WarmSkin    = geom.shapes.Boolean  ('WarmSkin', type='subtraction', first=BeamInnerBox, second=Layer3Out) 
-        WarmSkin_lv = geom.structure.Volume('volWarmSkin', material='S460ML', shape=WarmSkin)
+        WarmSkin_lv = geom.structure.Volume('volWarmSkin', material=self.Layer1Material, shape=WarmSkin)
         WarmSkin_in_cryo = geom.structure.Position("WarmSkin_in_Cryo",
                                                    Q('0m'), Q('0m'), Q('0m'))
         placement_WarmSkin_in_C = geom.structure.Placement('placeWarmSkinInBeamStruct',
@@ -560,7 +566,7 @@ class CryostatBuilder(gegede.builder.Builder):
         FinalSub = self.BuildBeamShape(geom, name, length,
                                        self.IPEBeamBase,   self.IPEBeamHeight,
                                        self.IPEBeamThickF, self.IPEBeamThickW)
-        Beam_lv       = geom.structure.Volume  ('vol'+name, material='S460ML', shape=FinalSub)
+        Beam_lv       = geom.structure.Volume  ('vol'+name, material=self.Layer1Material, shape=FinalSub)
         Position_Beam = geom.structure.Position("pos"+name, pos[0], pos[1], pos[2])
         self.beamInfo['shape'].append(FinalSub)
         self.beamInfo["pos"]  .append(Position_Beam)
@@ -590,7 +596,7 @@ class CryostatBuilder(gegede.builder.Builder):
                                        pos    = Pos)
         volume=math.pi*(0.5*self.HoleDiam)**2*self.IPEBeamThickW
         self.volume_beam_file.write(name+"_hole "+str(volume.to('m^3').magnitude)+"\n")
-        Beam_lv        = geom.structure.Volume   ("vol"+name, material="S460ML", shape=FinalSub)
+        Beam_lv        = geom.structure.Volume   ("vol"+name, material=self.Layer1Material, shape=FinalSub)
         Position_Beam  = geom.structure.Position ("pos"+name, pos[0], pos[1], pos[2])
         Placement_Beam = geom.structure.Placement("place"+name,
                                                   volume = Beam_lv,
@@ -607,7 +613,7 @@ class CryostatBuilder(gegede.builder.Builder):
         FinalSub = self.BuildBeamShape(geom, name, length,
                                        self.IPEBeamRoofBase,   self.IPEBeamRoofHeight,
                                        self.IPEBeamRoofThickF, self.IPEBeamRoofThickW)
-        Beam_lv = geom.structure.Volume('vol'+name, material='S460ML', shape=FinalSub)
+        Beam_lv = geom.structure.Volume('vol'+name, material=self.Layer1Material, shape=FinalSub)
         Position_Beam  = geom.structure.Position("pos"+name, pos[0], pos[1], pos[2])
         Placement_Beam = geom.structure.Placement("place"+name, volume = Beam_lv, pos=Position_Beam,
                                                   rot = rot)
@@ -783,11 +789,26 @@ class CryostatBuilder(gegede.builder.Builder):
                                          dx=0.5*(self.BeamInnerDim[0]),
                                          dy=0.5*(self.BeamInnerDim[1]),
                                          dz=0.5*(self.BeamInnerDim[2]))
+        WaterBottomSub = geom.shapes.Box('WaterBox_lower',
+                                         dx=0.5*(self.BeamInnerDim[0]+waterThickness),
+                                         dy=0.5*(waterThickness                     ),
+                                         dz=0.5*(self.BeamInnerDim[2]+waterThickness))
         subtractionPos = geom.structure.Position('waterPosition',
                                                  Q('0m'), Q('0m'), Q('0m'))
-        subtractionVol = geom.shapes.Boolean('water_BoolSub',
+        bottomSubPos   = geom.structure.Position('waterBottomSubPos',
+                                                 Q('0m'),
+                                                 0.5*(self.BeamInnerDim[1]+waterThickness),
+                                                 Q('0m'))
+
+        bottomSubVol   = geom.shapes.Boolean('water_bottomSub',
                                              type   = 'subtraction',
                                              first  = WaterBox_outer,
+                                             second = WaterBottomSub,
+                                             pos    = bottomSubPos)
+        
+        subtractionVol = geom.shapes.Boolean('water_BoolSub',
+                                             type   = 'subtraction',
+                                             first  = bottomSubVol,
                                              second = WaterBox_inner,
                                              pos    = subtractionPos)
 

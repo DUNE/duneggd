@@ -9,7 +9,7 @@ n_wires         = 400
 wire_angle      = 35.701     # [deg]
 first_wire_U    = 0.55
 first_wire_V    = 0.5
-pitch           = 5 # 0.4667
+pitch           = 0.4667
 wirepitch       = [0, pitch/np.sin(m.radians(35.710)), pitch/np.cos(m.radians(35.710))]
 center_wire_mid = [] 
 
@@ -94,8 +94,6 @@ while (mid_point_U <= APA_dz/2):
     mid_point_U += wirepitch[2]
     nWires += 1
     plt.plot(wire_done[0], wire_done[1], "k-")
-
-print("Number of wires: " + str(nWires))
     
 lenWire          = 2 * mid_point_U / np.sin(m.radians(wire_angle))
 wire_done        = makeLowWire(lenWire, wire_angle, mid_point_U, "U", False)
@@ -108,6 +106,7 @@ middle = line_middle
 while (middle + line_half < APA_dy):
     wire_done = makeMiddleWires(lenWire, wire_angle, middle, line_half, "U")
     middle += wire_ends[1] - wire_ends[0]
+    nWires += 1
     plt.plot(wire_done[0], wire_done[1], "k-")
 
 wire_done        = makeMiddleWires(lenWire, wire_angle, middle, line_half, "U")
@@ -121,12 +120,15 @@ while (middle[0] < APA_dz):
 
     lenWire   = 2 * (APA_dz - middle[0]) / np.sin(m.radians(wire_angle))
     wire_done = makeTopWires(lenWire, wire_angle, middle, line_half_y, "U")
-    
+    nWires += 1
+
     plt.plot(wire_done[0], wire_done[1], "k-")
     middle[0] += wirepitch[2]
     middle[1] += wire_ends[1] - wire_ends[0]
 
+print("Number of wires: " + str(nWires))
 
+    
 
 #  __  __       _    _              __      __           _               
 # |  \/  |     | |  (_)             \ \    / /          (_)              

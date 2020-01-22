@@ -22,6 +22,12 @@ int checkOverlaps()
   gGeoManager->PrintOverlaps();
   TObjArray* objectarray = gGeoManager->GetListOfOverlaps();
   return objectarray->GetEntries();
+
+  TFile *tf = new TFile("draw.root", "RECREATE");
+  gGeoManager->Write();
+  tf->Close();
+  
+
 }
 
 #ifndef __CINT__

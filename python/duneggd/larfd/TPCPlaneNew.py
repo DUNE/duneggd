@@ -144,19 +144,19 @@ class TPCPlaneBuilder(gegede.builder.Builder):
             self.ParseExcel(sheet_name='X Wires',header=1, usecols='E:J')
             self.planeDim[1] += - self.HeadBoardScrewCentre[1] - self.HeadAPAFrameScrewCentre[1]
             self.planeDim[2] += 2 * (-self.HeadAPAFrameScrewCentre[2] + self.HeadBoardScrewCentre[2])
-            print("X Plane Dimenstions: ", self.planeDim)
+            # print("X Plane Dimenstions: ", self.planeDim)
             
         if self.view == 'V':
             self.ParseExcel(sheet_name='V Wires', header=3, usecols='R:Z')
             self.planeDim[1] += 1 * self.G10ThicknessFoot - self.HeadBoardScrewCentre[1] - self.HeadAPAFrameScrewCentre[1]
-            self.planeDim[2] -= 0
-            print("Plane Dimenstions: ", self.planeDim)            
+            self.planeDim[2] -= self.G10ThicknessSide
+            # print("Plane Dimenstions: ", self.planeDim)            
 
         if self.view == 'U':
             self.ParseExcel(sheet_name='U Wires', header=3, usecols='S:AA')
             self.planeDim[1] += 2 * self.G10ThicknessFoot - self.HeadBoardScrewCentre[1] - self.HeadAPAFrameScrewCentre[1]
-            self.planeDim[2] += Q("6.7mm")
-            print("Plane Dimenstions: ", self.planeDim, "\n")
+            self.planeDim[2] -= 2 * self.G10ThicknessSide
+            # print("Plane Dimenstions: ", self.planeDim, "\n")
 
 
         # define readout plane shape and volume
@@ -196,9 +196,6 @@ class TPCPlaneBuilder(gegede.builder.Builder):
         dX = maxX - minX
         dY = maxY - minY
 
-        print("Max X", dX)
-        print("Max Y", dY)
-        
         if abs((self.planeDim[1] - dY).to('mm').magnitude) > 0.1:
             raise Exception("Inconsistent Y dim. dx: ", dY, " and y dim of the plane: ", self.planeDim[1])
 
@@ -236,10 +233,6 @@ class TPCPlaneBuilder(gegede.builder.Builder):
         dX = maxX - minX
         dY = maxY - minY
 
-        print("Max X", dX)
-        print("Max Y", dY)
-
-        
         # Somehow this check isn't valid
         # if abs((self.planeDim[1] - dY).to('mm').magnitude) > 0.1:
         #     raise Exception("Inconsistent Y dim. dx: ", dY, " and y dim of the plane: ", self.planeDim[1])

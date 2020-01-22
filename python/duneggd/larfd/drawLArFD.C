@@ -1,4 +1,5 @@
 
+
 #import "TGeoManager.h"
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
@@ -44,7 +45,7 @@ void drawLArFD()
   gSystem->Load("libGeom");
   gSystem->Load("libGdml");
 
-  TGeoManager::Import("larfd_50cm.gdml");
+  TGeoManager::Import("test.gdml");
 
   std::string topVol ="volWorld";
   // topVol ="volDetEnclosure";
@@ -93,9 +94,9 @@ void drawLArFD()
   /* MakeInvisible("volColdCryoLayer1"); */
 
   /* gGeoManager->GetVolume("volBeamPlanePosX")->DrawOnly("ogl"); */
-  gGeoManager->GetVolume("volWaterShielding")->SetLineColor(kBlue);
-  gGeoManager->GetVolume("volWaterShielding")->SetVisibility(1);
-  gGeoManager->GetVolume("volWaterShielding")->SetTransparency(20);
+  /* gGeoManager->GetVolume("volWaterShielding")->SetLineColor(kBlue); */
+  /* gGeoManager->GetVolume("volWaterShielding")->SetVisibility(1); */
+  /* gGeoManager->GetVolume("volWaterShielding")->SetTransparency(20); */
   
   /* gGeoManager->GetVolume("volWaterBoxBottom")->SetLineColor(kBlue); */
   /* gGeoManager->GetVolume("volWaterBoxBottom")->SetVisibility(1); */
@@ -204,7 +205,12 @@ void drawLArFD()
  // gGeoManager->FindVolumeFast(topVol)->CheckOverlaps(1e-5,"d");
  // gGeoManager->FindVolumeFast(topVol)->GetNode(0)->PrintOverlaps();
  gGeoManager->SetMaxVisNodes(70000);
- gGeoManager->FindVolumeFast(topVol.c_str())->Draw("ogl");
+ /* gGeoManager->FindVolumeFast(topVol.c_str())->Draw("ogl"); */
+
+ TFile *tf = new TFile("draw.root", "RECREATE");
+ gGeoManager->Write();
+ tf->Close();
+ 
 
 }
 

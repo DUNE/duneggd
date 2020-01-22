@@ -57,7 +57,6 @@ class WorldBuilder(gegede.builder.Builder):
         setZCenter    -=  self.cryoBldr.APAToUpstreamWall                       #
                                                                                 #
         detEncPos     = [ setXCenter, setYCenter, setZCenter ]                  #
-        print("READ ME SEYMORE ", detEncPos)
         #########################################################################
 
 
