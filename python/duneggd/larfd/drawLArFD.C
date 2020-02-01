@@ -45,7 +45,7 @@ void drawLArFD()
   gSystem->Load("libGeom");
   gSystem->Load("libGdml");
 
-  TGeoManager::Import("test.gdml");
+  TGeoManager::Import("larfd.gdml");
 
   std::string topVol ="volWorld";
   // topVol ="volDetEnclosure";

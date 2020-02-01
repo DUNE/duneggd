@@ -45,7 +45,7 @@ void drawLArFD()
   gSystem->Load("libGeom");
   gSystem->Load("libGdml");
 
-  TGeoManager::Import("larfd_50cm.gdml");
+  TGeoManager::Import("larfd_nowires.gdml");
 
   std::string topVol ="volWorld";
   // topVol ="volDetEnclosure";
@@ -190,9 +190,9 @@ void drawLArFD()
   /* gGeoManager->FindVolumeFast("volDSS4")->SetTransparency(31); */
   /* gGeoManager->FindVolumeFast("volDSS4")->SetLineColor(kRed); */
 
-  gGeoManager->FindVolumeFast("volWaterShielding")->SetVisibility(1);
-  gGeoManager->FindVolumeFast("volWaterShielding")->SetTransparency(31);
-  gGeoManager->FindVolumeFast("volWaterShielding")->SetLineColor(kBlue);
+  /* gGeoManager->FindVolumeFast("volWaterShielding")->SetVisibility(1); */
+  /* gGeoManager->FindVolumeFast("volWaterShielding")->SetTransparency(31); */
+  /* gGeoManager->FindVolumeFast("volWaterShielding")->SetLineColor(kBlue); */
 
   
   /* gGeoManager->FindVolumeFast("volLArCryoDownstream")->SetVisibility(1); */

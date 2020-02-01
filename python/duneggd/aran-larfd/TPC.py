@@ -35,7 +35,7 @@ class TPCBuilder(gegede.builder.Builder):
     #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
     def construct(self, geom):
 
-        self.APAFrameDim  = list(self.planeBldrZ.APAFrameDim)
+        self.apaFrameDim  = list(self.planeBldrZ.APAFrameDim)
         # N.B. -- the names 'volTPCPlane*', 'volTPC*', and 'volTPCActive' are required by LArSoft
         # Add g10 plastic for mounting wires/gridplane and cover
         # get dimensions and volume of readout plane
@@ -45,8 +45,8 @@ class TPCBuilder(gegede.builder.Builder):
         readPlaneU_lv = self.planeBldrU.get_volume('volTPCPlaneU')
 
         self.tpcDim = [ self.driftDistance + 2*self.wirePlanePitch + plane_x,
-                        self.APAFrameDim[1],
-                        self.APAFrameDim[2] ]
+                        self.apaFrameDim[1],
+                        self.apaFrameDim[2] ]
 
 
         # define TPC Active shape and volume

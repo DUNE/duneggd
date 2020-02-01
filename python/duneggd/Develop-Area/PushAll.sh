@@ -1,0 +1,16 @@
+pushfile larfd.gdml /dune/app/users/aborkum/v08_33_00_prof_e17/srcs/dunetpc/dune/Geometry/gdml
+pushfile larfd_nowires.gdml /dune/app/users/aborkum/v08_33_00_prof_e17/srcs/dunetpc/dune/Geometry/gdml
+pushfile larfd_airDSS.gdml /dune/app/users/aborkum/v08_33_00_prof_e17/srcs/dunetpc/dune/Geometry/gdml
+pushfile larfd_airDSS_nowires.gdml /dune/app/users/aborkum/v08_33_00_prof_e17/srcs/dunetpc/dune/Geometry/gdml
+pushfile larfd_airIns.gdml /dune/app/users/aborkum/v08_33_00_prof_e17/srcs/dunetpc/dune/Geometry/gdml
+pushfile larfd_airIns_nowires.gdml /dune/app/users/aborkum/v08_33_00_prof_e17/srcs/dunetpc/dune/Geometry/gdml
+pushfile larfd_allair.gdml /dune/app/users/aborkum/v08_33_00_prof_e17/srcs/dunetpc/dune/Geometry/gdml
+pushfile larfd_allair_nowires.gdml /dune/app/users/aborkum/v08_33_00_prof_e17/srcs/dunetpc/dune/Geometry/gdml
+pushfile larfd_short.gdml /dune/app/users/aborkum/v08_33_00_prof_e17/srcs/dunetpc/dune/Geometry/gdml
+pushfile larfd_short_nowires.gdml /dune/app/users/aborkum/v08_33_00_prof_e17/srcs/dunetpc/dune/Geometry/gdml
+pushfile larfd_airDSS_short.gdml /dune/app/users/aborkum/v08_33_00_prof_e17/srcs/dunetpc/dune/Geometry/gdml
+pushfile larfd_airDSS_short_nowires.gdml /dune/app/users/aborkum/v08_33_00_prof_e17/srcs/dunetpc/dune/Geometry/gdml
+pushfile larfd_airIns_short.gdml /dune/app/users/aborkum/v08_33_00_prof_e17/srcs/dunetpc/dune/Geometry/gdml
+pushfile larfd_airIns_short_nowires.gdml /dune/app/users/aborkum/v08_33_00_prof_e17/srcs/dunetpc/dune/Geometry/gdml
+pushfile larfd_allair_short.gdml /dune/app/users/aborkum/v08_33_00_prof_e17/srcs/dunetpc/dune/Geometry/gdml
+pushfile larfd_allair_short_nowires.gdml /dune/app/users/aborkum/v08_33_00_prof_e17/srcs/dunetpc/dune/Geometry/gdml

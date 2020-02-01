@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python
 '''
 Top level builder of LAr FD modules at Homestake Mines
 '''
@@ -218,14 +218,6 @@ class WorldBuilder(gegede.builder.Builder):
                                         ("carbon"  , 0.600),
                                         ("oxygen"  , 0.320),
                                         ("hydrogen", 0.080)
-                                    ))
-
-        G10     = g.matter.Mixture( "G10", density = "1.7*g/cc",
-                                    components = (
-                                        ("silicon" , 0.2805),
-                                        ("oxygen"  , 0.3954),
-                                        ("carbon"  , 0.2990),
-                                        ("hydrogen", 0.0251)
                                     ))
                 
         LArTarget = g.matter.Molecule("LAr", density="1.39*g/cc"   , elements=(("argon", 1),))

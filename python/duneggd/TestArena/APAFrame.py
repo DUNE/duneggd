@@ -8,7 +8,7 @@ import gegede.builder
 from gegede import Quantity as Q
 from gegede import units
 
-class FrameBuilder(gegede.builder.Builder):
+class APAFrameBuilder(gegede.builder.Builder):
     '''
     Build the FRAME.
     '''
@@ -19,7 +19,6 @@ class FrameBuilder(gegede.builder.Builder):
                   footsize                   = None,
                   headsize                   = None,
                   footthickness              = None,
-                  wireDiam                   = None,
                   nribs                      = None,
                   ribsize                    = None,
                   ribthickness               = None,
@@ -33,13 +32,20 @@ class FrameBuilder(gegede.builder.Builder):
                   nLightPaddlePerAPA         = None,
                   LightPaddleHeadOffset      = None,
                   LightPaddleVerticalSpacing = None,
+                  ArapucaIn_x                = None, 
+                  ArapucaIn_y                = None, 
+                  ArapucaIn_z                = None, 
+                  ArapucaAcceptanceWindow_x  = None, 
+                  ArapucaAcceptanceWindow_y  = None, 
+                  ArapucaAcceptanceWindow_z  = None, 
+                  gapCenter_arapuca_z        = None, 
+                  gapBetween_arapuca_z       = None, 
                   **kwds):
 
         self.size                       = size
         self.footsize                   = footsize
         self.headsize                   = headsize
         self.footthickness              = footthickness
-        self.wireDiam                   = wireDiam
         self.nribs                      = nribs
         self.ribsize                    = ribsize
         self.ribthickness               = ribthickness
@@ -53,8 +59,16 @@ class FrameBuilder(gegede.builder.Builder):
         self.nLightPaddlePerAPA         = nLightPaddlePerAPA
         self.LightPaddleHeadOffset      = LightPaddleHeadOffset
         self.LightPaddleVerticalSpacing = LightPaddleVerticalSpacing
+        self.ArapucaIn_x                = ArapucaIn_x              
+        self.ArapucaIn_y                = ArapucaIn_y              
+        self.ArapucaIn_z                = ArapucaIn_z              
+        self.ArapucaAcceptanceWindow_x  = ArapucaAcceptanceWindow_x
+        self.ArapucaAcceptanceWindow_y  = ArapucaAcceptanceWindow_y
+        self.ArapucaAcceptanceWindow_z  = ArapucaAcceptanceWindow_z
+        self.gapCenter_arapuca_z        = gapCenter_arapuca_z      
+        self.gapBetween_arapuca_z       = gapBetween_arapuca_z     
 
-        self.ZPlaneBldr = self.get_builder('WirePlaneZ')
+        
 
     # ^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
     def ConstructHollowBeam(self, geom, name, sizeouter, thickness):
@@ -120,7 +134,7 @@ class FrameBuilder(gegede.builder.Builder):
 
         # Calculating the Light Paddle spacing
         self.PaddleYInterval    = (2*self.size[1] + self.APAGap_y - self.LightPaddle_y - 2*self.APAFrameZSide_y) / (2*self.nLightPaddlePerAPA - 1)
-        print(self.PaddleYInterval)
+        # print(self.PaddleYInterval)
         self.FrameToPaddleSpace = (self.PaddleYInterval - self.APAGap_y)/2
 
         # Light Paddle construction
@@ -139,6 +153,7 @@ class FrameBuilder(gegede.builder.Builder):
 
         # Middle strut of the APA Frame
         size_middle = [self.footsize[0], self.footsize[1], self.size[1]-self.footsize[1]-self.headsize[1]]
+        print(size_middle)
         Middle_lv   = self.ConstructMiddleBeam(geom,
                                                'APAFrameMiddle',
                                                size_middle,
@@ -185,50 +200,57 @@ class FrameBuilder(gegede.builder.Builder):
         frame_lv.placements.append(Placement_Left  .name)
         frame_lv.placements.append(Placement_Right .name)
 
-
-   
-        
-        ZPlane_lv = self.ZPlaneBldr.get_volume('volTPCPlaneZ')
-
-        pos = geom.structure.Position("ZPlanePosition",
-                                      2.0*FrameBox.dx,
-                                      2.0*FrameBox.dy,
-                                      2.0*FrameBox.dz)
-        
-        place_plane = geom.structure.Placement("placeZPlane", volume=ZPlane_lv, pos=pos, rot="r90aboutX")
-        frame_lv.placements.append(place_plane.name)
-
-
-
-        
-        # place_plane = geom.structure.Placement("placeZPlane",
-        #                                        volume=ZPlane_lv, pos=pos)
-        # frame_lv.placements.append(place_plane.name)
-        # pZPlaneOnFrame = geom.structure.Placement('placeZPlane', volume=ZPlane_lv, pos=zPlanePos)
-        # frame_lv.placements.append(pZPlaneOnFrame.name)
-
-        # for i in range(2):
-        #     posName   = 'ZWirePlaneInFrame_'+str(i)
-        #     pPlaneInFrame = geom.structure.Placement('place_'+posName,
-        #                                              volume = ZPlane_lv,
-        #                                              pos    = zPlanePos)
-        #     frame_lv.placements.append(pPlaneInFrame.name)
-        #     zPlanePos[2] *= -1
-        
-            
-
-        
-        
-        print("low "+str(-0.5*self.size[1]))
-        print("hig "+str( 0.5*self.size[1]))
-
         LightPaddleBox = geom.shapes.Box('LightPaddle',
                                          dx=0.5*self.LightPaddle_x,
                                          dy=0.5*self.LightPaddle_y,
                                          dz=0.5*(self.size[2] - 2*Q('4in')))
-        LightPaddle_lv = geom.structure.Volume('volLightPaddle', material='Acrylic', shape=LightPaddleBox)
 
-        paddlePosition = 0.5*size_middle[2] - self.LightPaddleHeadOffset - 0.5*self.LightPaddle_y
+        self.ArapucaInnerBoxDim = [self.ArapucaIn_x , self.ArapucaIn_y , self.ArapucaIn_z ]
+        ArapucaInnerBox = geom.shapes.Box("ArapucaInnerBox",
+                                          dx=0.5*self.ArapucaInnerBoxDim[0],
+                                          dy=0.5*self.ArapucaInnerBoxDim[1],
+                                          dz=0.5*self.ArapucaInnerBoxDim[2])
+
+
+        spaceAvail = (0.5*(self.size[2] - 2*Q('4in'))) - Q('2in')
+
+        subPos = [0.5*(self.LightPaddle_x - self.ArapucaInnerBoxDim[0]), Q('0cm'), Q('2in')+(0.25*spaceAvail)]
+
+        for i in range(2):
+            
+            pos1 = geom.structure.Position('arapucaSubtraction_'+str((4*i)),    subPos[0], subPos[1],  subPos[2])
+            pos2 = geom.structure.Position('arapucaSubtraction_'+str((4*i)+1),  subPos[0], subPos[1], -subPos[2])
+            pos3 = geom.structure.Position('arapucaSubtraction_'+str((4*i)+2), -subPos[0], subPos[1],  subPos[2])
+            pos4 = geom.structure.Position('arapucaSubtraction_'+str((4*i)+3), -subPos[0], subPos[1], -subPos[2])
+
+            LightPaddleBox = geom.shapes.Boolean('ArapucaSubtraction_'+str(4*i),
+                                                  type   = 'subtraction',
+                                                  first  = LightPaddleBox,
+                                                  second = ArapucaInnerBox,
+                                                  pos    = pos1)
+            LightPaddleBox = geom.shapes.Boolean('ArapucaSubtraction_'+str((4*i)+1),
+                                                  type   = 'subtraction',
+                                                  first  = LightPaddleBox,
+                                                  second = ArapucaInnerBox,
+                                                  pos    = pos2)
+            LightPaddleBox = geom.shapes.Boolean('ArapucaSubtraction_'+str((4*i)+2),
+                                                  type   = 'subtraction',
+                                                  first  = LightPaddleBox,
+                                                  second = ArapucaInnerBox,
+                                                  pos    = pos3)
+            LightPaddleBox = geom.shapes.Boolean('ArapucaSubtraction_'+str((4*i)+3),
+                                                  type   = 'subtraction',
+                                                  first  = LightPaddleBox,
+                                                  second = ArapucaInnerBox,
+                                                  pos    = pos4)
+
+            subPos[2] += 0.5*spaceAvail
+
+
+
+        paddlePosition  = 0.5*size_middle[2] - self.LightPaddleHeadOffset - 0.5*self.LightPaddle_y
+        LightPaddle_lv  = geom.structure.Volume('volArapuca', material='G10', shape=LightPaddleBox)
+        ArapucaInner_lv = geom.structure.Volume('volOpDetSensitive', material='Acrylic', shape=ArapucaInnerBox)
 
         for i in range(self.nLightPaddlePerAPA):
             pos = geom.structure.Position('LightPaddlePosition_'+str(i),
@@ -238,6 +260,27 @@ class FrameBuilder(gegede.builder.Builder):
             place = geom.structure.Placement('placeLightPaddle_'+str(i),
                                              volume = LightPaddle_lv,
                                              pos    = pos)
+            
+            subPos = [0.5*(self.LightPaddle_x - self.ArapucaInnerBoxDim[0]), Q('0cm'), Q('2in')+(0.25*spaceAvail)]
+            for j in range(2):
+
+                pos1 = geom.structure.Position('posArapuca_'+str((4*j)  )+"in_paddle_"+str(i),  subPos[0], paddlePosition - i*self.LightPaddleVerticalSpacing,  subPos[2])
+                pos2 = geom.structure.Position('posArapuca_'+str((4*j)+1)+"in_paddle_"+str(i),  subPos[0], paddlePosition - i*self.LightPaddleVerticalSpacing, -subPos[2])
+                pos3 = geom.structure.Position('posArapuca_'+str((4*j)+2)+"in_paddle_"+str(i), -subPos[0], paddlePosition - i*self.LightPaddleVerticalSpacing,  subPos[2])
+                pos4 = geom.structure.Position('posArapuca_'+str((4*j)+3)+"in_paddle_"+str(i), -subPos[0], paddlePosition - i*self.LightPaddleVerticalSpacing, -subPos[2])
+
+                place1 = geom.structure.Placement('placeArapuca'+str((4*j)  )+"in_paddle_"+str(i), volume=ArapucaInner_lv, pos=pos1)
+                place2 = geom.structure.Placement('placeArapuca'+str((4*j)+1)+"in_paddle_"+str(i), volume=ArapucaInner_lv, pos=pos2)
+                place3 = geom.structure.Placement('placeArapuca'+str((4*j)+2)+"in_paddle_"+str(i), volume=ArapucaInner_lv, pos=pos3, rot='r180aboutY')
+                place4 = geom.structure.Placement('placeArapuca'+str((4*j)+3)+"in_paddle_"+str(i), volume=ArapucaInner_lv, pos=pos4, rot='r180aboutY')
+
+                frame_lv.placements.append(place1.name)
+                frame_lv.placements.append(place2.name)
+                frame_lv.placements.append(place3.name)
+                frame_lv.placements.append(place4.name)
+                
+                subPos[2] += 0.5*spaceAvail
+            
             frame_lv.placements.append(place.name)
         
         #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
@@ -260,4 +303,4 @@ class FrameBuilder(gegede.builder.Builder):
                                                      rot='r90aboutZ')
             frame_lv.placements.append(Placement_Rib.name)
 
-        
+

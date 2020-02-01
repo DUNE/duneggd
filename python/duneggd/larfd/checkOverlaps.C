@@ -16,7 +16,7 @@ int checkOverlaps()
     gSystem->Load("libGeom");
   gSystem->Load("libGdml");
 
-  TGeoManager::Import("test.gdml");
+  TGeoManager::Import("larfd.gdml");
   gGeoManager->GetTopNode();
   gGeoManager->CheckOverlaps(1e-5,"d");
   gGeoManager->PrintOverlaps();
