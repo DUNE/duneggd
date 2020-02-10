@@ -1,10 +1,11 @@
-#!/usr/bin/env python
+#!/usr/bin/env python
 '''
 Top level builder of LAr FD modules at Homestake Mines
 '''
 
 import gegede.builder
 import math
+import pandas as pd
 from gegede import Quantity as Q
 
 
@@ -93,140 +94,49 @@ class WorldBuilder(gegede.builder.Builder):
 
     #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
     def define_materials(self, g):
-        h  = g.matter.Element("hydrogen",   "H",  1,  "1.0791*g/mole"  )
-        be = g.matter.Element("beryllium",  "Be", 4,  "9.012182*g/mole")
-        c  = g.matter.Element("carbon",     "C",  6,  "12.0107*g/mole" )
-        n  = g.matter.Element("nitrogen",   "N",  7,  "14.0671*g/mole" )
-        o  = g.matter.Element("oxygen",     "O",  8,  "15.999*g/mole"  )
-        f  = g.matter.Element("fluorine",   "F",  9,  "18.9984*g/mole" )
-        na = g.matter.Element("sodium",     "Na", 11, "22.99*g/mole"   )
-        mg = g.matter.Element("magnesium",  "Mg", 12, "24.305*g/mole"  )
-        al = g.matter.Element("aluminum",   "Al", 13, "26.9815*g/mole" )
-        si = g.matter.Element("silicon",    "Si", 14, "28.0855*g/mole" )
-        p  = g.matter.Element("phosphorus", "P",  15, "30.973*g/mole"  )
-        s  = g.matter.Element("sulfur",     "S",  16, "32.065*g/mole"  )
-        ar = g.matter.Element("argon",      "Ar", 18, "39.948*g/mole"  )
-        ar = g.matter.Element("potassium",  "K",  19, "39.0983*g/mole" )
-        ca = g.matter.Element("calcium",    "Ca", 20, "40.078*g/mole"  )
-        ti = g.matter.Element("titanium",   "Ti", 22, "47.867*g/mole"  )
-        cr = g.matter.Element("chromium",   "Cr", 24, "51.9961*g/mole" )
-        mn = g.matter.Element("manganese",  "Mn", 25, "54.9380*g/mole" )
-        fe = g.matter.Element("iron",       "Fe", 26, "55.8450*g/mole" )
-        ni = g.matter.Element("nickel",     "Ni", 28, "58.6934*g/mole" )
-        cu = g.matter.Element("copper",     "Cu", 29, "63.55*g/mole"   )
-        br = g.matter.Element("bromine",    "Br", 35, "79.904*g/mole"  )
-        xe = g.matter.Element("xenon",      "Xe", 54, "131.293*g/mole" )
-        pb = g.matter.Element("lead",       "Pb", 82, "207.20*g/mole"  )
 
+        Elements  = pd.read_csv("MaterialDefinitions/Elements-Table 1.csv" )
+        Molecules = pd.read_csv("MaterialDefinitions/Molecules-Table 1.csv")
+        Mixtures  = pd.read_csv("MaterialDefinitions/Mixtures-Table 1.csv" )
 
-
-        # Molecules for Rock and fibrous_glass Mixtures 
-        SiO2  = g.matter.Molecule("SiO2",  density="2.2*g/cc",   elements=(("silicon",1)   ,("oxygen",2)))
-        FeO   = g.matter.Molecule("FeO",   density="5.745*g/cc", elements=(("iron",1)      ,("oxygen",1)))
-        Al2O3 = g.matter.Molecule("Al2O3", density="3.97*g/cc",  elements=(("aluminum",2)  ,("oxygen",3)))
-        MgO   = g.matter.Molecule("MgO",   density="3.58*g/cc",  elements=(("magnesium",1) ,("oxygen",1)))
-        CO2   = g.matter.Molecule("CO2",   density="1.562*g/cc", elements=(("carbon",1)    ,("oxygen",2)))
-        CaO   = g.matter.Molecule("CaO",   density="3.35*g/cc",  elements=(("calcium",1)   ,("oxygen",1)))
-        NaO2  = g.matter.Molecule("Na2O",  density="2.27*g/cc",  elements=(("sodium",2)    ,("oxygen",1)))
-        P2O5  = g.matter.Molecule("P2O5",  density="1.562*g/cc", elements=(("phosphorus",2),("oxygen",5)))        
-
-        Water = g.matter.Molecule("Water",
-                                  density="1*g/cc",
-                                  elements=(("hydrogen", 2),
-                                            ("oxygen"  , 1)))
-
-        Cellulose = g.matter.Molecule("Cellulose",
-                                      density="545.91*kg*m^-3",
-                                      elements=(("carbon"   ,6),
-                                                ("oxygen"   ,5),
-                                                ("hydrogen" ,10)))
+        # Define all of the elements 
+        for i in range(len(Elements)):
+            density = str(Elements["AtomicDensity"][i]) + "*" + str(Elements["Units"][i])
+            g.matter.Element(Elements["Name"      ][i],
+                             Elements["Symbol"    ][i],
+                             Elements["AtomicMass"][i],
+                             density)
         
-        PolyurethaneFoam = g.matter.Molecule("PolyurethaneFoam",
-                                             density="0.13*g/cc",
-                                             elements=(("carbon"  , 54),
-                                                       ("oxygen"  , 15),
-                                                       ("nitrogen", 4),
-                                                       ("hydrogen", 60)))        
-        
-        rock  = g.matter.Mixture( "Rock", density = "2.82*g/cc", 
-                                  components = (
-                                      ("SiO2",   0.5267),
-                                      ("FeO",    0.1174),
-                                      ("Al2O3",  0.1025),
-                                      ("oxygen", 0.0771),
-                                      ("MgO",    0.0473),
-                                      ("CO2",    0.0422),
-                                      ("CaO",    0.0382),
-                                      ("carbon", 0.0240),
-                                      ("sulfur", 0.0186),
-                                      ("Na2O",   0.0053),
-                                      ("P2O5",   0.0007),
-                                  ))
 
+        # Define all of the molecules
+        MoleculesNull = Molecules.isnull()
+        columns       = list(Molecules.columns.values)        
+        for i in range(len(Molecules)):
+            density  = str(Molecules["Density"][i]) + "*" + str(Molecules["Unit"][i])
+            elements = []
+            counter  = 4
+            while (counter < len(columns)):
+                if (MoleculesNull[columns[counter]][i] == False):
+                    elements.append((Molecules[columns[counter  ]][i],
+                                     Molecules[columns[counter+1]][i]))
+                counter += 2
+            g.matter.Molecule(Molecules["Name"][i],
+                              density  = density,
+                              elements = tuple(elements))
 
-        # fibrous_glass = g.matter.Mixture("fibrous_glass", density = "2.74351*g/cc",
-        #                                  components = (
-        #                                      ("SiO2",  0.600),
-        #                                      ("Al2O3", 0.118),
-        #                                      ("FeO"  , 0.001),
-        #                                      ("CaO",   0.224),
-        #                                      ("MgO",   0.034),
-        #                                      ("NaO2",  0.010),
-        #                                      ("TiO2",  0.013),
-        #                                  ))
-        
-        dirt  = g.matter.Mixture( "Dirt", density = "1.7*g/cc", 
-                                  components = (
-                                      ("oxygen",    0.438),
-                                      ("silicon",   0.257),
-                                      ("sodium",    0.222),
-                                      ("aluminum",  0.049),
-                                      ("iron",      0.019),
-                                      ("potassium", 0.015),
-                                  ))
+        # Define all of the mixtures
+        MixturesNull = Mixtures.isnull()
+        columns      = list(Mixtures.columns.values)
+        for i in range(len(Mixtures)):
+            density    = str(Mixtures["Density"][i]) + "*" + str(Mixtures["Unit"][i])
+            components = []
+            counter    = 4
 
-        air   = g.matter.Mixture( "Air", density = "0.001225*g/cc", 
-                                  components = (
-                                      ("nitrogen", 0.781154), 
-                                      ("oxygen",   0.209476),
-                                      ("argon",    0.00934)
-                                  ))
-
-        Steel    = g.matter.Mixture( "Steel", density = "7.9300*g/cc", 
-                                     components = (
-                                         ("iron",     0.7298),
-                                         ("chromium", 0.1792),
-                                         ("nickel",   0.0900),
-                                         ("carbon",   0.0010)
-                                     ))
-        CuBe    = g.matter.Mixture( "CuBe", density = "8.25g/cc", 
-                                      components = (
-                                          ("copper",    0.98),
-                                          ("beryllium", 0.02)
-                                      ))
-        S460ML    = g.matter.Mixture( "S460ML", density = "7.8*g/cc", 
-                                      components = (
-                                          ("iron",      0.96),
-                                          ("manganese", 0.018),
-                                          ("nickel",    0.0085),
-                                          ("silicon",   0.0065),
-                                          ("copper",    0.006),
-                                          ("carbon",    0.0018)
-                                      ))
-        Acrylic = g.matter.Mixture( "Acrylic", density = "1.19*g/cc",
-                                    components = (
-                                        ("carbon"  , 0.600),
-                                        ("oxygen"  , 0.320),
-                                        ("hydrogen", 0.080)
-                                    ))
-
-        G10     = g.matter.Mixture( "G10", density = "1.7*g/cc",
-                                    components = (
-                                        ("silicon" , 0.2805),
-                                        ("oxygen"  , 0.3954),
-                                        ("carbon"  , 0.2990),
-                                        ("hydrogen", 0.0251)
-                                    ))
-                
-        LArTarget = g.matter.Molecule("LAr", density="1.39*g/cc"   , elements=(("argon", 1),))
-        ArGas     = g.matter.Molecule("GAr", density="0.00166*g/cc", elements=(("argon", 1),))
+            while (counter < len(columns)):
+                if (MixturesNull[columns[counter]][i] == False):
+                    components.append((Mixtures[columns[counter]  ][i],
+                                       Mixtures[columns[counter+1]][i]))
+                counter += 2
+            g.matter.Mixture(Mixtures["Name"][i],
+                             density  = density,
+                             components = tuple(components))
