@@ -162,7 +162,7 @@ class TPCPlaneBuilder(gegede.builder.Builder):
             self.ParseExcel(sheet_name='U Wires', header=3, usecols='S:AA')
             # self.planeDim[1] += 2 * self.G10ThicknessFoot - self.HeadBoardScrewCentre[1] - self.HeadAPAFrameScrewCentre[1]
             # self.planeDim[2] += Q("6.7mm")
-            print("U Plane Dimenstions: ", self.planeDim, "\n")
+            print("U Plane Dimenstions: ", self.planeDim)
 
 
         # define readout plane shape and volume
