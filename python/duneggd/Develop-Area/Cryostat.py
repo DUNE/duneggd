@@ -57,6 +57,9 @@ class CryostatBuilder(gegede.builder.Builder):
                   HoleDiam            = None,
                   TopBeam             = None,
                   SteelThickness      = None,
+                  FieldCageBarWidth   = None,
+                  FieldCageBarHeight  = None,
+                  FieldCageMaterial   = None,
                   doWaterShielding    = False,
                   waterThickness      = Q("10cm"),
                   **kwds):
@@ -109,6 +112,10 @@ class CryostatBuilder(gegede.builder.Builder):
         self.TopBeam              = TopBeam
         self.SteelThickness       = SteelThickness
 
+        self.FieldCageBarWidth    = FieldCageBarWidth
+        self.FieldCageBarHeight   = FieldCageBarHeight
+        self.FieldCageMaterial    = FieldCageMaterial
+
         self.doWaterShielding  = doWaterShielding
         self.waterThickness    = waterThickness
         
@@ -138,6 +145,7 @@ class CryostatBuilder(gegede.builder.Builder):
         APAToAPA = [self.apaFrameDim[0] + 2*self.tpcDim[0] + self.cathodeThickness,
                     self.tpcDim[1],
                     self.tpcDim[2]]
+        self.APAToAPA = APAToAPA
 
         self.ColdInsulationThickness = self.Layer1Thickness + self.Layer2Thickness + self.Layer3Thickness
         self.WarmCryostatThickness   = self.SteelThickness + self.IPEBeamHeight
@@ -339,18 +347,151 @@ class CryostatBuilder(gegede.builder.Builder):
                         CPANum += 1
                   
 
-                # APANum += 1
-                    #print("Constructed APA: " + str(APANum))
-
-        # print("Small Drift Gap", 0.5*(self.CryostatInnerDim[0]-2*APAToAPA[0] - self.apaFrameDim[0]))
-                    
-        # print("Number of APAs: ", APANum)
         print ("Cryostat: Built "+str(self.nAPAs[0])
                +" wide by "+str(self.nAPAs[1])
                +" high by "+str(self.nAPAs[2])
                +" long modules.")
  
         self.beamInfo = {'shape':[], 'pos':[], 'rot':[]}
+
+        # Adding in the field  cage
+        lenHorizontalBar = self.nAPAs[2]*self.tpcDim[2] + (self.nAPAs[2]-1)*self.APAGap_z
+        lenVerticalBar   = self.nAPAs[1]*self.tpcDim[1] + (self.nAPAs[1]-1)*self.APAGap_y + 2*self.FieldCageBarHeight
+
+        # Get the center of the APA array
+        xCenter = Q("0")
+
+        yCenter = (- 0.5*self.CryostatInnerDim[1]
+                   + self.APAToFloor
+                   + self.apaFrameDim[1]
+                   + 0.5*self.APAGap_y)
+        
+        zCenter = (-0.5*self.CryostatInnerDim[2]+
+                   self.APAToUpstreamWall +
+                   0.5*(self.nAPAs[2]*self.tpcDim[2] + (self.nAPAs[2]-1)*self.APAGap_z))
+
+        horizontalBarBox = geom.shapes.Box("FieldCageHorizontalBar",
+                                           dx=0.5*self.FieldCageBarWidth,
+                                           dy=0.5*self.FieldCageBarHeight,
+                                           dz=0.5*lenHorizontalBar)
+        verticalBarBox   = geom.shapes.Box("FieldCageVerticalBar",
+                                           dx=0.5*self.FieldCageBarWidth,
+                                           dy=0.5*lenVerticalBar,
+                                           dz=0.5*self.FieldCageBarHeight)
+
+        horizontalBar_lv = geom.structure.Volume("volFieldCageHorBar", material=self.FieldCageMaterial, shape=horizontalBarBox)
+        verticalBar_lv   = geom.structure.Volume("volFieldCageVerBar", material=self.FieldCageMaterial, shape=verticalBarBox  )
+
+        yOffset = 0.5*self.APAGap_y + self.apaFrameDim[1] + 0.5*self.FieldCageBarHeight
+        zOffset = 0.5*lenHorizontalBar + 0.5*self.FieldCageBarHeight
+
+        posLong  = [Q("3cm"), yCenter, zCenter]
+        posShort = [Q("3cm"), yCenter, zCenter]
+
+
+        for bar in range(123):
+            horizontalBarTopRPos = geom.structure.Position("TopFCRBeam_"+str(bar),
+                                                            posLong[0], posLong[1]+yOffset, posLong[2])
+            horizontalBarTopLPos = geom.structure.Position("TopFCLBeam_"+str(bar),
+                                                           -posLong[0], posLong[1]+yOffset, posLong[2])
+            horizontalBarBotRPos = geom.structure.Position("BotFCRBeam_"+str(bar),
+                                                            posLong[0], posLong[1]-yOffset, posLong[2])
+            horizontalBarBotLPos = geom.structure.Position("BotFCLBeam_"+str(bar),
+                                                           -posLong[0], posLong[1]-yOffset, posLong[2])
+
+            verticalBarFroRPos = geom.structure.Position("FroFCRBeam_"+str(bar),
+                                                         posShort[0], posShort[1], posShort[2]+zOffset)
+            verticalBarFroLPos = geom.structure.Position("FroFCLBeam_"+str(bar),
+                                                         -posShort[0], posShort[1], posShort[2]+zOffset)
+            verticalBarBacRPos = geom.structure.Position("BacFCRBeam_"+str(bar),
+                                                         posShort[0], posShort[1], posShort[2]-zOffset)
+            verticalBarBacLPos = geom.structure.Position("BacFCLBeam_"+str(bar),
+                                                         -posShort[0], posShort[1], posShort[2]-zOffset)
+            
+            Placement_TopFCRBar = geom.structure.Placement("placeTopFCRBar_"+str(bar),
+                                                           volume=horizontalBar_lv, pos=horizontalBarTopRPos)
+            Placement_TopFCLBar = geom.structure.Placement("placeTopFCLBar_"+str(bar),
+                                                           volume=horizontalBar_lv, pos=horizontalBarTopLPos)
+            Placement_BotFCRBar = geom.structure.Placement("placeBotFCRBar_"+str(bar),
+                                                           volume=horizontalBar_lv, pos=horizontalBarBotRPos)
+            Placement_BotFCLBar = geom.structure.Placement("placeBotFCLBar_"+str(bar),
+                                                           volume=horizontalBar_lv, pos=horizontalBarBotLPos)
+
+            Placement_FroFCRBar = geom.structure.Placement("placeFroFCRBar_"+str(bar),
+                                                           volume=verticalBar_lv, pos=verticalBarFroRPos)
+            Placement_FroFCLBar = geom.structure.Placement("placeFroFCLBar_"+str(bar),
+                                                           volume=verticalBar_lv, pos=verticalBarFroLPos)
+            Placement_BacFCRBar = geom.structure.Placement("placeBacFCRBar_"+str(bar),
+                                                           volume=verticalBar_lv, pos=verticalBarBacRPos)
+            Placement_BacFCLBar = geom.structure.Placement("placeBacFCLBar_"+str(bar),
+                                                           volume=verticalBar_lv, pos=verticalBarBacLPos)
+
+            
+            LArBox = geom.shapes.Boolean("subHorizFCBarTopR_"+str(bar),
+                                         type   = 'subtraction',
+                                         first  = LArBox,
+                                         second = horizontalBarBox,
+                                         pos    = horizontalBarTopRPos)
+            LArBox = geom.shapes.Boolean("subHorizFCBarTopL_"+str(bar),
+                                         type   = 'subtraction',
+                                         first  = LArBox,
+                                         second = horizontalBarBox,
+                                         pos    = horizontalBarTopLPos)
+            LArBox = geom.shapes.Boolean("subHorizFCBarBotR_"+str(bar),
+                                         type   = 'subtraction',
+                                         first  = LArBox,
+                                         second = horizontalBarBox,
+                                         pos    = horizontalBarBotRPos)
+            LArBox = geom.shapes.Boolean("subHorizFCBarBotL_"+str(bar),
+                                         type   = 'subtraction',
+                                         first  = LArBox,
+                                         second = horizontalBarBox,
+                                         pos    = horizontalBarBotLPos)
+
+            LArBox = geom.shapes.Boolean("subVertiFCBarFroR_"+str(bar),
+                                         type   = 'subtraction',
+                                         first  = LArBox,
+                                         second = verticalBarBox,
+                                         pos    = verticalBarFroRPos)
+            LArBox = geom.shapes.Boolean("subVertiFCBarFroL_"+str(bar),
+                                         type   = 'subtraction',
+                                         first  = LArBox,
+                                         second = verticalBarBox,
+                                         pos    = verticalBarFroLPos)
+            LArBox = geom.shapes.Boolean("subVertiFCBarBacR_"+str(bar),
+                                         type   = 'subtraction',
+                                         first  = LArBox,
+                                         second = verticalBarBox,
+                                         pos    = verticalBarBacRPos)
+            LArBox = geom.shapes.Boolean("subVertiFCBarBacL_"+str(bar),
+                                         type   = 'subtraction',
+                                         first  = LArBox,
+                                         second = verticalBarBox,
+                                         pos    = verticalBarBacLPos)
+
+            cryo_lv.placements.append(Placement_TopFCRBar.name)
+            cryo_lv.placements.append(Placement_TopFCLBar.name)
+            cryo_lv.placements.append(Placement_BotFCRBar.name)
+            cryo_lv.placements.append(Placement_BotFCLBar.name)
+
+            cryo_lv.placements.append(Placement_FroFCRBar.name)
+            cryo_lv.placements.append(Placement_FroFCLBar.name)
+            cryo_lv.placements.append(Placement_BacFCRBar.name)
+            cryo_lv.placements.append(Placement_BacFCLBar.name)
+            
+            posLong [0]  += Q("6cm")
+            posShort[0]  += Q("6cm")
+
+
+
+
+
+
+
+
+
+
+        
         
         if (self.Layer1Thickness != None):
             self.ConstructOnion(geom, cryo_lv)
@@ -375,6 +516,8 @@ class CryostatBuilder(gegede.builder.Builder):
                                                        pos = pLAr_in_cryo)
         cryo_lv.placements.append(placement_LAr_in_C.name)
 
+
+        
     def ConstructOnion(self, geom, cryo_lv):
         print ("Constructing onion cold cryostat and warm skin")
         # make and place the membranes
