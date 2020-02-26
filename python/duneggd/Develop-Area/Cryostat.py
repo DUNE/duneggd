@@ -54,6 +54,7 @@ class CryostatBuilder(gegede.builder.Builder):
                   IPEBeamRoofThickW   = None,
                   IPEBeamRoofThickF   = None,
                   BeamFloors          = None,
+                  BeamMaterial        = None,
                   HoleDiam            = None,
                   TopBeam             = None,
                   SteelThickness      = None,
@@ -108,6 +109,7 @@ class CryostatBuilder(gegede.builder.Builder):
         self.IPEBeamRoofThickW    = IPEBeamRoofThickW
         self.IPEBeamRoofThickF    = IPEBeamRoofThickF
         self.BeamFloors           = BeamFloors
+        self.BeamMaterial         = BeamMaterial
         self.HoleDiam             = HoleDiam
         self.TopBeam              = TopBeam
         self.SteelThickness       = SteelThickness
@@ -709,7 +711,7 @@ class CryostatBuilder(gegede.builder.Builder):
         FinalSub = self.BuildBeamShape(geom, name, length,
                                        self.IPEBeamBase,   self.IPEBeamHeight,
                                        self.IPEBeamThickF, self.IPEBeamThickW)
-        Beam_lv       = geom.structure.Volume  ('vol'+name, material=self.Layer1Material, shape=FinalSub)
+        Beam_lv       = geom.structure.Volume  ('vol'+name, material=self.BeamMaterial, shape=FinalSub)
         Position_Beam = geom.structure.Position("pos"+name, pos[0], pos[1], pos[2])
         self.beamInfo['shape'].append(FinalSub)
         self.beamInfo["pos"]  .append(Position_Beam)
@@ -739,7 +741,7 @@ class CryostatBuilder(gegede.builder.Builder):
                                        pos    = Pos)
         volume=math.pi*(0.5*self.HoleDiam)**2*self.IPEBeamThickW
         self.volume_beam_file.write(name+"_hole "+str(volume.to('m^3').magnitude)+"\n")
-        Beam_lv        = geom.structure.Volume   ("vol"+name, material=self.Layer1Material, shape=FinalSub)
+        Beam_lv        = geom.structure.Volume   ("vol"+name, material=self.BeamMaterial, shape=FinalSub)
         Position_Beam  = geom.structure.Position ("pos"+name, pos[0], pos[1], pos[2])
         Placement_Beam = geom.structure.Placement("place"+name,
                                                   volume = Beam_lv,
@@ -756,7 +758,7 @@ class CryostatBuilder(gegede.builder.Builder):
         FinalSub = self.BuildBeamShape(geom, name, length,
                                        self.IPEBeamRoofBase,   self.IPEBeamRoofHeight,
                                        self.IPEBeamRoofThickF, self.IPEBeamRoofThickW)
-        Beam_lv = geom.structure.Volume('vol'+name, material=self.Layer1Material, shape=FinalSub)
+        Beam_lv = geom.structure.Volume('vol'+name, material=self.BeamMaterial, shape=FinalSub)
         Position_Beam  = geom.structure.Position("pos"+name, pos[0], pos[1], pos[2])
         Placement_Beam = geom.structure.Placement("place"+name, volume = Beam_lv, pos=Position_Beam,
                                                   rot = rot)
