@@ -31,6 +31,7 @@ class WorldBuilder(gegede.builder.Builder):
 
         # Get relevant dimensions
         detEncDim      = list(self.detEncBldr.detEncDim)
+        RadioRockThick = self.detEncBldr.RadioRockThickness
         encBoundToDet  = list(self.detEncBldr.ConcreteBeamGap)
         detDim         = list(self.detEncBldr.CryostatOuterDim)
         InsulationBeam = self.cryoBldr.TotalCryoLayer
@@ -44,19 +45,23 @@ class WorldBuilder(gegede.builder.Builder):
         #                                                                       #
         # Bring x=0 to -x of detEnc, then to det face, then to center of det    #
         setXCenter    =   0.5*detEncDim[0] - encBoundToDet[0] - 0.5*detDim[0]   #
-                                                                                #
+        #                                                                       #
         # Bring y=0 to halfway between the top&bototm APAs                      #
         setYCenter    =   0.5*detEncDim[1] - encBoundToDet[1]                   #
         setYCenter    -=  InsulationBeam + self.cryoBldr.APAToFloor             #
         setYCenter    -=  self.cryoBldr.tpcDim[1]                               #
         setYCenter    -=  0.5*self.cryoBldr.APAGap_y                            #
-                                                                                #
+        setYCenter    -=  0.5*RadioRockThick                                    #
+        #                                                                       #        
         # Bring z=0 to back of detEnc, then to upstream face of detector.       #
         setZCenter    =   0.5*detEncDim[2] - encBoundToDet[2]                   #
         #  then through cryo steel and upstream dead LAr                        #
         setZCenter    -=  InsulationBeam                                        #
         setZCenter    -=  self.cryoBldr.APAToUpstreamWall                       #
-                                                                                #
+
+
+
+        
         detEncPos     = [ setXCenter, setYCenter, setZCenter ]                  #
         #########################################################################
 
@@ -107,7 +112,6 @@ class WorldBuilder(gegede.builder.Builder):
                              Elements["AtomicMass"][i],
                              density)
         
-
         # Define all of the molecules
         MoleculesNull = Molecules.isnull()
         columns       = list(Molecules.columns.values)        
