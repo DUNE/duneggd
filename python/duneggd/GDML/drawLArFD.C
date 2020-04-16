@@ -50,7 +50,7 @@ void drawLArFD()
 
   /* TGeoManager::Import("larfd_rn1cm_v1_nowires.gdml"); */
   /* TGeoManager::Import("larfd_10cm_nowires.gdml"); */
-  TGeoManager::Import("dune10kt_v1_nowires.gdml");
+  TGeoManager::Import("dune10kt_v4_1x2x6_nowires.gdml");
 
   std::string topVol ="volWorld";
   // topVol ="volDetEnclosure";

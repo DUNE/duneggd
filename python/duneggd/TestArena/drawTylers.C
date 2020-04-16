@@ -1,12 +1,12 @@
 
 #import "TGeoManager.h"
 
-void draw()
+void drawTylers()
 {
   gSystem->Load("libGeom");
   gSystem->Load("libGdml");
 
-  TGeoManager::Import("test.gdml");
+  TGeoManager::Import("dune35t4apa_v6_nowires.gdml");
 
   std::string topVol ="volWorld";
   // topVol ="volDetEnclosure";
@@ -23,9 +23,9 @@ void draw()
   TGeoVolume * vol = (TGeoVolume*)next();
   TColor c;
 
-  /* gGeoManager->FindVolumeFast("volArapuca")->SetVisibility(1); */
-  /* gGeoManager->FindVolumeFast("volArapuca")->SetTransparency(31); */
-  /* gGeoManager->FindVolumeFast("volArapuca")->SetLineColor(kRed); */
+  /* gGeoManager->FindVolumeFast("volFieldCage")->SetVisibility(1); */
+  /* gGeoManager->FindVolumeFast("volFieldCage")->SetTransparency(31); */
+  /* gGeoManager->FindVolumeFast("volFieldCage")->SetLineColor(kRed); */
 
   /* gGeoManager->FindVolumeFast("volOpDetSensitive")->SetVisibility(1); */
   /* gGeoManager->FindVolumeFast("volOpDetSensitive")->SetTransparency(31); */

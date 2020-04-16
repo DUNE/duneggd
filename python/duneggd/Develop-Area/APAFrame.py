@@ -135,7 +135,6 @@ class APAFrameBuilder(gegede.builder.Builder):
 
         # Calculating the Light Paddle spacing
         self.PaddleYInterval    = (2*self.size[1] + self.APAGap_y - self.LightPaddle_y - 2*self.APAFrameZSide_y) / (2*self.nLightPaddlePerAPA - 1)
-        # print(self.PaddleYInterval)
         self.FrameToPaddleSpace = (self.PaddleYInterval - self.APAGap_y)/2
 
         # Light Paddle construction
@@ -163,7 +162,7 @@ class APAFrameBuilder(gegede.builder.Builder):
                                                self.PaddleYInterval)
         
         size_rib    = [self.ribsize[0], self.ribsize[1], 0.5*self.size[2]-1.5*self.footsize[0]]
-        Rib_lv    = self.ConstructHollowBeam(geom, 'APAFrameRib',     size_rib   , self.ribthickness)
+        Rib_lv      = self.ConstructHollowBeam(geom, 'APAFrameRib',     size_rib   , self.ribthickness)
         
         
         FootPosition = geom.structure.Position('APAFrameFootPos',
@@ -207,7 +206,9 @@ class APAFrameBuilder(gegede.builder.Builder):
                                          dz=0.5*(self.size[2] - 2*Q('4in')))
 
         if (self.NoOpticalDetectors == False):
-            self.ArapucaInnerBoxDim = [self.ArapucaIn_x , self.ArapucaIn_y , self.ArapucaIn_z ]
+            self.ArapucaInnerBoxDim = [self.ArapucaAcceptanceWindow_x ,
+                                       self.ArapucaAcceptanceWindow_y ,
+                                       self.ArapucaAcceptanceWindow_z ]
             ArapucaInnerBox = geom.shapes.Box("ArapucaInnerBox",
                                               dx=0.5*self.ArapucaInnerBoxDim[0],
                                               dy=0.5*self.ArapucaInnerBoxDim[1],
