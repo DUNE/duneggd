@@ -1,0 +1,29 @@
+Element,Name,Symbol,AtomicMass,AtomicDensity,Units
+h         ,Hydrogen,H,1,1.0791,g/mole
+be,Beryllium,Be,4,9.012182,g/mole
+b,Boron,B,5,10.881,g/mole
+c ,Carbon,C,6,12.0107,g/mole
+n ,Nitrogen,N,7,14.0671,g/mole
+o ,Oxygen,O,8,15.999,g/mole
+f ,Flourine,F,9,18.9984,g/mole
+na,Sodium,Na,11,22.99,g/mole
+mg,Magnesium,Mg,12,24.305,g/mole
+al,Aluminum,Al,13,26.9815,g/mole
+si,Silicon,Si,14,28.0855,g/mole
+p ,Phosphorus,P,15,30.973,g/mole
+s ,Sulfur,S,16,32.065,g/mole
+ar,Argon,Ar,18,39.948,g/mole
+k,Potassium,K,19,39.0983,g/mole
+ca,Calcium,Ca,20,40.078,g/mole
+ti,Titanium,Ti,22,47.867,g/mole
+v,Vanadium,Va,23,50.5415,g/mole
+cr,Chromium,Cr,24,51.9961,g/mole
+mn,Manganese,Mn,25,54.9380,g/mole
+fe,Iron,Fe,26,55.8450,g/mole
+ni,Nickel,Ni,28,58.6934,g/mole
+cu,Copper,Cu,29,63.55,g/mole
+br,Bromine,Br,35,79.904,g/mole
+nb,Niobium,Nb,41,92.90637,g/mole
+mo,Molybdenum,Mo,42,95.95,g/mole
+xe,Xenon,Xe,54,131.293,g/mole
+pb,Lead,Pb,82,207.20,g/mole

@@ -1,0 +1,15 @@
+Mixture,Name,Density,Unit,Component1,Percentage1,Component2,Percentage2,Component3,Percentage3,Component4,Percentage4,Component5,Percentage5,Component6,Percentage6,Component7,Percentage7,Component8,Percentage8,Component9,Percentage9,Component10,Percentage10,Component11,Percentage11,Component12,Percentage12,Component13,Percentage13,Component14,Percentage14,Component15,Percentage15
+Rock,Rock,2.82,g/cc,SiO2,0.5267,FeO,0.1174,Al2O3,0.1025,Oxygen,0.0771,MgO,0.0473,CO2,0.0422,CaO,0.0382,Carbon,0.024,Sulfur,0.0186,NaO2,0.0053,P2O5,0.0007,,,,,,,,
+RadioRock,RadioRock,2.82,g/cc,SiO2,0.5267,FeO,0.1174,Al2O3,0.1025,Oxygen,0.0771,MgO,0.0473,CO2,0.0422,CaO,0.0382,Carbon,0.024,Sulfur,0.0186,NaO2,0.0053,P2O5,0.0007,,,,,,,,
+Dirt,Dirt,1.7,g/cc,Oxygen,0.438,Silicon,0.257,Sodium,0.222,Aluminum,0.049,Iron,0.019,Potassium,0.015,,,,,,,,,,,,,,,,,,
+Air,Air,0.001225,g/cc,Nitrogen,0.781154,Oxygen,0.209476,Argon,0.00934,,,,,,,,,,,,,,,,,,,,,,,,
+Steel,Steel,7.93,g/cc,Iron,0.7298,Chromium,0.1792,Nickel,0.09,Carbon,0.001,,,,,,,,,,,,,,,,,,,,,,
+CuBe,CuBe,8.25,g/cc,Copper,0.98,Beryllium,0.02,,,,,,,,,,,,,,,,,,,,,,,,,,
+RadioCuBe,RadioCuBe,8.25,g/cc,Copper,0.98,Beryllium,0.02,,,,,,,,,,,,,,,,,,,,,,,,,,
+S460ML,S460ML,7.8,g/cc,Iron,0.9535,Manganese,0.017,Nickel,0.008,Silicon,0.006,Copper,0.0055,Carbon,0.0018,Phosphorus,0.0003,Sulfur,0.00025,Aluminum,0.0002,Nitrogen,0.00025,Niobium,0.0005,Vanadium,0.0012,Titanium,0.0005,Chromium,0.003,Molybdenum,0.002
+RadioS460ML,RadioS460ML,7.8,g/cc,Iron,0.9535,Manganese,0.017,Nickel,0.008,Silicon,0.006,Copper,0.0055,Carbon,0.0018,Phosphorus,0.0003,Sulfur,0.00025,Aluminum,0.0002,Nitrogen,0.00025,Niobium,0.0005,Vanadium,0.0012,Titanium,0.0005,Chromium,0.003,Molybdenum,0.002
+Acrylic,Acrylic,1.19,g/cc,Carbon,0.6,Oxygen,0.32,Hydrogen,0.08,,,,,,,,,,,,,,,,,,,,,,,,
+G10,G10,1.7,g/cc,Silicon,0.2805,Oxygen,0.3954,Carbon,0.299,Hydrogen,0.0251,,,,,,,,,,,,,,,,,,,,,,
+LAr,LAr,1.39,g/cc,Argon,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+GAr,GAr,0.00166,g/cc,Argon,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+ALUMINUM_AL,ALUMINUM_AL,2.6990,g/cc,Aluminum,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,
