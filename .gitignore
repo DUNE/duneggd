@@ -4,7 +4,11 @@ venv
 README.html
 build
 dist
-gegede.egg-info/
+*.egg-info/
 *.html
 *.pdf
 *.tex
+*.gdml
+*.txt
+*.root
+*.numbers
