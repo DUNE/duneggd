@@ -3,30 +3,42 @@
 Subbuilder of TPCBuilder
 '''
 
-from math import cos, sin, tan
+import math
 import gegede.builder
 from gegede import Quantity as Q
 from gegede import units
+import pandas as pd
+from pandas import ExcelWriter
+from pandas import ExcelFile
+import numpy as np
 
 class TPCPlaneBuilder(gegede.builder.Builder):
     '''
-    Build the Cryostat.
+    Build the TPCPlane.
     '''
 
     #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
     def configure(self, 
-                  wireDiam            = Q('150um'),
-                  wirePitch           = None,
-                  wireAngle           = None,
-                  nChannels           = None,
-                  nowires             = False,
-                  apaFrameDim         = None,
-                  g10Thickness        = Q('0.125in'),
-                  wrapCover           = Q('0.0625in'),
-                  view                = None,
+                  wireDiam                = None,
+                  wirePitch               = None,
+                  wireAngle               = None,
+                  nChannels               = None,
+                  nowires                 = None,
+                  APAFrameDim             = None,
+                  G10ThicknessFoot        = None,
+                  G10ThicknessSide        = None,
+                  HeadBoardScrewCentre    = None,
+                  HeadAPAFrameScrewCentre = None,
+                  SideWrappingBoardOffset = None,
+                  SideBoardScrewCentre    = None,
+                  SideAPAFrameScrewCentre = None,
+                  wrapCover               = None,
+                  view                    = None,
+                  planeDim                = None,
+                  wireSpreadSheet         = None,
                   **kwds):
 
-        if apaFrameDim is None:
+        if APAFrameDim is None:
             raise ValueError("No value given for apaFrameDim")
         if view is None:
             raise ValueError("No value given for view") 
@@ -37,96 +49,269 @@ class TPCPlaneBuilder(gegede.builder.Builder):
         if nChannels is None:
             raise ValueError("No value given for nChannels")
 
-        self.wireDiam           = wireDiam
-        self.wirePitch          = wirePitch
-        self.wireAngle          = wireAngle
-        self.nChannels          = nChannels
-        self.nowires            = nowires
-        self.apaFrameDim        = apaFrameDim
-        self.g10Thickness       = g10Thickness 
-        self.wrapCover          = wrapCover
-        self.view               = view
+        self.wireDiam                = wireDiam
+        self.wirePitch               = wirePitch
+        self.wireAngle               = wireAngle
+        self.nChannels               = nChannels
+        self.nowires                 = nowires
+        self.APAFrameDim             = APAFrameDim
+        self.G10ThicknessFoot        = G10ThicknessFoot
+        self.G10ThicknessSide        = G10ThicknessSide
+        self.HeadBoardScrewCentre    = HeadBoardScrewCentre
+        self.HeadAPAFrameScrewCentre = HeadAPAFrameScrewCentre 
+        self.SideWrappingBoardOffset = SideWrappingBoardOffset
+        self.SideBoardScrewCentre    = SideBoardScrewCentre
+        self.SideAPAFrameScrewCentre = SideAPAFrameScrewCentre 
+        self.wrapCover               = wrapCover
+        self.view                    = view
+        self.planeDim                = planeDim
 
+
+    def ParseExcel(self,
+                   sheet_name, header, usecols,
+                   # filename='Electronics channel to wire segment mapping.xlsx'):
+                   filename='Aran-Sheet.xlsx'):
+
+        self.WirePosition = pd.read_excel(filename,
+                                          sheet_name=sheet_name,
+                                          header=header,
+                                          usecols=usecols)
+
+        self.WirePosition.dropna(inplace = True)
+        self.XStartIndex = None
+        self.YStartIndex = None
+        self.XEndIndex   = None
+        self.YEndIndex   = None
+        self.FrontOrBack = None
+        newcolumns = self.WirePosition.columns.tolist()
+
+        for i in range(len(newcolumns)):
+            if (newcolumns[i].find('X'         ) is -1 and
+                newcolumns[i].find('Y'         ) is -1 and
+                newcolumns[i].find('Front/Back') is -1):
+                self.WirePosition.drop([newcolumns[i]], axis=1, inplace=True)
+
+        newcolumns = self.WirePosition.columns.tolist()
+                
+        for i in range(len(self.WirePosition.columns)):
+            # pandas add a column of index at 0 so have to add 1 to the indices here
+            if   self.WirePosition.columns[i] == 'X'   or self.WirePosition.columns[i] == 'X.2':
+                newcolumns[i] = 'XStart'
+                self.XStartIndex = i+1
+            elif self.WirePosition.columns[i] == 'Y'   or self.WirePosition.columns[i] == 'Y.2':
+                newcolumns[i] = 'YStart'
+                self.YStartIndex = i+1
+            elif self.WirePosition.columns[i] == 'X.1' or self.WirePosition.columns[i] == 'X.3':
+                newcolumns[i] = 'XEnd'
+                self.XEndIndex = i+1
+            elif self.WirePosition.columns[i] == 'Y.1' or self.WirePosition.columns[i] == 'Y.3':
+                newcolumns[i] = 'YEnd'
+                self.YEndIndex = i+1
+            elif self.WirePosition.columns[i].find('Front/Back') is not -1:
+                newcolumns[i] = 'Front'
+                self.FrontOrBack = i+1
+
+
+
+        if (self.XStartIndex is None or
+            self.YStartIndex is None or
+            self.XEndIndex   is None or
+            self.YEndIndex   is None or
+            self.FrontOrBack is None):
+            string = ("There was a problem while parsing the excel file: \""+filename+"\", sheet: \""+sheet_name+"\". Make sure the file exist in PWD and that the code in TPCPlaney is correct. Columns are:" +
+                      "\nself.XStartIndex = " + str(self.XStartIndex) + 
+                      "\nself.YStartIndex = " + str(self.YStartIndex) + 
+                      "\nself.XEndIndex   = " + str(self.XEndIndex  ) + 
+                      "\nself.YEndIndex   = " + str(self.YEndIndex  ) + 
+                      "\nself.FrontOrBack = " + str(self.FrontOrBack))
+            raise Exception(string)
+
+        self.WirePosition.columns = newcolumns
+        self.WirePosition['XStart'] = self.WirePosition['XStart'].astype(float) 
+        self.WirePosition['YStart'] = self.WirePosition['YStart'].astype(float) 
+        self.WirePosition['XEnd'  ] = self.WirePosition['XEnd'  ].astype(float) 
+        self.WirePosition['YEnd'  ] = self.WirePosition['YEnd'  ].astype(float)
+        self.WirePosition['Front' ] = self.WirePosition['Front' ].apply(lambda st: st.upper() == 'FRONT')
+        
     #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
     def construct(self, geom):
 
         # N.B. -- the names 'volTPCPlane*' and 'volTPCWire*' are required by LArSoft
-
         # Define wire shape and volume
-        #
-        # TODO: fix material
-        #
-
-        g10 = self.g10Thickness
-        g10wrap = self.wrapCover
-
         #
         # TODO: rework configuration of frame vs phys dimensions
         #       
         # apaFameDim config: z dim includes g10 plastic, y doesn't 
-        self.apaPhysicalDim = list(self.apaFrameDim)
-        self.apaPhysicalDim[1] += (4*g10 + g10wrap)  # 4x from Z, V, U, gridplane
-        self.apaFrameDim[2] -= (4*g10 + 2*g10wrap)  # V & U g10, and cover on both sides
 
-        self.planeDim = list(self.apaFrameDim)
-        self.planeDim[0] = self.wireDiam;
+        # self.planeDim = list(self.APAFrameDim)
+        # self.planeDim[0] = self.wireDiam;
+        self.PositionDumper = open("WirePos"+self.view+".txt", "w")
+        if self.view == 'Z':
+            self.ParseExcel(sheet_name='X Wires',header=1, usecols='E:J')
+            # self.planeDim[1] += - self.HeadBoardScrewCentre[1] - self.HeadAPAFrameScrewCentre[1]
+            # self.planeDim[2] += 2 * (-self.HeadAPAFrameScrewCentre[2] + self.HeadBoardScrewCentre[2])
+            print("X Plane Dimenstions: ", self.planeDim)
+            
+        if self.view == 'V':
+            self.ParseExcel(sheet_name='V Wires', header=3, usecols='R:Z')
+            # self.planeDim[1] += 1 * self.G10ThicknessFoot - self.HeadBoardScrewCentre[1] - self.HeadAPAFrameScrewCentre[1]
+            # self.planeDim[2] -= 0
+            print("V Plane Dimenstions: ", self.planeDim)            
 
-        if self.view == 'Z': 
-            self.planeDim[1] +=  1*g10 
-            #self.planeDim[2] -= (4*g10 + 2*g10wrap) # 228.415 too small ?
-            # calculate for now:
-            self.planeDim[2] = (int(self.nChannels/2)-1)*self.wirePitch + self.wireDiam
-        if self.view == 'V': 
-            self.planeDim[1] +=  1*g10
-            self.planeDim[2] -= (2*g10 + 2*g10wrap)
-        if self.view == 'U': 
-            self.planeDim[1] +=  2*g10
-            self.planeDim[2] -= (0*g10 + 2*g10wrap)
+        if self.view == 'U':
+            self.ParseExcel(sheet_name='U Wires', header=3, usecols='S:AA')
+            # self.planeDim[1] += 2 * self.G10ThicknessFoot - self.HeadBoardScrewCentre[1] - self.HeadAPAFrameScrewCentre[1]
+            # self.planeDim[2] += Q("6.7mm")
+            print("U Plane Dimenstions: ", self.planeDim)
 
 
         # define readout plane shape and volume
         #  nudge y and z dim so corners of wire endpoints fit in plane 
-        readPlaneBox = geom.shapes.Box( 'TPCPlane' + self.view,  dx=0.5*self.planeDim[0], 
-                                        dy=0.5*self.planeDim[1] + self.wireDiam,
-                                        dz=0.5*self.planeDim[2] + self.wireDiam )
+        readPlaneBox = geom.shapes.Box('TPCPlane' + self.view,
+                                       dx=0.5*self.planeDim[0], 
+                                       dy=0.5*self.planeDim[1] + 20*self.wireDiam,
+                                       dz=0.5*self.planeDim[2] + 20*self.wireDiam )
+        
         readPlane_lv = geom.structure.Volume('volTPCPlane' + self.view, material='LAr', shape=readPlaneBox)
-        self.add_volume(readPlane_lv)
 
+        self.add_volume(readPlane_lv)
 
         if not self.nowires:
             if (self.view == 'Z'):
-                self.MakeCollectionPlane(geom,readPlane_lv)
-            if (self.view == 'V' or self.view == 'U'):
-                self.MakeInductionPlane(geom,readPlane_lv)
-
-
-
+                self.MakeCollectionPlane(geom,readPlane_lv, readPlaneBox)
+            if (self.view == 'U'):
+                self.MakeInductionPlane(geom,readPlane_lv, readPlaneBox)
+            if (self.view == 'V'):
+                self.MakeInductionPlane(geom,readPlane_lv, readPlaneBox)
 
     #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
-    def MakeCollectionPlane( self, geom, readPlane_lv ):
-        print('Creating collection wires.')
-        nWires = int(0.5*self.nChannels)
-        wireSpan_z = (nWires-1) * self.wirePitch # center to center
-        if (wireSpan_z > self.planeDim[2]):
-            raise Exception('Wire span ' + str(wireSpan_z) + ' excedes ' + str(self.planeDim[2]))
-        
-        zwire    = geom.shapes.Tubs('TPCWire' + self.view, 
+    def MakeCollectionPlane( self, geom, readPlane_lv, readPlaneBox):
+        print('\nCreating collection wires.')
+        zwire    = geom.shapes.Tubs('TPCWire' + self.view,
                                     rmin = Q('0cm'),
                                     rmax = 0.5*self.wireDiam, 
                                     dz   = 0.5*self.planeDim[1] )
+        zwire_lv = geom.structure.Volume('volTPCWireVertInner', material='CuBe', shape=zwire)
+
+        index = 0
+
+        maxX = Q(max(max(self.WirePosition['XStart'].values), max(self.WirePosition['XEnd'].values)), "mm")
+        minX = Q(min(min(self.WirePosition['XStart'].values), min(self.WirePosition['XEnd'].values)), "mm")
+        maxY = Q(max(max(self.WirePosition['YStart'].values), max(self.WirePosition['YEnd'].values)), "mm")
+        minY = Q(min(min(self.WirePosition['YStart'].values), min(self.WirePosition['YEnd'].values)), "mm")
         
-        zwire_lv = geom.structure.Volume('volTPCWireVertInner', material='Steel', shape=zwire)
+        dX = maxX - minX
+        dY = maxY - minY
+
+        # if abs((self.planeDim[1] - dY).to('mm').magnitude) > 0.1:
+        #     raise Exception("Inconsistent Y dim. dx: ", dY, " and y dim of the plane: ", self.planeDim[1])
+
+        # if abs((self.planeDim[2] - dX).to('mm').magnitude) > 0.1:
+        #     raise Exception("Inconsistent Z dim. dz: ", dX, " and z dim of the plane: ", self.planeDim[2])
         
-        for i in range(nWires):       
-            wirePos = [ Q('0cm'), Q('0cm'), -0.5 * wireSpan_z + i*self.wirePitch ]
-            self.PlaceWire( geom, i, readPlane_lv, wirePos, 'r90aboutX', zwire_lv )
-        print('DONE - Creating collection wires.')
+        for row in self.WirePosition.itertuples():
+            if row[self.FrontOrBack]:
+                d = 0.5 * (Q(row[self.XStartIndex],"mm") + Q(row[self.XEndIndex],"mm"))
+                wirePos = [Q('0m'),
+                           Q('0m'),
+                           d]
+                self.PlaceWire( geom, index, readPlane_lv, wirePos, 'r90aboutX', zwire_lv )
+                index += 1
+
+        print('DONE - Creating ' + str(index)+' collection wires.')        
 
 
+        
+    def MakeInductionPlane(self, geom, plane_lv, readPlaneBox):
+        print('\nCreating '+self.view+' wires.')
+
+        degAboutX = Q(90, 'degree') + self.wireAngle
+        wireRot   = geom.structure.Rotation('r'+self.view+'Wire', degAboutX, '0deg', '0deg')
+        
+        maxX = Q(max(max(self.WirePosition['XStart'].values), max(self.WirePosition['XEnd'].values)), "mm")
+        minX = Q(min(min(self.WirePosition['XStart'].values), min(self.WirePosition['XEnd'].values)), "mm")
+        maxY = Q(max(max(self.WirePosition['YStart'].values), max(self.WirePosition['YEnd'].values)), "mm")
+        minY = Q(min(min(self.WirePosition['YStart'].values), min(self.WirePosition['YEnd'].values)), "mm")
+        
+        dX = maxX - minX
+        dY = maxY - minY
+        
+        # Somehow this check isn't valid
+        # if abs((self.planeDim[1] - dY).to('mm').magnitude) > 0.1:
+        #     raise Exception("Inconsistent Y dim. dx: ", dY, " and y dim of the plane: ", self.planeDim[1])
+
+        # if abs((self.planeDim[2] - dX).to('mm').magnitude) > 1:
+        #     raise Exception("Inconsistent Z dim. dz: ", dX, " and z dim of the plane: ", self.planeDim[2])
+
+        WirePositions = []
+        
+        wire_num = 0
+        for row in self.WirePosition.itertuples():
+            zstart = row[self.XStartIndex]
+            ystart = row[self.YStartIndex]
+            zend   = row[self.XEndIndex]  
+            yend   = row[self.YEndIndex]  
+            if (row[self.FrontOrBack]):
+            # if (True):
+                wireStartPos = [Q("0mm"),
+                                Q(ystart,"mm") - self.planeDim[1]*0.5,
+                                Q(zstart,"mm")]
+
+                wireEndPos   = [Q("0mm"),
+                                Q(yend,"mm") - self.planeDim[1]*0.5,
+                                Q(zend,"mm")]
+
+                if (self.view == 'V'):
+                    wirePos = [(wireStartPos[0] + wireEndPos[0]) * 0.5,
+                               (wireStartPos[1] + wireEndPos[1] + 2*self.wireDiam) * 0.5,
+                               (wireStartPos[2] + wireEndPos[2] - 2*self.wireDiam) * 0.5]
+                if (self.view == 'U'):
+                    wirePos = [(wireStartPos[0] + wireEndPos[0]) * 0.5,
+                               (wireStartPos[1] + wireEndPos[1] + 2*self.wireDiam) * 0.5,
+                               (wireStartPos[2] + wireEndPos[2] + 2*self.wireDiam) * 0.5]
+
+                wire_length = (((wireStartPos[0]-wireEndPos[0])**2 +
+                               (wireStartPos[1]-wireEndPos[1])**2 +
+                               (wireStartPos[2]-wireEndPos[2])**2)**0.5 -
+                               (0.5*self.wireDiam * np.sin(self.wireAngle.to('rad').magnitude)) -
+                               (0.5*self.wireDiam * np.tan(self.wireAngle.to('rad').magnitude)))
+
+                    
+
+            
+                self.PositionDumper.write(str(wire_num) + " " +
+                                          str(wireStartPos[0].to('cm').magnitude) + " " +
+                                          str(wireStartPos[1].to('cm').magnitude) + " " +
+                                          str(wireStartPos[2].to('cm').magnitude) + " " +
+                                          str(wireEndPos[0].to('cm').magnitude) + " " +
+                                          str(wireEndPos[1].to('cm').magnitude) + " " + 
+                                          str(wireEndPos[2].to('cm').magnitude) + "\n")
+                
+                self.MakeAndPlaceWire(geom, wire_num, plane_lv, wirePos, wireRot, wire_length)
+                wire_num += 1
+
+        print('DONE - Creating ' + str(wire_num)+' '+self.view+' wires.')
+        self.PositionDumper.close() 
+    
 
     #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
-    def PlaceWire( self, geom, num, plane_lv,
-                   wirePos, wireRot, wire_lv ):
+    def MakeAndPlaceWire( self, geom, num, plane_lv,
+                          wirePos, wireRot, wireLen):
+
+        wire    = geom.shapes.Tubs('TPCWire' + self.view + '_' + str(num), 
+                                    rmin = '0cm',
+                                    rmax = 0.5*self.wireDiam, 
+                                    dz   = 0.5*wireLen )
+        # if ((num < 430 or num>700) and self.view is 'U'):
+        #     print (num, wirePos, wireLen, self.wireDiam)
+        wire_lv = geom.structure.Volume('volTPCWire' + self.view + str(num)+'Inner', 
+                                        material='CuBe', shape=wire)
+
+        self.PlaceWire( geom, num, plane_lv, wirePos, wireRot, wire_lv  )
+
+        
+    #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
+    def PlaceWire( self, geom, num, plane_lv, wirePos, wireRot, wire_lv ):
 
         posName = 'Wire-'+str(num)+'_in_Plane-' + self.view
         wire_in_plane = geom.structure.Position(posName, 
@@ -142,97 +327,3 @@ class TPCPlaneBuilder(gegede.builder.Builder):
 
 
 
-    #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
-    def MakeAndPlaceWire( self, geom, num, plane_lv,
-                          wirePos, wireRot, wireLen):
-
-        wire    = geom.shapes.Tubs('TPCWire' + self.view + '_' + str(num), 
-                                    rmin = '0cm',
-                                    rmax = 0.5*self.wireDiam, 
-                                    dz   = 0.5*wireLen )
-        wire_lv = geom.structure.Volume('volTPCWire' + self.view + str(num)+'Inner', 
-                                        material='Steel', shape=wire)
-
-        self.PlaceWire( geom, num, plane_lv, wirePos, wireRot, wire_lv  )
-
-    #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
-    def MakeInductionPlane( self, geom, plane_lv ):
-        print('Creating induction wires ('+self.view+').')
-
-        pitch = [ Q('0cm'), 
-                  self.wirePitch / sin(self.wireAngle.to('radians')),
-                  self.wirePitch / cos(self.wireAngle.to('radians')) ]
-
-        nWires     = int( self.planeDim[2]/pitch[2] )
-        nSideWires = int( self.planeDim[1]/pitch[1] ) - nWires
-        print('There are '+str(nWires)+' induction wires at the edge and '+str(nSideWires)+' induction wires wrapped.')
-        print('Note these are in reality the same wires.')
-
-        ### if (nWires != int(0.5*self.nChannels)): 
-        ###     raise Exception(self.view+' Plane: Calculated '+str(nWires)+', but configured '+str(self.nChannels/2)+"\nThis needs to be reconciled")
-                   
-        if (self.view == 'U'):
-            firstWireOffset = Q('.55cm') + self.g10Thickness + 2*self.g10Thickness*tan(self.wireAngle.to('radians')) - pitch[2]
-            degAboutX = Q( 90, 'degree') + self.wireAngle
-            wireRot = geom.structure.Rotation( 'rUWire', degAboutX, '0deg','0deg'  )
-            order = 1
-        if (self.view == 'V'):
-            firstWireOffset = Q( .5, 'cm' )
-            degAboutX = Q( 90, 'degree') - self.wireAngle
-            wireRot = geom.structure.Rotation( 'rVWire', degAboutX, '0deg','0deg'  )
-            order = -1
-
-          # Starting with the bottom corner wires:
-           # x=0 to center the wires in the plane
-           # y positioning: (-0.5*$TPCWirePlaneHeight) starts the incremental increase
-             # from the bottom of the plane, and trigonometry gives the increment
-           # z positioning: Looking at the plane from the positive x direction,
-             # (0.5*$TPCWirePlaneLength) starts the incremental increase from
-             # the lower left corner.
-
-        
-        firstWirePos = [ Q('0cm'), 
-                         - 0.5*self.planeDim[1] + 0.5*firstWireOffset/tan(self.wireAngle.to('radians')), 
-                         order * ( - 0.5*self.planeDim[2] + 0.5*firstWireOffset) ]
-
-        #print (self.planeDim)
-
-
-        wireNum=0
-      #  print("now moving to unwrapped")
-        # anchored corner wire segments
-        for i in range(nWires):
-            wireLen = ( firstWireOffset + i*pitch[2] ) / sin(self.wireAngle.to('radians'))
-            wirePos = [ Q('0cm'), 
-                        firstWirePos[1] + i * 0.5 * pitch[1],
-                        firstWirePos[2] + order * i * 0.5 * pitch[2] ]
-            self.MakeAndPlaceWire( geom, wireNum, plane_lv, 
-                                   wirePos, wireRot, wireLen )
-            wireNum += 1
-            #print("wireLen: " + str(wireLen) + "; wirePos Y: " + str(wirePos[1]) + "; wirePos Z: " + str(wirePos[2]))
-        
-       # print("now moving to wrapped")
-        # wrapped common wire segments
-        wireLen = self.planeDim[2]/sin(self.wireAngle.to('radians'))
-        for i in range(nSideWires):
-            wirePos = [ Q('0cm'), 
-                        firstWirePos[1] + (0.5 * nWires + i) * pitch[1],
-                        firstWirePos[2] + order * (nWires-1) * 0.5 * pitch[2] ]
-            #print("wireLen: " + str(wireLen) + "; wirePos Y: " + str(wirePos[1]) + "; wirePos Z: " + str(wirePos[2]))
-            self.MakeAndPlaceWire( geom, wireNum, plane_lv, 
-                                   wirePos, wireRot, wireLen )
-            wireNum += 1
-        
-       # print("now moving to unwrapped")
-        # readout corner wire segments
-        for i in range(nWires):
-            wireLen = self.planeDim[2]/sin(self.wireAngle.to('radians')) - ( firstWireOffset + i*pitch[2] ) / sin(self.wireAngle.to('radians'))
-            
-            wirePos = [ Q('0cm'), 
-                        firstWirePos[1] + (0.5 * nWires + nSideWires + 0.5 * i) * pitch[1],
-                        firstWirePos[2] + order * (nWires-1 + i) * 0.5 * pitch[2] ]
-            #print("wireLen: " + str(wireLen) + "; wirePos Y: " + str(wirePos[1]) + "; wirePos Z: " + str(wirePos[2]))
-            self.MakeAndPlaceWire( geom, wireNum, plane_lv, 
-                                   wirePos, wireRot, wireLen )
-            wireNum += 1
-        print('DONE - Creating induction wires ('+self.view+').')
