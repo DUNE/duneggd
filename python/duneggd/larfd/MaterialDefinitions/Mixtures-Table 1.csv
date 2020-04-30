@@ -5,7 +5,6 @@ Dirt,Dirt,1.7,g/cc,Oxygen,0.438,Silicon,0.257,Sodium,0.222,Aluminum,0.049,Iron,0
 Air,Air,0.001225,g/cc,Nitrogen,0.781154,Oxygen,0.209476,Argon,0.00934,,,,,,,,,,,,,,,,,,,,,,,,
 Steel,Steel,7.93,g/cc,Iron,0.7298,Chromium,0.1792,Nickel,0.09,Carbon,0.001,,,,,,,,,,,,,,,,,,,,,,
 CuBe,CuBe,8.25,g/cc,Copper,0.98,Beryllium,0.02,,,,,,,,,,,,,,,,,,,,,,,,,,
-RadioCuBe,RadioCuBe,8.25,g/cc,Copper,0.98,Beryllium,0.02,,,,,,,,,,,,,,,,,,,,,,,,,,
 S460ML,S460ML,7.8,g/cc,Iron,0.9535,Manganese,0.017,Nickel,0.008,Silicon,0.006,Copper,0.0055,Carbon,0.0018,Phosphorus,0.0003,Sulfur,0.00025,Aluminum,0.0002,Nitrogen,0.00025,Niobium,0.0005,Vanadium,0.0012,Titanium,0.0005,Chromium,0.003,Molybdenum,0.002
 RadioS460ML,RadioS460ML,7.8,g/cc,Iron,0.9535,Manganese,0.017,Nickel,0.008,Silicon,0.006,Copper,0.0055,Carbon,0.0018,Phosphorus,0.0003,Sulfur,0.00025,Aluminum,0.0002,Nitrogen,0.00025,Niobium,0.0005,Vanadium,0.0012,Titanium,0.0005,Chromium,0.003,Molybdenum,0.002
 Acrylic,Acrylic,1.19,g/cc,Carbon,0.6,Oxygen,0.32,Hydrogen,0.08,,,,,,,,,,,,,,,,,,,,,,,,
@@ -13,3 +12,5 @@ G10,G10,1.7,g/cc,Silicon,0.2805,Oxygen,0.3954,Carbon,0.299,Hydrogen,0.0251,,,,,,
 LAr,LAr,1.39,g/cc,Argon,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 GAr,GAr,0.00166,g/cc,Argon,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 ALUMINUM_AL,ALUMINUM_AL,2.6990,g/cc,Aluminum,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+ShotRock,ShotRock,1.62,g/cc,Oxygen,0.438,Silicon,0.257,Sodium,0.222,Aluminum,0.049,Iron,0.019,Potassium,0.015,,,,,,,,,,,,,,,,,,
+Concrete,Concrete,2.3,g/cc,Oxygen,0.530,Silicon,0.335,Calcium,0.060,Sodium,0.015,Iron,0.020,Aluminum,0.040,,,,,,,,,,,,,,,,,,

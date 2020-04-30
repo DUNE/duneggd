@@ -35,6 +35,8 @@ class WorldBuilder(gegede.builder.Builder):
         encBoundToDet  = list(self.detEncBldr.ConcreteBeamGap)
         detDim         = list(self.detEncBldr.CryostatOuterDim)
         InsulationBeam = self.cryoBldr.TotalCryoLayer
+        ConcreteThick  = self.detEncBldr.ConcreteThickness
+        GroutThick     = self.detEncBldr.GroutThickness
         
 
         ########################### SET THE ORIGIN  #############################
@@ -52,6 +54,8 @@ class WorldBuilder(gegede.builder.Builder):
         setYCenter    -=  self.cryoBldr.tpcDim[1]                               #
         setYCenter    -=  0.5*self.cryoBldr.APAGap_y                            #
         setYCenter    -=  0.5*RadioRockThick                                    #
+        setYCenter    -=  ConcreteThick                                         #
+        setYCenter    -=  GroutThick                                            #
         #                                                                       #        
         # Bring z=0 to back of detEnc, then to upstream face of detector.       #
         setZCenter    =   0.5*detEncDim[2] - encBoundToDet[2]                   #
