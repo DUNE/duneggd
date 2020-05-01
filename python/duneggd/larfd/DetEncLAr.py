@@ -185,35 +185,33 @@ class DetEncLArBuilder(gegede.builder.Builder):
                                         pos    = Pos)
 
         ShotInnerBox    = geom.shapes.Box('ShotInnerBox',
-                                    dx=0.5*self.detEncDim[0] - self.ShotCreteThickness, 
-                                    dy=0.5*self.detEncDim[1] - 0.5*self.ShotCreteThickness,
-                                    dz=0.5*self.detEncDim[2] - self.ShotCreteThickness)
+                                          dx=0.5*self.detEncDim[0] - self.ShotCreteThickness,
+                                          dy=0.5*self.detEncDim[1],
+                                          dz=0.5*self.detEncDim[2] - self.ShotCreteThickness)
+        ShotInnerBoxPos = geom.structure.Position("ShotInnerBoxPos", Q('0m'), Q('0m'), Q('0m'))
+        ShotOuterBox    = geom.shapes.Boolean("ShotInnerBoxSub",
+                                              type   = 'subtraction',
+                                              first  = ShotOuterBox,
+                                              second = ShotInnerBox,
+                                              pos    = ShotInnerBoxPos)
 
         x         = self.detEncDim[0]- 2*self.ShotCreteThickness
         r         = self.archRadius  -   self.ShotCreteThickness
         RockAngle = m.degrees(m.asin(x/(2*r)))
-        elevation = self.detEncDim[1]/2 - m.cos(m.radians(RockAngle)) * r + 0.5*self.ShotCreteThickness
-        Tube_pos  = geom.structure.Position('posInnerTube', Q('0m'), elevation, Q('0m'))
+        elevation = 0.5*self.detEncDim[1] - (m.cos(m.radians(RockAngle)) * r) - 0.5*self.ShotCreteThickness
         ShotInnerArch   = geom.shapes.Tubs('ShotInnerArch',
                                      rmin = Q('0cm'),
                                      rmax = self.archRadius - self.ShotCreteThickness,
                                      dz   = 0.5*self.detEncDim[2] - self.ShotCreteThickness,
                                      sphi = Q('90deg')-Q(RockAngle, 'deg'),
                                      dphi = Q(RockAngle, 'deg')*2)
-        elevation     = self.detEncDim[1]/2 - m.cos(self.archHalfAngle.to('radians')) * self.archRadius
         Pos           = geom.structure.Position('ShotInnerArchPos', Q('0m'), elevation, Q('0m'))
-        ShotInnerBox  = geom.shapes.Boolean("ShotInnerBoolAdd",
-                                        type   = 'union',
-                                        first  = ShotInnerBox,
-                                        second = ShotInnerArch,
-                                        pos    = Pos)
-        ShotInPos = geom.structure.Position('posShotInBox', Q('0m'), 0.5*(self.RadioRockThickness +
-                                                                          self.ShotCreteThickness), Q('0m'))
-        ShotOuterBox  = geom.shapes.Boolean('ShotOuterMinusShotInner',
+        ShotOuterBox  = geom.shapes.Boolean("ShotInnerArchSub",
                                             type   = 'subtraction',
                                             first  = ShotOuterBox,
-                                            second = ShotInnerBox,
-                                            pos    = ShotInPos)
+                                            second = ShotInnerArch,
+                                            pos    = Pos)
+
         ConcSubBox = geom.shapes.Box('ConcSubBox',
                                      dx=0.5*self.detEncDim[0],
                                      dy=0.5*(self.ConcreteThickness + self.GroutThickness),
