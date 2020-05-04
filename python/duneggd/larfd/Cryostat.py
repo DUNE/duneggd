@@ -33,6 +33,7 @@ class CryostatBuilder(gegede.builder.Builder):
                   Layer1Material      = None,
                   Layer2Material      = None,
                   Layer3Material      = None,
+                  WarmSkinMaterial    = None,
                   DSSClearance        = None,
                   nDSSBeam            = None,
                   DSSBeamHeight       = None,
@@ -78,6 +79,7 @@ class CryostatBuilder(gegede.builder.Builder):
         self.Layer1Material       = Layer1Material
         self.Layer2Material       = Layer2Material
         self.Layer3Material       = Layer3Material
+        self.WarmSkinMaterial     = WarmSkinMaterial
         self.cathodeThickness     = cathodeThickness
         self.outerAPAs            = outerAPAs
         self.nAPAs                = nAPAs
@@ -485,15 +487,6 @@ class CryostatBuilder(gegede.builder.Builder):
             posShort[0]  += Q("6cm")
 
 
-
-
-
-
-
-
-
-
-        
         
         if (self.Layer1Thickness != None):
             self.ConstructOnion(geom, cryo_lv)
@@ -536,7 +529,7 @@ class CryostatBuilder(gegede.builder.Builder):
                                     dy=0.5*self.CryostatInnerDim[1]+self.Layer1Thickness+self.Layer2Thickness,
                                     dz=0.5*self.CryostatInnerDim[2]+self.Layer1Thickness+self.Layer2Thickness)
         Layer3Out = geom.shapes.Box("ColdCryoLayer3Out",
-                                    dx=0.5*self.CryostatInnerDim[0]+self.Layer1Thickness+self.Layer2Thickness+self.Layer3Thickness, 
+                                    dx=0.5*self.CryostatInnerDim[0]+self.Layer1Thickness+self.Layer2Thickness+self.Layer3Thickness,
                                     dy=0.5*self.CryostatInnerDim[1]+self.Layer1Thickness+self.Layer2Thickness+self.Layer3Thickness,
                                     dz=0.5*self.CryostatInnerDim[2]+self.Layer1Thickness+self.Layer2Thickness+self.Layer3Thickness)
 
@@ -612,7 +605,7 @@ class CryostatBuilder(gegede.builder.Builder):
 
         
         WarmSkin    = geom.shapes.Boolean  ('WarmSkin', type='subtraction', first=BeamInnerBox, second=Layer3Out) 
-        WarmSkin_lv = geom.structure.Volume('volWarmSkin', material=self.Layer1Material, shape=WarmSkin)
+        WarmSkin_lv = geom.structure.Volume('volWarmSkin', material=self.WarmSkinMaterial, shape=WarmSkin)
         WarmSkin_in_cryo = geom.structure.Position("WarmSkin_in_Cryo",
                                                    Q('0m'), Q('0m'), Q('0m'))
         placement_WarmSkin_in_C = geom.structure.Placement('placeWarmSkinInBeamStruct',
