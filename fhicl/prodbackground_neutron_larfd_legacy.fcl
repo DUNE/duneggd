@@ -1,0 +1,75 @@
+#include "services_dune.fcl"
+#include "dune_radiological_model.fcl"
+
+BEGIN_PROLOG
+
+larfd_neutron:
+{
+ module_type:           "RadioGen"
+ Nuclide:               ["Concrete_DUNE10MeV",
+                         "Concrete_DUNE10MeV",
+                         "Concrete_DUNE10MeV",
+                         "Concrete_DUNE10MeV",
+                         "Concrete_DUNE10MeV",
+                         "Concrete_DUNE10MeV"]
+ Material:              [".*",".*",".*",".*",".*", ".*"]
+ BqPercc:               [ 0.0000076, 0.0000076, 0.0000076, 0.0000076, 0.0000076, 0.0000076 ]
+ # Positions                  left ,     right,      top,   bottom,    front,     back
+ X0:                    [    -947.0,     947.0,   -947.0,   -947.0,   -947.0,   -947.0 ]
+ X1:                    [    -948.0,     948.0,    947.0,    947.0,    947.0,    947.0 ]
+ Y0:                    [    -847.0,    -847.0,    938.0,   -848.0,   -847.0,   -847.0 ]
+ Y1:                    [     937.0,     937.0,    937.0,   -847.0,    937.0,    937.0 ]
+ Z0:                    [    -493.0,    -493.0,   -493.0,   -493.0,   -493.0,   6902.0 ]
+ Z1:                    [    6091.0,    6091.0,   6091.0,   6091.0,   -494.0,   6091.0 ]
+ T0:                    [ -2246000., -2246000.,-2246000.,-2246000.,-2246000.,-2246000. ] # ending time in ns
+ T1:                    [  2246000.,  2246000., 2246000., 2246000., 2246000., 2246000. ] # ending time in ns
+}
+
+END_PROLOG
+
+process_name: MARLEYGen
+
+services:
+{
+  TFileService:          { fileName: "prodradiological_hist.root" }
+  TimeTracker:           {}
+  RandomNumberGenerator: {}
+  FileCatalogMetadata:   @local::art_file_catalog_mc
+                         @table::dunefd_services
+}
+
+source:
+{
+  module_type: EmptyEvent
+  timestampPlugin: { plugin_type: "GeneratedEventTimestamp" }
+  maxEvents:   10          # Number of events to create
+  firstRun:    20000047    # Run number to use for this file
+  firstEvent:  1           # number of first event in the file
+}
+
+physics:
+{
+  producers:
+  {
+    cNeutronGen: @local::larfd_neutron
+    rns:       { module_type: "RandomNumberSaver" }
+  }
+
+  simulate:      [ rns, cNeutronGen ]
+  stream1:       [ out1 ]
+  trigger_paths: [ simulate ]
+  end_paths:     [ stream1 ]
+}
+
+outputs:
+{
+  out1:
+  {
+    module_type: RootOutput
+    fileName:    "prodradiological_neutron_larfd_legacy_gen.root"
+    dataTier:    "generated"
+    compressionLevel: 1
+  }
+}
+
+services.Geometry.GDML: "larfd_rn1cm_noOpDet_v3.gdml"
