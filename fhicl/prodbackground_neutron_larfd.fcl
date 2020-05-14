@@ -1,0 +1,71 @@
+#include "services_dune.fcl"
+#include "dune_radiological_model.fcl"
+
+BEGIN_PROLOG
+
+larfd_neutron:
+{
+ module_type:           "RadioGen"
+ Nuclide:               ["Concrete_DUNE10MeV",
+                         "Concrete_DUNE10MeV",
+                         "Concrete_DUNE10MeV"]
+ Material:              ["RadioRock","RadioRock","RadioRock"]
+ BqPercc:               [  0.0000076,  0.0000076, 0.0000076 ]
+ X0:                    [    -991.0 ,    -991.0 ,     -991.0 ]
+ X1:                    [     991.0 ,     991.0 ,      991.0 ]
+ Y0:                    [    -879.0 ,    -879.0 ,     -879.0 ]
+ Y1:                    [    1904.0 ,    -839.0 ,     -839.0 ]
+ Z0:                    [    -537.0 ,    -537.0 ,     -537.0 ]
+ Z1:                    [   14525.0 ,   14525.0 ,    14525.0 ]
+ T0:                    [  -2246000.,  -2246000.,  -2246000. ] # ending time in ns
+ T1:                    [   2246000.,   2246000.,   2246000. ] # ending time in ns
+}
+
+END_PROLOG
+
+process_name: MARLEYGen
+
+services:
+{
+  TFileService:          { fileName: "prodradiological_hist.root" }
+  TimeTracker:           {}
+  RandomNumberGenerator: {}
+  FileCatalogMetadata:   @local::art_file_catalog_mc
+                         @table::dunefd_services
+}
+
+source:
+{
+  module_type: EmptyEvent
+  timestampPlugin: { plugin_type: "GeneratedEventTimestamp" }
+  maxEvents:   10          # Number of events to create
+  firstRun:    20000047    # Run number to use for this file
+  firstEvent:  1           # number of first event in the file
+}
+
+physics:
+{
+  producers:
+  {
+    cNeutronGen: @local::larfd_neutron
+    rns:       { module_type: "RandomNumberSaver" }
+  }
+
+  simulate:      [ rns, cNeutronGen ]
+  stream1:       [ out1 ]
+  trigger_paths: [ simulate ]
+  end_paths:     [ stream1 ]
+}
+
+outputs:
+{
+  out1:
+  {
+    module_type: RootOutput
+    fileName:    "prodradiological_neutron_larfd_gen.root" # Default file name, can override from command line with -o or --output
+    dataTier:    "generated"
+    compressionLevel: 1
+  }
+}
+
+services.Geometry.GDML: "larfd_rn1cm_noOpDet_v3.gdml"
