@@ -44,9 +44,9 @@ class TPCBuilder(gegede.builder.Builder):
         readPlaneV_lv = self.planeBldrV.get_volume('volTPCPlaneV')
         readPlaneU_lv = self.planeBldrU.get_volume('volTPCPlaneU')
         
-        self.tpcDim = [ self.driftDistance + 2*self.wirePlanePitch + plane_x,
-                        self.APAFrameDim[1],
-                        self.APAFrameDim[2] ]
+        self.tpcDim = [self.driftDistance  + 2*self.wirePlanePitch + plane_x,
+                       self.APAFrameDim[1],
+                       self.APAFrameDim[2]]
 
 
         # define TPC Active shape and volume
@@ -62,8 +62,10 @@ class TPCBuilder(gegede.builder.Builder):
 
 
         # define tpc shape and volume, will be placed by CryostatBuilder
-        tpcBox = geom.shapes.Box( self.name,             dx=0.5*self.tpcDim[0], 
-                                  dy=0.5*self.tpcDim[1], dz=0.5*self.tpcDim[2]  )
+        tpcBox = geom.shapes.Box(self.name,
+                                 dx=0.5*self.tpcDim[0], 
+                                 dy=0.5*self.tpcDim[1],
+                                 dz=0.5*self.tpcDim[2])
         tpc_lv = geom.structure.Volume('vol'+self.name, material='LAr', shape=tpcBox)
         self.add_volume(tpc_lv)
 
