@@ -10,12 +10,17 @@ Na2O,Na2O,2.27,g/cc ,Sodium,2,Oxygen,1,,,,,,,,,,,,,,,,,,
 P2O5,P2O5,1.562,g/cc ,Phosphorus,2,Oxygen,5,,,,,,,,,,,,,,,,,,
 Water,Water,1,g/cc ,Hydrogen,2,Oxygen,1,,,,,,,,,,,,,,,,,,
 Cellulose,Cellulose,0.54591,g/cc ,Carbon,6,Oxygen,5,Hydrogen,10,,,,,,,,,,,,,,,,
-PolyurethaneFoam,PolyurethaneFoam,0.13,g/cc ,Carbon,54,Oxygen,15,Nitrogen,4,Hydrogen,60,,,,,,,,,,,,,,
+PolyurethaneFoam,PolyurethaneFoam,0.09,g/cc,Carbon,54,Oxygen,15,Nitrogen,4,Hydrogen,60,,,,,,,,,,,,,,
 SS304L,SS304L,8.00,g/cc,Iron,1219,Carbon,3,Manganese,36,Phosphorus,1,Sulfur,1,Silicon,27,Chromium,365,Nickel,170,Aluminum,4,,,,
 K2O,K2O,2.35,g/cc,Potassium,2,Oxygen,1,,,,,,,,,,,,,,,,,,
 TiO2,TiO2,4.23,g/cc,Titanium,1,Oxygen,2,,,,,,,,,,,,,,,,,,
 MnO,MnO,5.37,g/cc,Manganese,1,Oxygen,1,,,,,,,,,,,,,,,,,,
 MnO2,MnO2,5.03,g/cc,Manganese,1,Oxygen,2,,,,,,,,,,,,,,,,,,
 N2O,N2O,1.98,g/cc,Nitrogen,2,Oxygen,1,,,,,,,,,,,,,,,,,,
-Shotcrete,Shotcrete,2.40,g/cc,Oxygen,5653,Iron,13,Calcium,2061,Potassium,28,Silicon,417,Aluminum,51,Magnesium,38,Sodium,12,Nitrogen,7,Carbon,1200,Hydrogen,472
-ShotConcrete,ShotConcrete,2.40,g/cc,Oxygen,5653,Iron,13,Calcium,2061,Potassium,28,Silicon,417,Aluminum,51,Magnesium,38,Sodium,12,Nitrogen,7,Carbon,1200,Hydrogen,472
+ShotcretePeteLein,ShotcretePeteLein,2.4,g/cc,Oxygen,5654,Iron,13,Calcium,2106,Potassium,28,Silicon,417,Aluminum,51,Magnesium,38,Sodium,12,Nitrogen,7,Carbon,1201,Hydrogen,472
+RadioShotcretePeteLein,RadioShotcretePeteLein,2.4,g/cc,Oxygen,5654,Iron,13,Calcium,2106,Potassium,28,Silicon,417,Aluminum,51,Magnesium,38,Sodium,12,Nitrogen,7,Carbon,1201,Hydrogen,472
+ConcretePeteLein,ConcretePeteLein,2.4,g/cc,Oxygen,5654,Iron,13,Calcium,2106,Potassium,28,Silicon,417,Aluminum,51,Magnesium,38,Sodium,12,Nitrogen,7,Carbon,1201,Hydrogen,472
+RadioConcretePeteLein,RadioConcretePeteLein,2.4,g/cc,Oxygen,5654,Iron,13,Calcium,2106,Potassium,28,Silicon,417,Aluminum,51,Magnesium,38,Sodium,12,Nitrogen,7,Carbon,1201,Hydrogen,472
+Wood,Wood,0.5,g/cc,Carbon,50,Oxygen,44,Hydrogen,6,,,,,,,,,,,,,,,,
+AverageDuneRock,AverageDuneRock,2.65,g/cc,Oxygen,5874,Iron,150,Manganese,3,Calcium,11,Potassium,155,Silicon,1985,Aluminum,494,Magnesium,358,Sodium,69,Hydrogen,900,,
+RadioAverageDuneRock,RadioAverageDuneRock,2.65,g/cc,Oxygen,5874,Iron,150,Manganese,3,Calcium,11,Potassium,155,Silicon,1985,Aluminum,494,Magnesium,358,Sodium,69,Hydrogen,900,,
