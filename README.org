@@ -1,6 +1,6 @@
 #+TITLE: duneggd - DUNE Geometries in GeGeDe
 
-This is a repository for developing any DUNE geometries with [[https://github.com/brettviren/gegede][gegede]]. Currently the only project using gegede is the Fine-Grained Tracker (FGT).
+This is a repository for developing any DUNE geometries with [[https://github.com/brettviren/gegede][gegede]] forked from [[https://github.com/tyleralion/duneggd][tyleralion/duneggd]]. Initially it was for the Fine-Grained Tracker (FGT) and has since grown to include support for several detectors.
 
 * Getting Started
 
