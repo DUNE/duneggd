@@ -224,176 +224,7 @@ class TPCBuilder(gegede.builder.Builder):
 
 
     def construct_crm(self, geom, quad):
-        """Construct one CRM (Cold Readout Module) quadrant."""
         
-        def make_box(name, dx, dy, dz):
-            """Create a box shape with given dimensions"""
-            return geom.shapes.Box(f"{name}_{quad}", dx=dx/2, dy=dy/2, dz=dz/2)
-        
-        def make_volume(name, shape, material="LAr", **params):
-            """Create a volume with given shape and parameters"""
-            vol = geom.structure.Volume(f"{name}_{quad}", material=material, shape=shape)
-            if params.get('params'):
-                for param_type, param_value in params['params']:
-                    vol.params.append((param_type, param_value))
-            return vol
-
-        # Calculate dimensions
-        dims = {
-            'active': (
-                self.params['driftTPCActive'],
-                self.params['widthPCBActive'] / 2,
-                self.params['lengthPCBActive']
-            ),
-            'tpc': (
-                self.params['driftTPCActive'] + self.params['ReadoutPlane'],
-                self.params['widthPCBActive'] / 2,
-                self.params['lengthPCBActive']
-            ),
-            'plane': (
-                self.params['padWidth'],
-                self.params['widthPCBActive'] / 2,
-                self.params['lengthPCBActive']
-            )
-        }
-
-        # Create shapes
-        shapes = {
-            'active': make_box('CRMActive', *dims['active']),
-            'tpc': make_box('CRM', *dims['tpc']),
-            **{plane: make_box(f'CRM{plane}Plane', *dims['plane']) 
-               for plane in ['U', 'V', 'Z']}
-        }
-
-        # Create volumes
-        vols = {
-            'active': make_volume('volTPCActive', shapes['active']),
-            'tpc': make_volume('volTPC', shapes['tpc']),
-            **{f'plane_{p}': make_volume(f'volTPCPlane{p}', shapes[p]) 
-               for p in ['U', 'V', 'Z']}
-        }
-        vols['tpc'].params.append(("SensDet","SimEnergyDeposit"))
-        vols['tpc'].params.append(("StepLimit","0.5*cm"))
-        vols['tpc'].params.append(("Efield","500*V/cm"))
-
-
-        # If wires are enabled
-        if hasattr(self, 'wire_configs'):
-            # Create wire shapes and volumes for U plane
-            if 'U' in self.wire_configs:
-                for wire in self.wire_configs['U'][quad]:
-                    # print(quad, wire[0],wire[3], wire[2])
-                    wid = wire[0]
-                    wlen = wire[3]
-                    wire_shape = geom.shapes.Tubs(
-                        f"CRMWireU{wid}_{quad}",
-                        rmax=self.params['padWidth']/2,
-                        dz=wlen/2.,
-                        sphi="0deg",
-                        dphi="360deg")
-                    wire_vol = geom.structure.Volume(
-                        f"volTPCWireU{wid}_{quad}",
-                        material="Copper_Beryllium_alloy25",
-                        shape=wire_shape)
-                    # Place wire in U plane
-                    pos = geom.structure.Position(
-                        f"posWireU{wid}_{quad}",
-                        x=Q("0cm"),
-                        y=wire[2],  # ycenter
-                        z=wire[1])  # xcenter
-                    rot = "rUWireAboutX"
-                    place = geom.structure.Placement(
-                        f"placeWireU{wid}_{quad}",
-                        volume=wire_vol,
-                        pos=pos,
-                        rot=rot)
-                    vols['plane_U'].placements.append(place.name)
-
-            # Create wire shapes and volumes for V plane  
-            if 'V' in self.wire_configs:
-                for wire in self.wire_configs['V'][quad]:
-                    wid = wire[0]
-                    wlen = wire[3]
-                    wire_shape = geom.shapes.Tubs(
-                        f"CRMWireV{wid}_{quad}",
-                        rmax=self.params['padWidth']/2,
-                        dz=wlen/2.,
-                        sphi="0deg",
-                        dphi="360deg")
-                    wire_vol = geom.structure.Volume(
-                        f"volTPCWireV{wid}_{quad}",
-                        material="Copper_Beryllium_alloy25",
-                        shape=wire_shape)
-                    # Place wire in V plane
-                    pos = geom.structure.Position(
-                        f"posWireV{wid}_{quad}",
-                        x=Q("0cm"),
-                        y=wire[2],  # ycenter 
-                        z=wire[1])  # xcenter
-                    rot = "rVWireAboutX"
-                    place = geom.structure.Placement(
-                        f"placeWireV{wid}_{quad}",
-                        volume=wire_vol,
-                        pos=pos,
-                        rot=rot)
-                    vols['plane_V'].placements.append(place.name)
-
-            # Create and place Z wires
-            nch = self.params['nChans']['Col']//2
-            zdelta = self.params['lengthPCBActive'] - self.params['wirePitch']['Z'] * nch
-            if zdelta < 0:
-                print("Warning: Z delta should be positive or 0")
-                zdelta = 0
-
-            zoffset = zdelta if quad <= 1 else 0
-            
-            wire_shape_z = geom.shapes.Tubs(
-                f"CRMWireZ{quad}",
-                rmax=self.params['padWidth']/2,
-                dz=dims['plane'][1]/2.,  # Half width
-                sphi="0deg",
-                dphi="360deg")
-            wire_vol_z = geom.structure.Volume(
-                f"volTPCWireZ{quad}",
-                material="Copper_Beryllium_alloy25", 
-                shape=wire_shape_z)
-
-            # Place Z wires
-            for i in range(nch):
-                zpos = zoffset + (i + 0.5) * self.params['wirePitch']['Z'] - 0.5 * self.params['lengthPCBActive']
-                if abs(0.5 * self.params['lengthPCBActive'] - abs(zpos)) < 0:
-                    raise ValueError(f"Cannot place wire {i} in view Z, plane too small")
-                    
-                wid = i + quad * nch
-                pos = geom.structure.Position(
-                    f"posWireZ{wid}_{quad}",
-                    x=Q("0cm"),
-                    y=Q("0cm"),
-                    z=zpos)
-                rot = "rPlus90AboutX"
-                place = geom.structure.Placement(
-                    f"placeWireZ{wid}_{quad}",
-                    volume=wire_vol_z,
-                    pos=pos,
-                    rot=rot)
-                vols['plane_Z'].placements.append(place.name)
-
-
-        # Define placements
-        placements = {
-            'active': (-self.params['ReadoutPlane']/2, 0, 0),
-            'plane_U': (0.5*dims['tpc'][0] - 2.5*self.params['padWidth'], 0, 0),
-            'plane_V': (0.5*dims['tpc'][0] - 1.5*self.params['padWidth'], 0, 0),
-            'plane_Z': (0.5*dims['tpc'][0] - 0.5*self.params['padWidth'], 0, 0)
-        }
-
-        # Place all volumes
-        for name, (x, y, z) in placements.items():
-            pos = geom.structure.Position(f"pos{name}{quad}_pos", x=x, y=Q('0cm'), z=Q('0cm'))
-            place = geom.structure.Placement(f"pos{name.split('_')[-1]}{quad}", 
-                                          volume=vols[name], 
-                                          pos=pos)
-            vols['tpc'].placements.append(place.name)
 
         # print(vols['tpc'].name)
 
@@ -461,8 +292,182 @@ class TPCBuilder(gegede.builder.Builder):
             }
 
         # Construct CRM volumes with wire configurations
+        def make_box(name, dx, dy, dz, quad=""):
+            """Create a box shape with given dimensions"""
+            return geom.shapes.Box(f"{name}{quad}", dx=dx/2, dy=dy/2, dz=dz/2)
+        
+        def make_volume(name, shape, material="LAr", quad="", **params):
+            """Create a volume with given shape and parameters"""
+            vol = geom.structure.Volume(f"{name}{quad}", material=material, shape=shape)
+            if params.get('params'):
+                for param_type, param_value in params['params']:
+                    vol.params.append((param_type, param_value))
+            return vol
+        
+        # Calculate dimensions
+        dims = {
+            'active': (
+                self.params['driftTPCActive'],
+                self.params['widthPCBActive'] / 2,
+                self.params['lengthPCBActive']
+            ),
+            'tpc': (
+                self.params['driftTPCActive'] + self.params['ReadoutPlane'],
+                self.params['widthPCBActive'] / 2,
+                self.params['lengthPCBActive']
+            ),
+            'plane': (
+                self.params['padWidth'],
+                self.params['widthPCBActive'] / 2,
+                self.params['lengthPCBActive']
+            )
+        }
+
+        # Create shapes
+        shapes = {
+            'active': make_box('CRMActive', *dims['active']),
+            **{plane: make_box(f'CRM{plane}Plane', *dims['plane']) 
+               for plane in ['U', 'V', 'Z']}
+        }
+
+        # Create volumes
+        vols = {
+            'active': make_volume('volTPCActive', shapes['active']),
+            **{f'plane_{p}': make_volume(f'volTPCPlane{p}', shapes[p]) 
+               for p in ['U', 'V', 'Z']}
+        }
+        vols['active'].params.append(("SensDet","SimEnergyDeposit"))
+        vols['active'].params.append(("StepLimit","0.5*cm"))
+        vols['active'].params.append(("Efield","500*V/cm"))
+
         for quad in range(4):
-            self.add_volume(self.construct_crm(geom, quad))
+            """Construct one CRM (Cold Readout Module) quadrant."""
+           
+            shapes['tpc'] = make_box('CRM', *dims['tpc'], quad=f"_{quad}")
+            vols['tpc'] = make_volume('volTPC', shapes['tpc'], quad=f"_{quad}")
+            vols['tpc'].params.append(("SensDet","SimEnergyDeposit"))
+            vols['tpc'].params.append(("StepLimit","0.5*cm"))
+            vols['tpc'].params.append(("Efield","500*V/cm"))
+        
+            # If wires are enabled
+            if hasattr(self, 'wire_configs'):
+                # Create wire shapes and volumes for U plane
+                if 'U' in self.wire_configs:
+                    for wire in self.wire_configs['U'][quad]:
+                        # print(quad, wire[0],wire[3], wire[2])
+                        wid = wire[0]
+                        wlen = wire[3]
+                        wire_shape = geom.shapes.Tubs(
+                            f"CRMWireU{wid}_{quad}",
+                            rmax=self.params['padWidth']/2,
+                            dz=wlen/2.,
+                            sphi="0deg",
+                            dphi="360deg")
+                        wire_vol = geom.structure.Volume(
+                            f"volTPCWireU{wid}_{quad}",
+                            material="Copper_Beryllium_alloy25",
+                            shape=wire_shape)
+                        # Place wire in U plane
+                        pos = geom.structure.Position(
+                            f"posWireU{wid}_{quad}",
+                            x=Q("0cm"),
+                            y=wire[2],  # ycenter
+                            z=wire[1])  # xcenter
+                        rot = "rUWireAboutX"
+                        place = geom.structure.Placement(
+                            f"placeWireU{wid}_{quad}",
+                            volume=wire_vol,
+                            pos=pos,
+                            rot=rot)
+                        vols['plane_U'].placements.append(place.name)
+
+                # Create wire shapes and volumes for V plane  
+                if 'V' in self.wire_configs:
+                    for wire in self.wire_configs['V'][quad]:
+                        wid = wire[0]
+                        wlen = wire[3]
+                        wire_shape = geom.shapes.Tubs(
+                            f"CRMWireV{wid}_{quad}",
+                            rmax=self.params['padWidth']/2,
+                            dz=wlen/2.,
+                            sphi="0deg",
+                            dphi="360deg")
+                        wire_vol = geom.structure.Volume(
+                            f"volTPCWireV{wid}_{quad}",
+                            material="Copper_Beryllium_alloy25",
+                            shape=wire_shape)
+                        # Place wire in V plane
+                        pos = geom.structure.Position(
+                            f"posWireV{wid}_{quad}",
+                            x=Q("0cm"),
+                            y=wire[2],  # ycenter 
+                            z=wire[1])  # xcenter
+                        rot = "rVWireAboutX"
+                        place = geom.structure.Placement(
+                            f"placeWireV{wid}_{quad}",
+                            volume=wire_vol,
+                            pos=pos,
+                            rot=rot)
+                        vols['plane_V'].placements.append(place.name)
+
+                # Create and place Z wires
+                nch = self.params['nChans']['Col']//2
+                zdelta = self.params['lengthPCBActive'] - self.params['wirePitch']['Z'] * nch
+                if zdelta < 0:
+                    print("Warning: Z delta should be positive or 0")
+                    zdelta = 0
+
+                zoffset = zdelta if quad <= 1 else 0
+                
+                wire_shape_z = geom.shapes.Tubs(
+                    f"CRMWireZ{quad}",
+                    rmax=self.params['padWidth']/2,
+                    dz=dims['plane'][1]/2.,  # Half width
+                    sphi="0deg",
+                    dphi="360deg")
+                wire_vol_z = geom.structure.Volume(
+                    f"volTPCWireZ{quad}",
+                    material="Copper_Beryllium_alloy25", 
+                    shape=wire_shape_z)
+
+                # Place Z wires
+                for i in range(nch):
+                    zpos = zoffset + (i + 0.5) * self.params['wirePitch']['Z'] - 0.5 * self.params['lengthPCBActive']
+                    if abs(0.5 * self.params['lengthPCBActive'] - abs(zpos)) < 0:
+                        raise ValueError(f"Cannot place wire {i} in view Z, plane too small")
+                        
+                    wid = i + quad * nch
+                    pos = geom.structure.Position(
+                        f"posWireZ{wid}_{quad}",
+                        x=Q("0cm"),
+                        y=Q("0cm"),
+                        z=zpos)
+                    rot = "rPlus90AboutX"
+                    place = geom.structure.Placement(
+                        f"placeWireZ{wid}_{quad}",
+                        volume=wire_vol_z,
+                        pos=pos,
+                        rot=rot)
+                    vols['plane_Z'].placements.append(place.name)
+
+
+            # Define placements
+            placements = {
+                'active': (-self.params['ReadoutPlane']/2, 0, 0),
+                'plane_U': (0.5*dims['tpc'][0] - 2.5*self.params['padWidth'], 0, 0),
+                'plane_V': (0.5*dims['tpc'][0] - 1.5*self.params['padWidth'], 0, 0),
+                'plane_Z': (0.5*dims['tpc'][0] - 0.5*self.params['padWidth'], 0, 0)
+            }
+
+            # Place all volumes
+            for name, (x, y, z) in placements.items():
+                pos = geom.structure.Position(f"pos{name}{quad}_pos", x=x, y=Q('0cm'), z=Q('0cm'))
+                place = geom.structure.Placement(f"pos{name.split('_')[-1]}{quad}", 
+                                              volume=vols[name], 
+                                              pos=pos)
+                vols['tpc'].placements.append(place.name)
+
+            self.add_volume(vols['tpc'])
 
 
     def construct(self, geom):

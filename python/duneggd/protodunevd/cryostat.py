@@ -191,7 +191,7 @@ class CryostatBuilder(gegede.builder.Builder):
                                         shape=gas_ar_shape_final)
 
         # Create the main cryostat volume
-        cryo_vol = geom.structure.Volume(self.name + '_volume',
+        cryo_vol = geom.structure.Volume('volCryostat',
                                     material='LAr',
                                     shape=cryo_shape)
 
