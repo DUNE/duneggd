@@ -345,9 +345,9 @@ class TPCBuilder(gegede.builder.Builder):
            
             shapes['tpc'] = make_box('CRM', *dims['tpc'], quad=f"_{quad}")
             vols['tpc'] = make_volume('volTPC', shapes['tpc'], quad=f"_{quad}")
-            vols['tpc'].params.append(("SensDet","SimEnergyDeposit"))
-            vols['tpc'].params.append(("StepLimit","0.5*cm"))
-            vols['tpc'].params.append(("Efield","500*V/cm"))
+            #  vols['tpc'].params.append(("SensDet","SimEnergyDeposit"))
+            #  vols['tpc'].params.append(("StepLimit","0.5*cm"))
+            #  vols['tpc'].params.append(("Efield","500*V/cm"))
         
             # If wires are enabled
             if hasattr(self, 'wire_configs'):
