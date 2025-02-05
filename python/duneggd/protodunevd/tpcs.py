@@ -246,8 +246,8 @@ class TPCBuilder(gegede.builder.Builder):
         if self.params.get('wires_on', 1):  # Check if wires are enabled
             # U wires
             winfo_u1 = generate_wires(
-            self.params['lengthPCBActive'], 
-            self.params['widthPCBActive'],
+            self.params['lengthPCBActive'] - Q('0.04cm'),
+            self.params['widthPCBActive'] - Q('0.04cm'),
             self.params['nChans']['Ind1'],
             self.params['wirePitch']['U'],
             self.params['wireAngle']['U'].to('deg').magnitude,
@@ -257,8 +257,8 @@ class TPCBuilder(gegede.builder.Builder):
 
             # V wires  
             winfo_v1 = generate_wires(
-            self.params['lengthPCBActive'],
-            self.params['widthPCBActive'], 
+            self.params['lengthPCBActive'] - Q('0.04cm'),
+            self.params['widthPCBActive'] - Q('0.04cm'),
             self.params['nChans']['Ind2'],
             self.params['wirePitch']['V'],
             self.params['wireAngle']['V'].to('deg').magnitude,
@@ -272,17 +272,17 @@ class TPCBuilder(gegede.builder.Builder):
 
             # Split wires for each quadrant
             winfo_u1a, winfo_u1b = split_wires(winfo_u1, 
-                               self.params['widthPCBActive'],
+                               self.params['widthPCBActive'] - Q('0.04cm'),
                                self.params['wireAngle']['U'].to('deg').magnitude)
             winfo_v1a, winfo_v1b = split_wires(winfo_v1,
-                               self.params['widthPCBActive'],
+                               self.params['widthPCBActive'] - Q('0.04cm'),
                                self.params['wireAngle']['V'].to('deg').magnitude)
 
             winfo_u2a, winfo_u2b = split_wires(winfo_u2,
-                               self.params['widthPCBActive'],
+                               self.params['widthPCBActive'] - Q('0.04cm'),
                                self.params['wireAngle']['U'].to('deg').magnitude)  
             winfo_v2a, winfo_v2b = split_wires(winfo_v2,
-                               self.params['widthPCBActive'],
+                               self.params['widthPCBActive'] - Q('0.04cm'),
                                self.params['wireAngle']['V'].to('deg').magnitude)
 
             # Store wire configurations for CRM construction
