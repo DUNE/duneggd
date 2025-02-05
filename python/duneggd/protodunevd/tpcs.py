@@ -326,15 +326,15 @@ class TPCBuilder(gegede.builder.Builder):
         # Create shapes
         shapes = {
             'active': make_box('CRMActive', *dims['active']),
-            **{plane: make_box(f'CRM{plane}Plane', *dims['plane']) 
+            **{plane: make_box(f'CRM{plane}Plane', *dims['plane'])
                for plane in ['U', 'V', 'Z']}
         }
 
         # Create volumes
         vols = {
-            'active': make_volume('volTPCActive', shapes['active']),
-            **{f'plane_{p}': make_volume(f'volTPCPlane{p}', shapes[p]) 
-               for p in ['U', 'V', 'Z']}
+            'active': make_volume('volTPCActive', shapes['active'])
+            #  **{f'plane_{p}': make_volume(f'volTPCPlane{p}', shapes[p])
+            #     for p in ['U', 'V', 'Z']}
         }
         vols['active'].params.append(("SensDet","SimEnergyDeposit"))
         vols['active'].params.append(("StepLimit","0.5*cm"))
@@ -342,13 +342,18 @@ class TPCBuilder(gegede.builder.Builder):
 
         for quad in range(4):
             """Construct one CRM (Cold Readout Module) quadrant."""
-           
+
             shapes['tpc'] = make_box('CRM', *dims['tpc'], quad=f"_{quad}")
-            vols['tpc'] = make_volume('volTPC', shapes['tpc'], quad=f"_{quad}")
+            vols.update({
+                'tpc': make_volume('volTPC', shapes['tpc'], quad=f"_{quad}"),
+                **{f'plane_{p}': make_volume(f'volTPCPlane{p}', shapes[p], quad=f"_{quad}")
+                   for p in ['U', 'V', 'Z']}
+            })
+            #  vols['tpc'] = make_volume('volTPC', shapes['tpc'], quad=f"_{quad}")
             #  vols['tpc'].params.append(("SensDet","SimEnergyDeposit"))
             #  vols['tpc'].params.append(("StepLimit","0.5*cm"))
             #  vols['tpc'].params.append(("Efield","500*V/cm"))
-        
+
             # If wires are enabled
             if hasattr(self, 'wire_configs'):
                 # Create wire shapes and volumes for U plane
@@ -381,7 +386,7 @@ class TPCBuilder(gegede.builder.Builder):
                             rot=rot)
                         vols['plane_U'].placements.append(place.name)
 
-                # Create wire shapes and volumes for V plane  
+                # Create wire shapes and volumes for V plane
                 if 'V' in self.wire_configs:
                     for wire in self.wire_configs['V'][quad]:
                         wid = wire[0]
