@@ -49,10 +49,13 @@ class TPCBuilder(gegede.builder.Builder):
         if globals.get("wires"):
             wires = self.get_builder("Wires")
             wireinfo = wires.WireInfo
+        rUWireAboutX = geom.structure.Rotation("rUWireAboutX", x=globals.get("wireAngleU"), y="0deg", z="0deg")
+        rVWireAboutX = geom.structure.Rotation("rVWireAboutX", x=globals.get("wireAngleV"), y="0deg", z="0deg")
 
         postpcs = {}
         tpcplanes_LV = {}
         pid = 0
+
         for plane in ['U', 'V', 'Z']:
             tpcplane_LV = geom.structure.Volume('vol'+self.name+'Plane'+plane,
                                                 material = "LAr",
