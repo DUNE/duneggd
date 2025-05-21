@@ -20,6 +20,7 @@ class Params:
     _world['pdsconfig'] = 0
     _world['wires'] = True
     _world['tpc'] = True
+    _world['simple'] = True
 
     _tpc['nChans'] = {'Ind1': 286, 'Ind1Bot': 96, 'Ind2': 286, 'Col': 292}
     _tpc['wirePitchU'] = Q('0.765cm')
@@ -49,8 +50,23 @@ class Params:
     _detenc['FracMassOfSteel'] = 0.5
     _detenc['SpaceSteelSupportToWall']    = Q('100cm')
     _detenc['SpaceSteelSupportToCeiling'] = Q('100cm')
-    _detenc['RockThickness'] = Q('4000cm')
+    _detenc['RockThickness'] = Q('40000cm')
 
+    # Cavern dimensions
+    _detenc['archRadius'] = Q('12.84m')
+    _detenc['archHalfAngle'] = Q('50deg')
+    _detenc['Cavern_x'] = Q('23.15m')
+    _detenc['Cavern_y'] = Q('19.80m')
+    _detenc['Cavern_z'] = 2*(Q('3.3m') + Q('5.55m') + Q('6m') + Q('60.45m'))
+    _detenc['ConcreteBeamGap_x'] = Q('100mm')
+    _detenc['ConcreteBeamGap_y'] = Q('427mm')
+    _detenc['ConcreteBeamGap_z'] = Q('427mm')
+    _detenc['RadioRockThickness'] = Q('1cm')
+    _detenc['ShotCreteThickness'] = Q('4in')
+    _detenc['ConcreteThickness'] = Q('11in')
+    _detenc['GroutThickness'] = Q('1in')
+
+    # field cage and downstream
     _fieldcage['FieldShaperInnerRadius'] = Q('0.5cm')
     _fieldcage['FieldShaperOuterRadius'] = Q('2.285cm')
     _fieldcage['FieldShaperOuterRadiusSlim'] = Q('0.75cm')
@@ -262,6 +278,8 @@ class Params:
                                                     type(self)._detenc['SteelSupport_x'] +                                                      \
                                                     type(self)._detenc['FoamPadding'] +                                                         \
                                                     type(self)._cryostat['Cryostat_x']/2
+        type(self)._detenc['posCryoInDetEnc_y'] = Q('0m')
+        type(self)._detenc['posCryoInDetEnc_z'] = Q('0m')
 
         type(self)._detenc['OriginXSet'] =  type(self)._detenc['DetEncX']/2.0 - type(self)._detenc['SteelSupport_x'] -                          \
                                             type(self)._detenc['FoamPadding'] - type(self)._cryostat['SteelThickness'] -                        \
@@ -282,6 +300,40 @@ class Params:
                                             type(self)._cryostat['SteelThickness'] - type(self)._cryostat['zLArBuffer'] -                       \
                                             type(self)._tpc['borderCRM']
 
+        if not type(self)._world['simple'] and type(self)._world['workspace'] == 0:
+            type(self)._detenc['DetEncX'] = type(self)._detenc['Cavern_x']
+            type(self)._detenc['DetEncY'] = type(self)._detenc['Cavern_y']
+            type(self)._detenc['DetEncZ'] = type(self)._detenc['Cavern_z']
+
+            type(self)._detenc['posCryoInDetEnc_x'] = -0.5*type(self)._detenc['DetEncX'] +              \
+                                                      type(self)._detenc['ConcreteBeamGap_x'] +         \
+                                                      type(self)._detenc['ConcreteThickness'] +         \
+                                                      type(self)._detenc['GroutThickness'] +            \
+                                                      0.5*type(self)._cryostat['Cryostat_x'] +            \
+                                                      0.5*type(self)._detenc['RadioRockThickness']
+            type(self)._detenc['posCryoInDetEnc_y'] = Q('0m')
+            type(self)._detenc['posCryoInDetEnc_z'] = -0.5*type(self)._detenc['DetEncZ'] +              \
+                                                      type(self)._detenc['ConcreteBeamGap_z'] +         \
+                                                      0.5*type(self)._cryostat['Cryostat_z']
+
+            type(self)._detenc['OriginXSet'] =  type(self)._detenc['DetEncX']/2.0  -                    \
+                                                type(self)._detenc['ConcreteBeamGap_x'] -               \
+                                                type(self)._detenc['ConcreteThickness'] -               \
+                                                type(self)._detenc['GroutThickness'] -                  \
+                                                0.5*type(self)._detenc['RadioRockThickness'] -          \
+                                                type(self)._cryostat['SteelThickness'] -                \
+                                                type(self)._cryostat['xLArBuffer'] -                    \
+                                                type(self)._tpc['driftTPCActive']/2.0 -                 \
+                                                type(self)._cathode['heightCathode']/2.
+            type(self)._detenc['OriginYSet'] =  type(self)._detenc['DetEncY']/2.0 -                     \
+                                                type(self)._cryostat['SteelThickness'] -                \
+                                                type(self)._cryostat['yLArBuffer'] -                    \
+                                                type(self)._tpc['widthTPCActive']/2.0
+            type(self)._detenc['OriginZSet'] =  type(self)._detenc['DetEncZ']/2.0 -                     \
+                                                type(self)._cryostat['SteelThickness'] -                \
+                                                type(self)._detenc['ConcreteBeamGap_z'] -               \
+                                                type(self)._cryostat['zLArBuffer'] -                    \
+                                                type(self)._tpc['borderCRM']
 
         # FieldCage parameters
         type(self)._fieldcage['FieldShaperLongTubeLength']  =  type(self)._tpc['lengthTPCActive']
