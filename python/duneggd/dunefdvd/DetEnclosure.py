@@ -30,7 +30,7 @@ class DetEnclosureBuilder(gegede.builder.Builder):
         cryostatLV = cryostat.get_volume()
         posCryoInDetEnc = geom.structure.Position("posCryoInDetEnc", x=globals.get("posCryoInDetEnc_x"),
                                                                      y=globals.get("posCryoInDetEnc_y"),
-                                                                     z=globals.get("posCryoInDetEnc_y"))
+                                                                     z=globals.get("posCryoInDetEnc_z"))
         cryostat_place = geom.structure.Placement('place'+cryostat.name,
                                                   volume = cryostatLV,
                                                   pos = posCryoInDetEnc)
@@ -242,7 +242,7 @@ class DetEnclosureBuilder(gegede.builder.Builder):
         cryostatLV = cryostat.get_volume()
         posCryoInDetEnc = geom.structure.Position("posCryoInDetEnc", x=globals.get("posCryoInDetEnc_x"),
                                                                      y=globals.get("posCryoInDetEnc_y"),
-                                                                     z=globals.get("posCryoInDetEnc_y"))
+                                                                     z=globals.get("posCryoInDetEnc_z"))
         cryostat_place = geom.structure.Placement('place'+cryostat.name,
                                                   volume = cryostatLV,
                                                   pos = posCryoInDetEnc)
