@@ -330,7 +330,8 @@ class CryostatBuilder(gegede.builder.Builder):
                 elif ara < 8:
                     ara_x = frCenter_x - globals.get("FirstFrameVertDist")
                 else:
-                    ara_x = -ara_x - globals.get("HeightGaseousAr") + globals.get("xLArBuffer")
+                    ara_x = -frCenter_x - globals.get("HeightGaseousAr") + globals.get("xLArBuffer") +              \
+                            globals.get("FirstFrameVertDist")
 
                 ara_y = 0.5*globals.get("Argon_y") - globals.get("FrameToArapucaSpaceLat")
                 delta_sens = -0.5*globals.get("ArapucaOut_y") +                                                     \
@@ -375,7 +376,8 @@ class CryostatBuilder(gegede.builder.Builder):
                 elif ara < 8:
                     ara_x = frCenter_x - globals.get("FirstFrameVertDist")
                 else:
-                    ara_x = -ara_x - globals.get("HeightGaseousAr") + globals.get("xLArBuffer")
+                    ara_x = -frCenter_x - globals.get("HeightGaseousAr") + globals.get("xLArBuffer") +              \
+                            globals.get("FirstFrameVertDist")
                 ara_y = frCenter_y
 
                 ara_z = 0.5*globals.get("Argon_z") - globals.get("FrameToArapucaSpaceLat")
