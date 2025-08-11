@@ -133,7 +133,9 @@ class CryostatBuilder(gegede.builder.Builder):
         cryo_LV = self.placeOpDetsShortLateral(geom, arapuca_LV[0], cryo_LV)
         cryo_LV = self.placeOpDetsMembOnly(geom, arapuca_LV[0], cryo_LV)
         # place the field shaper
-        cryo_LV = self.placeFieldShaper(geom, fs_LV, fsslim_LV, cryo_LV)
+        nfs = [0] if globals.get("nCRM_x") != 2 else [0, 1]
+        for reversed in nfs:
+            cryo_LV = self.placeFieldShaper(geom, fs_LV, fsslim_LV, cryo_LV, reversed)
         return
 
     # a number of placement helpers for cryostat and other constituent volumes
@@ -267,11 +269,10 @@ class CryostatBuilder(gegede.builder.Builder):
             frCenter_z = -0.5*globals.get("TPCEnclosure_z") + 0.5*globals.get("lengthCathode")
         return tpcenc_LV
 
-    def placeFieldShaper(self, geom, fs_LV, fsslim_LV, cryo_LV):
+    def placeFieldShaper(self, geom, fs_LV, fsslim_LV, cryo_LV, reversed):
         if not globals.get("FieldCage_switch"):
             return cryo_LV
 
-        reversed = 0 if globals.get("nCRM_x") != 2 else 1
         pos_y = -0.5*globals.get("FieldShaperShortTubeLength") - globals.get("FieldShaperTorRad")
         pos_z = Q('0cm')
 
@@ -288,9 +289,9 @@ class CryostatBuilder(gegede.builder.Builder):
 
             name = re.sub(r'vol', '', fs_LV.name)
             if (globals.get("pdsconfig") == 0 and dist <= Q('250cm')):
-                place = geom.structure.Placement('place%s%d_inCryo' % (fs_LV.name, i),
+                place = geom.structure.Placement('place%s_%d_%d_inCryo' % (fs_LV.name, int(reversed), i),
                                                  volume = fs_LV,
-                                                 pos = geom.structure.Position('pos%s_%d%d' %                       \
+                                                 pos = geom.structure.Position('pos%s_%d_%d' %                       \
                                                                                  (name, int(reversed), i),
                                                                                x = pos_x,
                                                                                y = pos_y,
@@ -298,9 +299,9 @@ class CryostatBuilder(gegede.builder.Builder):
                                                  rot = "rPlus90AboutZ")
                 cryo_LV.placements.append(place.name)
             else:
-                place_slim = geom.structure.Placement('place%s%d_inCryo' % (fsslim_LV.name, i),
+                place_slim = geom.structure.Placement('place%s_%d_%d_inCryo' % (fsslim_LV.name, int(reversed), i),
                                                       volume = fsslim_LV,
-                                                      pos = geom.structure.Position('pos%s_%d%d' %                  \
+                                                      pos = geom.structure.Position('pos%s_%d_%d' %                  \
                                                                                       (name, int(reversed), i),
                                                                                     x = pos_x,
                                                                                     y = pos_y,
