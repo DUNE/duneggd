@@ -5,7 +5,7 @@ from utils import *
 #Globals
 #--------------------#
 fht = Q('841.1cm')
-fst = Q('896.4cm') + Q('3.1cm')
+fst = Q('896.4cm') #+ Q('3.1cm')
 fzpl = Q('6473.2cm') + Q('0.1cm')
 
 fSpacing = Q('157.86cm')
@@ -67,10 +67,9 @@ class SupportEncBuilder(gegede.builder.Builder):
                         #placement_name = f'ShieldingFloor_{jj}_{ii}_placement'
 
                         placement = geom.structure.Placement(
-                                f'ShieldingFloor_{jj}_{ii}',
-                                volume = boxshapevolume,
-			        pos = geom.structure.Position(f'ShieldingFloor_{jj}_{ii}_position', x=xpos, y=ypos, z=zpos)
-			)
+                                        f'ShieldingFloor_{jj}_{ii}',
+                                        volume = boxshapevolume,
+                                        pos = geom.structure.Position(f'ShieldingFloor_{jj}_{ii}_position', x=xpos, y=ypos, z=zpos))
                         supportencLV.placements.append(placement.name)
                 zpl+=zbsp
 
@@ -166,19 +165,19 @@ class SupportEncBuilder(gegede.builder.Builder):
 
 
                 #pdb.set_trace()
-                shieldLeftPosition = geom.structure.Position(f'ShieldLeftPosition{ii}{jj}',-st,y,-zpl)
+                shieldLeftPosition = geom.structure.Position(f'ShieldLeftPosition{ii}{jj}',y,-st,-zpl)
                 shieldLeft = geom.structure.Placement(f'ShieldLeftPlacement{ii}{jj}',volume=shield,pos=shieldLeftPosition,rot= fcRotation)
                 supportencLV.placements.append(shieldLeft.name)
 
-                shieldRightPosition = geom.structure.Position(f'ShieldRightPosition{ii}{jj}',st,y,-zpl)
+                shieldRightPosition = geom.structure.Position(f'ShieldRightPosition{ii}{jj}',y,st,-zpl)
                 shieldRight = geom.structure.Placement(f'ShielRightPlacement{ii}{jj}',volume=shield,pos=shieldRightPosition,rot=fcRotation)
                 supportencLV.placements.append(shieldRight.name)
 
-                shieldLeftPosition = geom.structure.Position(f'ShieldLeft2Position{ii}{jj}',-st,y,zpl)
+                shieldLeftPosition = geom.structure.Position(f'ShieldLeft2Position{ii}{jj}',y,-st,zpl)
                 shieldLeft = geom.structure.Placement(f'ShieldLeft2Placement{ii}{jj}',volume=shield,pos=shieldLeftPosition,rot=fcRotation)
                 supportencLV.placements.append(shieldLeft.name)
 
-                shieldRightPosition = geom.structure.Position(f'ShieldRight2Position{ii}{jj}',st,y,zpl)
+                shieldRightPosition = geom.structure.Position(f'ShieldRight2Position{ii}{jj}',y,st,zpl)
                 shieldRight = geom.structure.Placement(f'ShieldRight2Placement{ii}{jj}',volume=shield,pos=shieldRightPosition,rot=fcRotation)
                 supportencLV.placements.append(shieldRight.name)
 
@@ -205,19 +204,19 @@ class SupportEncBuilder(gegede.builder.Builder):
                     y = yBotHole -BlockHeight/2 - 0.5*BlockHeightBottom - Q('5cm')
                     shield = ShieldBlockBotLog
 
-                ShieldBackPositon = geom.structure.Position(f'ShieldBackPosition{ii}{jj}', -xpl, y, -zpl)
+                ShieldBackPositon = geom.structure.Position(f'ShieldBackPosition{ii}{jj}',y,-xpl, -zpl)
                 ShielBackPlacement = geom.structure.Placement(f'ShieldBackPlacement{ii}{jj}',volume=shield,pos=ShieldBackPositon,rot=fc2Rotation)
                 supportencLV.placements.append(ShielBackPlacement.name)
 
-                ShieldBackPositon = geom.structure.Position(f'ShieldBack2Position{ii}{jj}', xpl, y, -zpl)
+                ShieldBackPositon = geom.structure.Position(f'ShieldBack2Position{ii}{jj}',y,xpl, -zpl)
                 ShielBackPlacement = geom.structure.Placement(f'ShieldBack2Placement{ii}{jj}',volume=shield,pos=ShieldBackPositon,rot=fc2Rotation)
                 supportencLV.placements.append(ShielBackPlacement.name)
 
-                ShieldFrontPosition = geom.structure.Position(f'ShieldFrontposition{ii}{jj}', -xpl,y,zpl)
+                ShieldFrontPosition = geom.structure.Position(f'ShieldFrontposition{ii}{jj}',y,-xpl,zpl)
                 ShieldFrontPlacement = geom.structure.Placement(f'ShieldFrontPlacement{ii}{jj}',volume=shield,pos=ShieldFrontPosition,rot=fc2Rotation)
                 supportencLV.placements.append(ShieldFrontPlacement.name)
 
-                ShieldFrontPosition = geom.structure.Position(f'ShieldFront2position{ii}{jj}', xpl,y,zpl)
+                ShieldFrontPosition = geom.structure.Position(f'ShieldFront2position{ii}{jj}',y,xpl,zpl)
                 ShieldFrontPlacement = geom.structure.Placement(f'ShieldFront2Placement{ii}{jj}',volume=shield,pos=ShieldFrontPosition,rot=fc2Rotation)
                 supportencLV.placements.append(ShieldFrontPlacement.name)
             xpl+=zbsp
