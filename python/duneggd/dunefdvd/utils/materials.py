@@ -22,7 +22,7 @@ def construct_materials(geom):
     e_ar = geom.matter.Element("argon", "Ar", 18, "39.9480g/mole")
     e_s = geom.matter.Element("sulphur", "S", 16, "32.065g/mole")
     e_p = geom.matter.Element("phosphorus", "P", 15, "30.973g/mole")
-
+    e_mn = geom.matter.Element("manganese", "Mn", 25, "54.94g/mole")
 
     m_vacuum = geom.matter.Mixture("Vacuum", density = "1.e-25g/cc",
 						components = (("videRef", 1.0),))
@@ -264,4 +264,16 @@ def construct_materials(geom):
     m_vm2000 = geom.matter.Molecule("vm2000", density = "1.2g/cc",
 						elements = (("carbon", 2),
 									("hydrogen", 4)))
+    WoodMaterial = geom.matter.Mixture("Wood", density = "0.5g/cc",
+						components = (("hydrogen", 0.06),
+									("carbon", 0.5),
+									("oxygen", 0.44)))
+    m_dunesteel = geom.matter.Mixture("fDuneSteel", density = "7.93g/cc",
+						components =(("iron", 0.958),
+									("manganese", 0.018),
+									("nickel", 0.008),
+									("silicon", 0.006),
+									("copper", 0.005),
+									("chromium", 0.003),
+									("carbon", 0.002)))
 

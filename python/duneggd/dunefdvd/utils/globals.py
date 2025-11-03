@@ -230,6 +230,11 @@ class Params:
         type(self)._tpc['TPC_y'] = type(self)._tpc['widthCRM']
         type(self)._tpc['TPC_z'] = type(self)._tpc['lengthCRM']
 
+        if not type(self)._world['simple'] and type(self)._world['workspace'] == 0:
+            type(self)._cryostat['Argon_x'] = Q('1360cm')
+            type(self)._cryostat['Argon_y'] = Q('1450cm')
+            type(self)._cryostat['HeightGaseousAr'] = Q('5cm')
+
         # Cryostat parameters
         if type(self)._world['workspace'] != 0:
             if type(self)._tpc['nCRM_x']== 1:

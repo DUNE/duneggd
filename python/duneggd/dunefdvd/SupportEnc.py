@@ -31,15 +31,29 @@ class SupportEncBuilder(gegede.builder.Builder):
         globals.SetDerived()
 
         supportencBox = geom.shapes.Box(self.name,
-                                     dx=0.5*globals.get("Cavern_x") - Q('100cm')- Q('5cm'),
+                                     dx=0.5*globals.get("Cavern_x") - Q('155cm')- Q('5cm'),
                                      dy=0.5*globals.get("Cavern_y") - Q('10cm') - Q('2cm'),
-                                     dz=0.5*globals.get("Cavern_z") - Q('10cm') - Q('2cm'))
+                                     dz=0.5*(fzpl) + Q('100cm'))
         supportencLV = geom.structure.Volume('vol'+self.name, material="Air", shape=supportencBox)
         self.add_volume(supportencLV)
         supportencLV = self.construct_place_IBeams(geom, supportencLV)
         supportencLV = self.construct_place_Belts(geom, supportencLV)
         supportencLV = self.construct_place_ShieldingWalls(geom, supportencLV)
         supportencLV = self.construct_place_ShieldingFloors(geom, supportencLV)
+
+        cryostat = self.get_builder("CryostatEnc")
+        cryostatLV = cryostat.get_volume()
+        #  posCryoInDetEnc = geom.structure.Position("posCryoInDetEnc", x=globals.get("posCryoInDetEnc_x"),
+        #                                                               y=globals.get("posCryoInDetEnc_y"),
+        #                                                               z=globals.get("posCryoInDetEnc_z"))
+        #  posCryoInDetEnc = geom.structure.Position("posCryoInDetEnc", x = Q("-100cm"),
+        #                                                               y=globals.get("posCryoInDetEnc_y"),
+        #                                                               z= Q("-4000cm"))
+        cryostat_place = geom.structure.Placement('place'+cryostat.name,
+                                                  volume = cryostatLV,
+                                                  pos = "posCenter")
+        supportencLV.placements.append(cryostat_place.name)
+
         return
 
     def construct_place_ShieldingFloors(self, geom, supportencLV):
@@ -268,7 +282,7 @@ class SupportEncBuilder(gegede.builder.Builder):
 						pos = tr2)
 
 
-        BeltHoleUniLog = geom.structure.Volume('BeltHoleUni', material='AirSteelMixture', shape=BeltHoleUni)
+        BeltHoleUniLog = geom.structure.Volume('BeltHoleUni', material='fDuneSteel', shape=BeltHoleUni)
 
 
         Union2 = geom.shapes.Boolean('Union2', type = 'union',
@@ -280,7 +294,7 @@ class SupportEncBuilder(gegede.builder.Builder):
 						second = BeltFlange,
 						pos = tr2)
 
-        BeltUniLog = geom.structure.Volume('BeltUni', material='AirSteelMixture', shape=BeltUni)
+        BeltUniLog = geom.structure.Volume('BeltUni', material='fDuneSteel', shape=BeltUni)
 
 
         zbsp = fSpacing
@@ -543,7 +557,7 @@ class SupportEncBuilder(gegede.builder.Builder):
 						first = fBeamTopVol1,
 						second = IBeamTopFlange,
 						pos = IBeamBottomPosition)
-        fIBeamTopLog = geom.structure.Volume('IBeamTop', material='ShotRock', shape=fBeamTopVol2)
+        fIBeamTopLog = geom.structure.Volume('IBeamTop', material='fDuneSteel', shape=fBeamTopVol2)
 
         fBeamBotVol1 = geom.shapes.Boolean('TopBeamUnion1.1', type = 'union',
 						first = IBeamBotMid,
@@ -553,7 +567,7 @@ class SupportEncBuilder(gegede.builder.Builder):
 						first = fBeamBotVol1,
 						second = IBeamTopFlange,
 						pos = IBeamBottomPosition)
-        fIBeamBotLog = geom.structure.Volume('IBeamBot', material='ShotRock', shape=fBeamBotVol2)
+        fIBeamBotLog = geom.structure.Volume('IBeamBot', material='fDuneSteel', shape=fBeamBotVol2)
 
         fBeamSideVol1 = geom.shapes.Boolean('TopBeamUnion1.3', type = 'union',
 						first = IBeamSideMid,
@@ -563,7 +577,7 @@ class SupportEncBuilder(gegede.builder.Builder):
 						first = fBeamSideVol1,
 						second = IBeamSideFlange,
 						pos = IBeamBottomPosition)
-        fIBeamSideLog = geom.structure.Volume('IBeamSide', material='ShotRock', shape=fBeamSideVol2)
+        fIBeamSideLog = geom.structure.Volume('IBeamSide', material='fDuneSteel', shape=fBeamSideVol2)
         #big box for ibeams volume
 
         ht = fht
