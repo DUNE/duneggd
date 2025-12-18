@@ -411,16 +411,8 @@ class SupportEncBuilder(gegede.builder.Builder):
         ht = fht
         st = fst
         zbsp = fSpacing
-        cpIT = Q('0')
-        cpIB = Q('0')
-        cpIL = Q('0')
-        cpIR = Q('0')
         zpl = Q('0cm')
-        mIL  = Q('0')
-        cpIF = Q('0')
-        cpIBk = Q('0')
         xpl = Q('0cm')
-        #  fzpl = Q('6473.2cm')
 
         for i in range(20):
                   IBeamTopPlacement = geom.structure.Placement(f'IBeamTopPLacement{i}',
