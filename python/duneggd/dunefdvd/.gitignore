@@ -1,3 +1,7 @@
 __pycache__/
 *.root
 compile_flags.txt
+*.C
+*.pl
+from_carlos/
+from_gleb/

@@ -17,8 +17,6 @@ fISidePortLoc = Q('5.907m')
 fIBotPortLoc = Q('5m')
 fIPortHoleRad = Q('40cm')
 
-#  fht = Q('841.1cm')
-#  fst = Q('896.4cm') #+ Q('3.1cm')
 fzpl = Q('65.84m') - fBeamDepth
 fst = 0.5*(Q('18.94m') - fBeamDepth) # y : set to be vertical (cryostat width in reality)
 fht = 0.5*(Q('17.84m') - fBeamDepth) # x : set to be lateral (cryostat height in reality)
@@ -48,12 +46,6 @@ class SupportEncBuilder(gegede.builder.Builder):
 
         cryostat = self.get_builder("CryostatEnc")
         cryostatLV = cryostat.get_volume()
-        #  posCryoInDetEnc = geom.structure.Position("posCryoInDetEnc", x=globals.get("posCryoInDetEnc_x"),
-        #                                                               y=globals.get("posCryoInDetEnc_y"),
-        #                                                               z=globals.get("posCryoInDetEnc_z"))
-        #  posCryoInDetEnc = geom.structure.Position("posCryoInDetEnc", x = Q("-100cm"),
-        #                                                               y=globals.get("posCryoInDetEnc_y"),
-        #                                                               z= Q("-4000cm"))
         cryostat_place = geom.structure.Placement('place'+cryostat.name,
                                                   volume = cryostatLV,
                                                   pos = "posCenter")
@@ -67,7 +59,7 @@ class SupportEncBuilder(gegede.builder.Builder):
         clearance = Q('2mm')
         BlockWidth = fSpacing-fIFlangeWaist-clearance
         box_shape = geom.shapes.Box('box_name', dy=(BlockWidth)/2, dx=(BlockThickness/2.0), dz=(BlockWidth/2))
-        boxshapevolume = geom.structure.Volume('boxshapeVol', material='Water', shape=box_shape)
+        boxshapevolume = geom.structure.Volume('boxshapeVol', material='BP', shape=box_shape)
         box_shape_pb = geom.shapes.Box('box_namePb', dy=(BlockWidth)/2, dx=(BlockThicknessPb/2.0), dz=(BlockWidth/2))
         boxshapevolumePb = geom.structure.Volume('boxshapeLeadVol', material='lead', shape=box_shape_pb)
 
@@ -113,7 +105,7 @@ class SupportEncBuilder(gegede.builder.Builder):
 					dy = (WaterThickness/2),
 					dx = (WaterHeight /2),
 					dz = (WaterWidth /2))
-        ShieldBlockContainerLog = geom.structure.Volume('ShieldBlockContainerLog', material='Water', shape=ShieldBlockContainer)
+        ShieldBlockContainerLog = geom.structure.Volume('ShieldBlockContainerLog', material='BP', shape=ShieldBlockContainer)
         ShieldBlockWaterLog = geom.structure.Volume('ShieldBlockWaterLog', material='Water', shape=ShieldBlockWater)
         waterPos = geom.structure.Placement('WaterInContainer', volume=ShieldBlockWaterLog)
         ShieldBlockContainerLog.placements.append(waterPos.name)
@@ -156,106 +148,6 @@ class SupportEncBuilder(gegede.builder.Builder):
                 supportencLV.placements.append(shieldBack.name)
 
         return supportencLV
-        #  eps = Q('21.5cm')
-        #  ht = fht
-        #  st = fst + Q('3.1cm')
-        #  fzpl = Q('6473.2cm')
-        #  yTopHole = -((fISideLength / 2) +(fIFlangeHeight / 2) - Q('590.7cm') -(3.0 * fIPortSpacing) +(9 * fIPortHoleRad)) / 2
-        #  yBotHole = -((fISideLength / 2) +(fIFlangeHeight / 2) - Q('590.7cm') -(-1.0 * fIPortSpacing) +(9 * fIPortHoleRad)) / 2
-        #  y1HoleUp = -((fISideLength / 2) +(fIFlangeHeight / 2) - Q('590.7cm') -(1.0 * fIPortSpacing) +(9 * fIPortHoleRad)) / 2
-        #  yTop = (ht-eps)
-        #
-        #
-        #  BlockWidth = fSpacing - fIFlangeWaist - Q('0.1cm') - Q('5cm')
-        #  BlockHeight = fIPortSpacing - Q('5cm')
-        #  BlockHeightTop = BlockHeight * 0.63
-        #  BlockHeightBottom = BlockHeight * 0.15
-        #  fcRotation = geom.structure.Rotation('fcRotation', x= "0deg", y= "0deg",z= "0deg")
-        #  fc2Rotation = geom.structure.Rotation('fc2Rotation',x= "90deg", y= "0deg",z= "0deg")
-        #  fc3Rotation = geom.structure.Rotation('fc3Rotation', x= "0deg", y= "0deg",z= "90deg")
-        #
-        #  zbsp = fSpacing
-        #  zpl = zbsp /2
-        #  xpl = Q('0cm')
-        #
-        #  for ii in range(20):
-        #      for jj in range(5):
-        #          y = "0cm"
-        #          shield = ShieldBlockLog
-        #          if(jj ==3):
-        #              y = yTopHole + BlockHeight/2 + BlockHeightTop/2 + Q('5cm')
-        #              shield = ShieldBlockTopLog
-        #          if(jj==2):
-        #              y = yBotHole
-        #          if(jj==1):
-        #              y = y1HoleUp
-        #          if(jj==0):
-        #              y =yTopHole
-        #          if(jj==4):
-        #              y= (yBotHole)-(BlockHeight/2) - (0.05*BlockHeightBottom)- (Q('5cm'))
-        #              shield = ShieldBlockBotLog
-        #
-        #          if(jj== 0 or jj==3):
-        #              continue
-        #
-        #
-        #          #pdb.set_trace()
-        #          shieldLeftPosition = geom.structure.Position(f'ShieldLeftPosition{ii}{jj}',y,-st,-zpl)
-        #          shieldLeft = geom.structure.Placement(f'ShieldLeftPlacement{ii}{jj}',volume=shield,pos=shieldLeftPosition,rot= fcRotation)
-        #          supportencLV.placements.append(shieldLeft.name)
-        #
-        #          shieldRightPosition = geom.structure.Position(f'ShieldRightPosition{ii}{jj}',y,st,-zpl)
-        #          shieldRight = geom.structure.Placement(f'ShielRightPlacement{ii}{jj}',volume=shield,pos=shieldRightPosition,rot=fcRotation)
-        #          supportencLV.placements.append(shieldRight.name)
-        #
-        #          shieldLeftPosition = geom.structure.Position(f'ShieldLeft2Position{ii}{jj}',y,-st,zpl)
-        #          shieldLeft = geom.structure.Placement(f'ShieldLeft2Placement{ii}{jj}',volume=shield,pos=shieldLeftPosition,rot=fcRotation)
-        #          supportencLV.placements.append(shieldLeft.name)
-        #
-        #          shieldRightPosition = geom.structure.Position(f'ShieldRight2Position{ii}{jj}',y,st,zpl)
-        #          shieldRight = geom.structure.Placement(f'ShieldRight2Placement{ii}{jj}',volume=shield,pos=shieldRightPosition,rot=fcRotation)
-        #          supportencLV.placements.append(shieldRight.name)
-        #
-        #      zpl += zbsp
-        #
-        #  xpl = zbsp/2
-        #  zpl = fzpl/2
-        #  for ii in range(5):
-        #      for jj in range(5):
-        #          y = "0cm"
-        #          shield = ShieldBlockLog
-        #          if(jj==3):
-        #              y = yTopHole + BlockHeight/2 + BlockHeightTop/2 + Q('5cm')
-        #              shield = ShieldBlockTopLog
-        #
-        #          if(jj==2):
-        #              y = yBotHole
-        #
-        #          if(jj==1):
-        #              y = y1HoleUp
-        #          if(jj==0):
-        #              y =yTopHole
-        #          if(jj==4):
-        #              y = yBotHole -BlockHeight/2 - 0.5*BlockHeightBottom - Q('5cm')
-        #              shield = ShieldBlockBotLog
-        #
-        #          ShieldBackPositon = geom.structure.Position(f'ShieldBackPosition{ii}{jj}',y,-xpl, -zpl)
-        #          ShielBackPlacement = geom.structure.Placement(f'ShieldBackPlacement{ii}{jj}',volume=shield,pos=ShieldBackPositon,rot=fc2Rotation)
-        #          supportencLV.placements.append(ShielBackPlacement.name)
-        #
-        #          ShieldBackPositon = geom.structure.Position(f'ShieldBack2Position{ii}{jj}',y,xpl, -zpl)
-        #          ShielBackPlacement = geom.structure.Placement(f'ShieldBack2Placement{ii}{jj}',volume=shield,pos=ShieldBackPositon,rot=fc2Rotation)
-        #          supportencLV.placements.append(ShielBackPlacement.name)
-        #
-        #          ShieldFrontPosition = geom.structure.Position(f'ShieldFrontposition{ii}{jj}',y,-xpl,zpl)
-        #          ShieldFrontPlacement = geom.structure.Placement(f'ShieldFrontPlacement{ii}{jj}',volume=shield,pos=ShieldFrontPosition,rot=fc2Rotation)
-        #          supportencLV.placements.append(ShieldFrontPlacement.name)
-        #
-        #          ShieldFrontPosition = geom.structure.Position(f'ShieldFront2position{ii}{jj}',y,xpl,zpl)
-        #          ShieldFrontPlacement = geom.structure.Placement(f'ShieldFront2Placement{ii}{jj}',volume=shield,pos=ShieldFrontPosition,rot=fc2Rotation)
-        #          supportencLV.placements.append(ShieldFrontPlacement.name)
-        #      xpl+=zbsp
-        #  return supportencLV
 
     def construct_place_Belts(self, geom, supportencLV):
         ht = fht
@@ -353,8 +245,6 @@ class SupportEncBuilder(gegede.builder.Builder):
                                                             	volume = BeltHoleUniLog)
                 supportencLV.placements.append(BeltBot.name)
 
-                #  if abs(jj) in (1, 2, 4):
-
                 BeltTop = geom.structure.Placement(f'BeltTop_{jj}_{ii}',
 
                                                             pos = geom.structure.Position(f'BeltTopPlacement_{jj}_{ii}',
@@ -433,19 +323,19 @@ class SupportEncBuilder(gegede.builder.Builder):
         IBeamTopFlange = geom.shapes.Box('IBeamTopFlange',
 					dy = (fIFlangeWidth /2),
 					dx = (fIFlangeThick /2),
-					dz = (fITopLength /2))#creating a IBeamTopFlange object
+					dz = (fITopLength /2))  #creating a IBeamTopFlange object
         IBeamTopMid = geom.shapes.Box('IBeamTopMid',
 					dy = (fIFlangeWaist /2),
 					dx = (fIFlangeHeight /2),
-					dz = (fITopLength /2))#creating a IBeamTopMid object
+					dz = (fITopLength /2))  #creating a IBeamTopMid object
         IBeamSideFlange = geom.shapes.Box('IBeamSideFlange',
 					dy = (fIFlangeWidth /2),
 					dx = (fIFlangeThick /2),
-					dz = (fISideLength /2))#creating a IBeamSideFlange object
+					dz = (fISideLength /2))  #creating a IBeamSideFlange object
         IBeamSideMidtmp0 = geom.shapes.Box('IBeamSideMid',
 					dy = (fIFlangeWaist /2),
 					dx = (fIFlangeHeight /2),
-					dz = (fISideLength /2))#creating a IBeamSideMid object
+					dz = (fISideLength /2))  #creating a IBeamSideMid object
         IBeamPort = geom.shapes.Tubs('IBeamPortTub',
 					rmin = Q('0cm'),
 					rmax = fIPortHoleRad,
