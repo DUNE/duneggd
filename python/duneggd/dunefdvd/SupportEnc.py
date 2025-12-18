@@ -4,19 +4,24 @@ from utils import *
 
 #Globals
 #--------------------#
-fht = Q('841.1cm')
-fst = Q('896.4cm') #+ Q('3.1cm')
-fzpl = Q('6473.2cm') + Q('0.1cm')
-
-fSpacing = Q('157.86cm')
+fSpacing = Q('64.732/41.0m')
 fIFlangeWidth = Q('40.2cm')
 fIFlangeThick = Q('4cm')
 fIFlangeWaist = Q('2.2cm')
-fIFlangeHeight = Q('110.8cm')
-fIPortSpacing = Q('400cm')
-fITopLength = Q('1783.2cm') + fIFlangeHeight
-fISideLength = Q('1473.2cm') + fIFlangeHeight
+fBeamDepth = Q('110.8cm')
+fIFlangeHeight = fBeamDepth - 2*fIFlangeThick
+fITopLength = Q('1894cm')
+fISideLength = Q('1784cm') - 2*fBeamDepth
+fIPortSpacing = Q('4m')
+fISidePortLoc = Q('5.907m')
+fIBotPortLoc = Q('5m')
 fIPortHoleRad = Q('40cm')
+
+#  fht = Q('841.1cm')
+#  fst = Q('896.4cm') #+ Q('3.1cm')
+fzpl = Q('65.84m') - fBeamDepth
+fst = 0.5*(Q('18.94m') - fBeamDepth) # y : set to be vertical (cryostat width in reality)
+fht = 0.5*(Q('17.84m') - fBeamDepth) # x : set to be lateral (cryostat height in reality)
 
 class SupportEncBuilder(gegede.builder.Builder):
     def configure(self, **kwds):
@@ -31,15 +36,15 @@ class SupportEncBuilder(gegede.builder.Builder):
         globals.SetDerived()
 
         supportencBox = geom.shapes.Box(self.name,
-                                     dx=0.5*globals.get("Cavern_x") - Q('155cm')- Q('5cm'),
-                                     dy=0.5*globals.get("Cavern_y") - Q('10cm') - Q('2cm'),
-                                     dz=0.5*(fzpl) + Q('100cm'))
+                                     dx=0.5*(Q('17.84m')+Q('46.2cm')),  # have shield blocks of 23cm thickness (from Juergen)
+                                     dy=0.5*(Q('18.94m')+Q('46.2cm')),  # have shield blocks of 23cm thickness (from Juergen)
+                                     dz=0.5*(Q('65.84m')+fIFlangeWidth+Q('60cm')))
         supportencLV = geom.structure.Volume('vol'+self.name, material="Air", shape=supportencBox)
         self.add_volume(supportencLV)
         supportencLV = self.construct_place_IBeams(geom, supportencLV)
         supportencLV = self.construct_place_Belts(geom, supportencLV)
-        supportencLV = self.construct_place_ShieldingWalls(geom, supportencLV)
         supportencLV = self.construct_place_ShieldingFloors(geom, supportencLV)
+        supportencLV = self.construct_place_ShieldingWalls(geom, supportencLV)
 
         cryostat = self.get_builder("CryostatEnc")
         cryostatLV = cryostat.get_volume()
@@ -57,202 +62,227 @@ class SupportEncBuilder(gegede.builder.Builder):
         return
 
     def construct_place_ShieldingFloors(self, geom, supportencLV):
-        BlockThickness = Q('0.40m')
-        zbsp = fSpacing
-        BlockWidth = fSpacing-fIFlangeWaist-Q('0.001m') - Q('0.050m')
-        box_shape = geom.shapes.Box('box_name', dy=(zbsp-Q('0.050m'))/2, dx=(BlockThickness/2.0), dz=(BlockWidth/2))
+        BlockThickness = Q('0.30m')
+        BlockThicknessPb = Q('2.5cm')
+        clearance = Q('2mm')
+        BlockWidth = fSpacing-fIFlangeWaist-clearance
+        box_shape = geom.shapes.Box('box_name', dy=(BlockWidth)/2, dx=(BlockThickness/2.0), dz=(BlockWidth/2))
         boxshapevolume = geom.structure.Volume('boxshapeVol', material='Water', shape=box_shape)
+        box_shape_pb = geom.shapes.Box('box_namePb', dy=(BlockWidth)/2, dx=(BlockThicknessPb/2.0), dz=(BlockWidth/2))
+        boxshapevolumePb = geom.structure.Volume('boxshapeLeadVol', material='lead', shape=box_shape_pb)
 
-        eps = Q('21.5cm')
         zbsp = fSpacing
-        zpl=zbsp/2
-        for ii in range(20):
-                for jj in range(-5, 6):
+        yPbBlock = -fht - 0.5*fIFlangeHeight + 0.5*BlockThicknessPb
+        yBlock  = yPbBlock + BlockThicknessPb + 0.5*BlockThickness
+        for ii in range(-1, 41):
+                zpos_i = (ii-1-19)*zbsp + zbsp/2
+                for jj in range(-1, 11):
+                        xpos_i = (jj-1-4)*zbsp + zbsp/2
                         box_name = f'ShieldingFloor_{jj}_{ii}'
-
-                        #box_lv = geom.structure.Volume(box_name + '_lv', material=geom.get_material("Water"), shape=box_shape)
-                        #box_lv.params.append(("color", "blue"))
-
-                        xpos = -fht + eps
-                        ypos = (jj) * zbsp
-                        zpos = zpl
-
-                        #pos_name = f'ShieldingFloor_pos'
-                        #placement_name = f'ShieldingFloor_{jj}_{ii}_placement'
 
                         placement = geom.structure.Placement(
                                         f'ShieldingFloor_{jj}_{ii}',
                                         volume = boxshapevolume,
-                                        pos = geom.structure.Position(f'ShieldingFloor_{jj}_{ii}_position', x=xpos, y=ypos, z=zpos))
+                                        pos = geom.structure.Position(f'ShieldingFloor_{jj}_{ii}_position', x=yBlock, y=xpos_i, z=zpos_i))
                         supportencLV.placements.append(placement.name)
-                zpl+=zbsp
 
-        zpl=-zbsp/2
-        for ii in range(0, -20, -1):
-                for jj in range(-5, 6):
-                        box_name = f'ShieldingFloor_{jj}_{ii}'
-
-                        #box_lv = geom.structure.Volume(box_name + '_lv', material=geom.get_material("Water"), shape=box_shape)
-                        #box_lv.params.append(("color", "blue"))
-
-                        xpos = -fht + eps
-                        ypos = (jj) * zbsp
-                        zpos = zpl
-
-                        #pos_name = f'ShieldingFloor_pos'
-                        #placement_name = f'ShieldingFloor2_{jj}_{ii}_placement'
-
-                        placement = geom.structure.Placement(
-                                f'ShieldingFloor2_{jj}_{ii}',
-                                volume = boxshapevolume,
-                                pos = geom.structure.Position(f'ShieldingFloor2_{jj}_{ii}_position', x=xpos, y=ypos, z=zpos)
-                        )
-                        supportencLV.placements.append(placement.name)
-                zpl-=zbsp
+                        placement2 = geom.structure.Placement(
+                                        f'ShieldingFloorPb_{jj}_{ii}',
+                                        volume = boxshapevolumePb,
+                                        pos = geom.structure.Position(f'ShieldingFloorPb_{jj}_{ii}_position', x=yPbBlock, y=xpos_i, z=zpos_i))
+                        supportencLV.placements.append(placement2.name)
         return supportencLV
 
     def construct_place_ShieldingWalls(self, geom, supportencLV):
-        eps = Q('21.5cm')
-        ht = fht
-        st = fst + Q('3.1cm')
-        fzpl = Q('6473.2cm')
-        yTopHole = -((fISideLength / 2) +(fIFlangeHeight / 2) - Q('590.7cm') -(3.0 * fIPortSpacing) +(9 * fIPortHoleRad)) / 2
-        yBotHole = -((fISideLength / 2) +(fIFlangeHeight / 2) - Q('590.7cm') -(-1.0 * fIPortSpacing) +(9 * fIPortHoleRad)) / 2
-        y1HoleUp = -((fISideLength / 2) +(fIFlangeHeight / 2) - Q('590.7cm') -(1.0 * fIPortSpacing) +(9 * fIPortHoleRad)) / 2
-        yTop = (ht-eps)
+        BlockThickness = Q('23cm')
+        BlockHeight = Q('100cm')
+        BlockWidth = Q('100cm')
+        ContainerThickness = Q('2mm')
+        WaterThickness = BlockThickness - 2*ContainerThickness
+        WaterHeight = BlockHeight - 2*ContainerThickness
+        WaterWidth = BlockWidth - 2*ContainerThickness
+        nBlocksLongSide = 64
+        nBlocksShortSide = 19
+        nBlocksStack = 9
 
-
-        BlockWidth = fSpacing - fIFlangeWaist - Q('0.1cm') - Q('5cm')
-        BlockHeight = fIPortSpacing - Q('5cm')
-        BlockHeightTop = BlockHeight * 0.63
-        BlockHeightBottom = BlockHeight * 0.15
-
-        fBlockThickness = Q('23cm')
-
-
-        ShieldBlock = geom.shapes.Box('ShieldBlock',
-					dy = (fBlockThickness /2),
+        ShieldBlockContainer = geom.shapes.Box('ShieldBlockContainer',
+					dy = (BlockThickness/2),
 					dx = (BlockHeight /2),
 					dz = (BlockWidth /2))
+        ShieldBlockWater = geom.shapes.Box('ShieldBlockWater',
+					dy = (WaterThickness/2),
+					dx = (WaterHeight /2),
+					dz = (WaterWidth /2))
+        ShieldBlockContainerLog = geom.structure.Volume('ShieldBlockContainerLog', material='Water', shape=ShieldBlockContainer)
+        ShieldBlockWaterLog = geom.structure.Volume('ShieldBlockWaterLog', material='Water', shape=ShieldBlockWater)
+        waterPos = geom.structure.Placement('WaterInContainer', volume=ShieldBlockWaterLog)
+        ShieldBlockContainerLog.placements.append(waterPos.name)
 
-        ShieldBlockTop = geom.shapes.Box('ShieldBlockTop',
-					dy = (fBlockThickness /2),
-					dx = (BlockHeightTop /2),
-					dz = (BlockWidth /2))
+        origin_z = -nBlocksLongSide * BlockWidth/2 + BlockWidth/2
+        origin_y = -fht - 0.5*fBeamDepth + BlockHeight/2
+        xLatWall = fITopLength/2 + BlockThickness/2
 
-        ShieldBlockBot = geom.shapes.Box('ShieldBlockBot',
-					dy = (fBlockThickness /2),
-					dx = (BlockHeightBottom /2),
-					dz = (BlockWidth /2))
+        for ii in range(nBlocksLongSide+2):
+            zpos = origin_z + (ii - 1) * BlockWidth
+            for jj in range(nBlocksStack-1):
+                ypos = origin_y + (jj) * BlockHeight
+                shieldPosPlus = geom.structure.Position(f'ShieldLatContainerPlusXPos_{ii}_{jj}', ypos, xLatWall, zpos)
+                shieldPosMinus = geom.structure.Position(f'ShieldLatContainerMinusXPos_{ii}_{jj}', ypos, -xLatWall, zpos)
+                shieldRight = geom.structure.Placement(f'ShieldLatContainerPlusXPlace_{ii}_{jj}',
+                                                      volume = ShieldBlockContainerLog,
+                                                      pos=shieldPosPlus)
+                supportencLV.placements.append(shieldRight.name)
+                shieldLeft = geom.structure.Placement(f'ShieldLatContainerMinusXPlace_{ii}_{jj}',
+                                                      volume = ShieldBlockContainerLog,
+                                                      pos=shieldPosMinus)
+                supportencLV.placements.append(shieldLeft.name)
 
-        fcRotation = geom.structure.Rotation('fcRotation', x= "0deg", y= "0deg",z= "0deg")
+        origin_x = -fst - 0.5*fBeamDepth + 0.5*BlockWidth
+        zFrontWall = 0.5*(fzpl + fBeamDepth + BlockThickness) + Q('25cm')
         fc2Rotation = geom.structure.Rotation('fc2Rotation',x= "90deg", y= "0deg",z= "0deg")
-        fc3Rotation = geom.structure.Rotation('fc3Rotation', x= "0deg", y= "0deg",z= "90deg")
+        for ii in range(2*nBlocksStack):
+            ypos = origin_y + (ii) * BlockHeight
+            for jj in range(nBlocksShortSide):
+                xpos = origin_x + (jj)*BlockWidth
+                shieldPosFront = geom.structure.Position(f'ShieldLatContainerFrontZPos_{ii}_{jj}', ypos, xpos, zFrontWall)
+                shieldPosBack = geom.structure.Position(f'ShieldLatContainerBackZPos_{ii}_{jj}', ypos, xpos, -zFrontWall)
+                shieldFront = geom.structure.Placement(f'ShieldLatContainerFrontZPlace_{ii}_{jj}',
+                                                      volume = ShieldBlockContainerLog,
+                                                      pos=shieldPosFront, rot=fc2Rotation)
+                supportencLV.placements.append(shieldFront.name)
+                shieldBack = geom.structure.Placement(f'ShieldLatContainerBackZPlace_{ii}_{jj}',
+                                                      volume = ShieldBlockContainerLog,
+                                                      pos=shieldPosBack, rot=fc2Rotation)
+                supportencLV.placements.append(shieldBack.name)
 
-        ShieldBlockLog = geom.structure.Volume('ShieldBlockLog', material='Water', shape=ShieldBlock)
-        ShieldBlockTopLog = geom.structure.Volume('ShieldBlockTopLog', material='Water', shape=ShieldBlockTop)
-        ShieldBlockBotLog = geom.structure.Volume('ShieldBlockBotLog', material='Water', shape=ShieldBlockBot)
-
-        zbsp = fSpacing
-        zpl = zbsp /2
-        xpl = Q('0cm')
-
-        for ii in range(20):
-            for jj in range(5):
-                y = "0cm"
-                shield = ShieldBlockLog
-                if(jj ==3):
-                    y = yTopHole + BlockHeight/2 + BlockHeightTop/2 + Q('5cm')
-                    shield = ShieldBlockTopLog
-                if(jj==2):
-                    y = yBotHole
-                if(jj==1):
-                    y = y1HoleUp
-                if(jj==0):
-                    y =yTopHole
-                if(jj==4):
-                    y= (yBotHole)-(BlockHeight/2) - (0.05*BlockHeightBottom)- (Q('5cm'))
-                    shield = ShieldBlockBotLog
-
-                if(jj== 0 or jj==3):
-                    continue
-
-
-                #pdb.set_trace()
-                shieldLeftPosition = geom.structure.Position(f'ShieldLeftPosition{ii}{jj}',y,-st,-zpl)
-                shieldLeft = geom.structure.Placement(f'ShieldLeftPlacement{ii}{jj}',volume=shield,pos=shieldLeftPosition,rot= fcRotation)
-                supportencLV.placements.append(shieldLeft.name)
-
-                shieldRightPosition = geom.structure.Position(f'ShieldRightPosition{ii}{jj}',y,st,-zpl)
-                shieldRight = geom.structure.Placement(f'ShielRightPlacement{ii}{jj}',volume=shield,pos=shieldRightPosition,rot=fcRotation)
-                supportencLV.placements.append(shieldRight.name)
-
-                shieldLeftPosition = geom.structure.Position(f'ShieldLeft2Position{ii}{jj}',y,-st,zpl)
-                shieldLeft = geom.structure.Placement(f'ShieldLeft2Placement{ii}{jj}',volume=shield,pos=shieldLeftPosition,rot=fcRotation)
-                supportencLV.placements.append(shieldLeft.name)
-
-                shieldRightPosition = geom.structure.Position(f'ShieldRight2Position{ii}{jj}',y,st,zpl)
-                shieldRight = geom.structure.Placement(f'ShieldRight2Placement{ii}{jj}',volume=shield,pos=shieldRightPosition,rot=fcRotation)
-                supportencLV.placements.append(shieldRight.name)
-
-            zpl += zbsp
-
-        xpl = zbsp/2
-        zpl = fzpl/2
-        for ii in range(5):
-            for jj in range(5):
-                y = "0cm"
-                shield = ShieldBlockLog
-                if(jj==3):
-                    y = yTopHole + BlockHeight/2 + BlockHeightTop/2 + Q('5cm')
-                    shield = ShieldBlockTopLog
-
-                if(jj==2):
-                    y = yBotHole
-
-                if(jj==1):
-                    y = y1HoleUp
-                if(jj==0):
-                    y =yTopHole
-                if(jj==4):
-                    y = yBotHole -BlockHeight/2 - 0.5*BlockHeightBottom - Q('5cm')
-                    shield = ShieldBlockBotLog
-
-                ShieldBackPositon = geom.structure.Position(f'ShieldBackPosition{ii}{jj}',y,-xpl, -zpl)
-                ShielBackPlacement = geom.structure.Placement(f'ShieldBackPlacement{ii}{jj}',volume=shield,pos=ShieldBackPositon,rot=fc2Rotation)
-                supportencLV.placements.append(ShielBackPlacement.name)
-
-                ShieldBackPositon = geom.structure.Position(f'ShieldBack2Position{ii}{jj}',y,xpl, -zpl)
-                ShielBackPlacement = geom.structure.Placement(f'ShieldBack2Placement{ii}{jj}',volume=shield,pos=ShieldBackPositon,rot=fc2Rotation)
-                supportencLV.placements.append(ShielBackPlacement.name)
-
-                ShieldFrontPosition = geom.structure.Position(f'ShieldFrontposition{ii}{jj}',y,-xpl,zpl)
-                ShieldFrontPlacement = geom.structure.Placement(f'ShieldFrontPlacement{ii}{jj}',volume=shield,pos=ShieldFrontPosition,rot=fc2Rotation)
-                supportencLV.placements.append(ShieldFrontPlacement.name)
-
-                ShieldFrontPosition = geom.structure.Position(f'ShieldFront2position{ii}{jj}',y,xpl,zpl)
-                ShieldFrontPlacement = geom.structure.Placement(f'ShieldFront2Placement{ii}{jj}',volume=shield,pos=ShieldFrontPosition,rot=fc2Rotation)
-                supportencLV.placements.append(ShieldFrontPlacement.name)
-            xpl+=zbsp
         return supportencLV
+        #  eps = Q('21.5cm')
+        #  ht = fht
+        #  st = fst + Q('3.1cm')
+        #  fzpl = Q('6473.2cm')
+        #  yTopHole = -((fISideLength / 2) +(fIFlangeHeight / 2) - Q('590.7cm') -(3.0 * fIPortSpacing) +(9 * fIPortHoleRad)) / 2
+        #  yBotHole = -((fISideLength / 2) +(fIFlangeHeight / 2) - Q('590.7cm') -(-1.0 * fIPortSpacing) +(9 * fIPortHoleRad)) / 2
+        #  y1HoleUp = -((fISideLength / 2) +(fIFlangeHeight / 2) - Q('590.7cm') -(1.0 * fIPortSpacing) +(9 * fIPortHoleRad)) / 2
+        #  yTop = (ht-eps)
+        #
+        #
+        #  BlockWidth = fSpacing - fIFlangeWaist - Q('0.1cm') - Q('5cm')
+        #  BlockHeight = fIPortSpacing - Q('5cm')
+        #  BlockHeightTop = BlockHeight * 0.63
+        #  BlockHeightBottom = BlockHeight * 0.15
+        #  fcRotation = geom.structure.Rotation('fcRotation', x= "0deg", y= "0deg",z= "0deg")
+        #  fc2Rotation = geom.structure.Rotation('fc2Rotation',x= "90deg", y= "0deg",z= "0deg")
+        #  fc3Rotation = geom.structure.Rotation('fc3Rotation', x= "0deg", y= "0deg",z= "90deg")
+        #
+        #  zbsp = fSpacing
+        #  zpl = zbsp /2
+        #  xpl = Q('0cm')
+        #
+        #  for ii in range(20):
+        #      for jj in range(5):
+        #          y = "0cm"
+        #          shield = ShieldBlockLog
+        #          if(jj ==3):
+        #              y = yTopHole + BlockHeight/2 + BlockHeightTop/2 + Q('5cm')
+        #              shield = ShieldBlockTopLog
+        #          if(jj==2):
+        #              y = yBotHole
+        #          if(jj==1):
+        #              y = y1HoleUp
+        #          if(jj==0):
+        #              y =yTopHole
+        #          if(jj==4):
+        #              y= (yBotHole)-(BlockHeight/2) - (0.05*BlockHeightBottom)- (Q('5cm'))
+        #              shield = ShieldBlockBotLog
+        #
+        #          if(jj== 0 or jj==3):
+        #              continue
+        #
+        #
+        #          #pdb.set_trace()
+        #          shieldLeftPosition = geom.structure.Position(f'ShieldLeftPosition{ii}{jj}',y,-st,-zpl)
+        #          shieldLeft = geom.structure.Placement(f'ShieldLeftPlacement{ii}{jj}',volume=shield,pos=shieldLeftPosition,rot= fcRotation)
+        #          supportencLV.placements.append(shieldLeft.name)
+        #
+        #          shieldRightPosition = geom.structure.Position(f'ShieldRightPosition{ii}{jj}',y,st,-zpl)
+        #          shieldRight = geom.structure.Placement(f'ShielRightPlacement{ii}{jj}',volume=shield,pos=shieldRightPosition,rot=fcRotation)
+        #          supportencLV.placements.append(shieldRight.name)
+        #
+        #          shieldLeftPosition = geom.structure.Position(f'ShieldLeft2Position{ii}{jj}',y,-st,zpl)
+        #          shieldLeft = geom.structure.Placement(f'ShieldLeft2Placement{ii}{jj}',volume=shield,pos=shieldLeftPosition,rot=fcRotation)
+        #          supportencLV.placements.append(shieldLeft.name)
+        #
+        #          shieldRightPosition = geom.structure.Position(f'ShieldRight2Position{ii}{jj}',y,st,zpl)
+        #          shieldRight = geom.structure.Placement(f'ShieldRight2Placement{ii}{jj}',volume=shield,pos=shieldRightPosition,rot=fcRotation)
+        #          supportencLV.placements.append(shieldRight.name)
+        #
+        #      zpl += zbsp
+        #
+        #  xpl = zbsp/2
+        #  zpl = fzpl/2
+        #  for ii in range(5):
+        #      for jj in range(5):
+        #          y = "0cm"
+        #          shield = ShieldBlockLog
+        #          if(jj==3):
+        #              y = yTopHole + BlockHeight/2 + BlockHeightTop/2 + Q('5cm')
+        #              shield = ShieldBlockTopLog
+        #
+        #          if(jj==2):
+        #              y = yBotHole
+        #
+        #          if(jj==1):
+        #              y = y1HoleUp
+        #          if(jj==0):
+        #              y =yTopHole
+        #          if(jj==4):
+        #              y = yBotHole -BlockHeight/2 - 0.5*BlockHeightBottom - Q('5cm')
+        #              shield = ShieldBlockBotLog
+        #
+        #          ShieldBackPositon = geom.structure.Position(f'ShieldBackPosition{ii}{jj}',y,-xpl, -zpl)
+        #          ShielBackPlacement = geom.structure.Placement(f'ShieldBackPlacement{ii}{jj}',volume=shield,pos=ShieldBackPositon,rot=fc2Rotation)
+        #          supportencLV.placements.append(ShielBackPlacement.name)
+        #
+        #          ShieldBackPositon = geom.structure.Position(f'ShieldBack2Position{ii}{jj}',y,xpl, -zpl)
+        #          ShielBackPlacement = geom.structure.Placement(f'ShieldBack2Placement{ii}{jj}',volume=shield,pos=ShieldBackPositon,rot=fc2Rotation)
+        #          supportencLV.placements.append(ShielBackPlacement.name)
+        #
+        #          ShieldFrontPosition = geom.structure.Position(f'ShieldFrontposition{ii}{jj}',y,-xpl,zpl)
+        #          ShieldFrontPlacement = geom.structure.Placement(f'ShieldFrontPlacement{ii}{jj}',volume=shield,pos=ShieldFrontPosition,rot=fc2Rotation)
+        #          supportencLV.placements.append(ShieldFrontPlacement.name)
+        #
+        #          ShieldFrontPosition = geom.structure.Position(f'ShieldFront2position{ii}{jj}',y,xpl,zpl)
+        #          ShieldFrontPlacement = geom.structure.Placement(f'ShieldFront2Placement{ii}{jj}',volume=shield,pos=ShieldFrontPosition,rot=fc2Rotation)
+        #          supportencLV.placements.append(ShieldFrontPlacement.name)
+        #      xpl+=zbsp
+        #  return supportencLV
 
     def construct_place_Belts(self, geom, supportencLV):
         ht = fht
         st = fst
+        halfSpacingZ = ((fSpacing/2) - (fIFlangeWaist/2))
 
         BeltFlange = geom.shapes.Box('BeltFlange',
-					dy = Q('10cm'),
-					dx = (fIFlangeWaist /2),
-					dz = ((fSpacing /2) - (fIFlangeWaist/2) - Q('0.1cm')))
+					dy = (fIFlangeWidth/2),
+					dx = (fIFlangeWaist/2),
+					dz = halfSpacingZ - (fIFlangeWidth/2))
+        BeltFlangeTop = geom.shapes.Box('BeltFlangeTop',
+                        dy = (fIFlangeWidth/3),
+                        dx = (fIFlangeWaist/2),
+                        dz = halfSpacingZ)
 
         BeltMid = geom.shapes.Box('BeltMid',
 					dy = (fIFlangeWaist/2),
-					dx = (fIFlangeHeight /4),
-					dz = ((fSpacing /2) - (fIFlangeWaist/2) - Q('0.1cm')))
+					dx = (fIFlangeHeight/2),
+					dz = halfSpacingZ)
+        BeltMidTop = geom.shapes.Box('BeltMidTop',
+					dy = (fIFlangeWaist/2),
+					dx = (fIFlangeHeight/3),
+					dz = halfSpacingZ)
 
         IBeamPort = geom.shapes.Tubs('BeltPortHole',
 					rmin = Q('0cm'),
-					rmax = Q('25cm'),
+					rmax = fIPortHoleRad,
 					dz = (fIFlangeThick /2),
 					sphi = Q('0deg'),
 					dphi = Q('360deg'))
@@ -269,8 +299,10 @@ class SupportEncBuilder(gegede.builder.Builder):
 						rot = fc2Rotation)
 
 
-        tr1 = geom.structure.Position('tr1', y= Q('0cm'), x=(fIFlangeHeight/4), z= Q('0cm'))
-        tr2 = geom.structure.Position('tr2', y= Q('0cm'), x=(-fIFlangeHeight /4), z= Q('0cm'))
+        tr1 = geom.structure.Position('tr1', y= Q('0cm'), x=(fIFlangeHeight/2 + fIFlangeThick/2), z= Q('0cm'))
+        tr2 = geom.structure.Position('tr2', y= Q('0cm'), x=(-fIFlangeHeight/2 - fIFlangeThick/2), z= Q('0cm'))
+        tr1Top = geom.structure.Position('tr1Top', y= Q('0cm'), x=(fIFlangeHeight/3 + fIFlangeThick/2), z= Q('0cm'))
+        tr2Top = geom.structure.Position('tr2Top', y= Q('0cm'), x=(-fIFlangeHeight/3 - fIFlangeThick/2), z= Q('0cm'))
 
         Union1 = geom.shapes.Boolean('Union1', type = 'union',
 						first = BeltHole,
@@ -296,171 +328,90 @@ class SupportEncBuilder(gegede.builder.Builder):
 
         BeltUniLog = geom.structure.Volume('BeltUni', material='fDuneSteel', shape=BeltUni)
 
+        Union3 = geom.shapes.Boolean('Union3', type = 'union',
+						first = BeltMidTop,
+						second = BeltFlangeTop,
+						pos = tr1Top)
+        BeltUniTop = geom.shapes.Boolean('BeltUnionTop', type = 'union',
+						first = Union3,
+						second = BeltFlangeTop,
+						pos = tr2Top)
+
+        BeltUniTopLog = geom.structure.Volume('BeltUniTop', material='fDuneSteel', shape=BeltUniTop)
+
 
         zbsp = fSpacing
-        zpl = (zbsp/2)
-        xpl = Q('0cm')
-        eps = Q('21.5cm')
-        cpIT = Q('0cm')
-        cpIB = Q('0cm')
-        cpIL = Q('0cm')
-        cpIR = Q('0cm')
-        fzpl = Q('6473.2cm')
-
-        for ii in range (19):
-            for jj in range(-5,5):
+        for ii in range(-1, 39):
+            zpos_i = (-19*zbsp) + ii*zbsp + zbsp/2
+            for jj in range(-4,5):
                 BeltBot = geom.structure.Placement(f'BeltBottom_{jj}_{ii}',
 
                                                                 pos = geom.structure.Position(f'BeltBottomPlacement_{jj}_{ii}',
-                                                                y = ((jj + 0.5) * zbsp),
-                                                                x =  (-ht + eps),
-                                                                z = (zpl)),
+                                                                y = ((jj) * zbsp),
+                                                                x =  (-ht),
+                                                                z = (zpos_i)),
                                                             	volume = BeltHoleUniLog)
                 supportencLV.placements.append(BeltBot.name)
 
-                BeltBot = geom.structure.Placement(f'BeltBottom2_{jj}_{ii}',
+                #  if abs(jj) in (1, 2, 4):
 
-                                                                pos = geom.structure.Position(f'BeltBottomPlacement2_{jj}_{ii}',
-                                                                y = ((jj + 0.5) * zbsp),
-                                                                x =  (-ht + eps),
-                                                                z = (-zpl)),
-                                                            	volume = BeltHoleUniLog)
-                supportencLV.placements.append(BeltBot.name)
+                BeltTop = geom.structure.Placement(f'BeltTop_{jj}_{ii}',
 
-                if abs(jj) in (1, 2, 4):
-
-                    BeltTop = geom.structure.Placement(f'BeltTop_{jj}_{ii}',
-
-                                                                pos = geom.structure.Position(f'BeltTopPlacement_{jj}_{ii}',
-                                                                y = ((jj + 0.5) * zbsp),
-                                                                x =  (ht - eps),
-                                                                z = (zpl)),
-                                                            	volume = BeltUniLog)
-                    supportencLV.placements.append(BeltTop.name)
-
-                    BeltTop = geom.structure.Placement(f'BeltTop2_{jj}_{ii}',
-
-                                                                pos = geom.structure.Position(f'BeltTopPlacement2_{jj}_{ii}',
-                                                                y = ((jj + 0.5) * zbsp),
-                                                                x =  (ht - eps),
-                                                                z = (-zpl)),
-                                                            	volume = BeltUniLog)
-                    supportencLV.placements.append(BeltTop.name)
+                                                            pos = geom.structure.Position(f'BeltTopPlacement_{jj}_{ii}',
+                                                            y = ((jj) * zbsp),
+                                                            x =  (ht),
+                                                            z = (zpos_i)),
+                                                            volume = BeltUniTopLog)
+                supportencLV.placements.append(BeltTop.name)
 
 
             for kk in range(4):
-                yvar = None
-                belt = BeltHoleUniLog
-
-                if kk == 3:
-                    yvar = ht-eps
-                    belt = BeltUniLog
-                    if ii % 3:
-                        belt = BeltHoleUniLog
-                if kk == 2:
-                    yvar = -((fISideLength / 2) +(fIFlangeHeight / 2) -Q('590.7cm') +(0.0 * fIPortSpacing) +(9 * fIPortHoleRad)) / 2
-
-                if kk ==1:
-                    yvar = -((fISideLength / 2) +(fIFlangeHeight / 2) -Q('590.7cm') -(2.0 * fIPortSpacing) +(9 * fIPortHoleRad)) / 2
-                    belt = BeltUniLog
-                    if (ii+1) % 3:
-                        belt =BeltHoleUniLog
+                yvar = ht - ((kk-0.5)*fIPortSpacing) - 2*fIPortHoleRad
+                belt = BeltUniLog
 
                 if kk == 0:
-                    yvar  = -((fISideLength / 2) +(fIFlangeHeight / 2) -Q('590.7cm') -(4.0 * fIPortSpacing) +(9 * fIPortHoleRad)) / 2
-                    belt = BeltUniLog
-                    if ((ii+2) %3):
-                        belt = BeltHoleUniLog
-
-                if ii ==20:
-                    belt = BeltUniLog
-
-                BeltLeft = geom.structure.Placement(f'BeltLeft{kk}_{ii}',
-
-                                                                pos = geom.structure.Position(f'BeltLeftPlacement{kk}_{ii}',
-                                                                y = -st,
-                                                                x = yvar ,
-                                                                z = (-zpl)),
-                                                            	volume = belt,
-                                                                rot= fcRotation)
-                supportencLV.placements.append(BeltLeft.name)
-
-                BeltRight = geom.structure.Placement(f'BeltRight{kk}_{ii}',
-
-                                                                pos = geom.structure.Position(f'BeltRigthPlacement{kk}_{ii}',
-                                                                y = st,
-                                                                x = yvar ,
-                                                                z = (-zpl)),
-                                                            	volume = belt,
-                                                                rot= fcRotation)
-                supportencLV.placements.append(BeltRight.name)
+                    yvar =  ht - (kk*fIPortSpacing)
+                if (ii+kk+2 % 3 == 0) or (kk == 3):
+                    belt = BeltHoleUniLog
 
                 BeltLeft = geom.structure.Placement(f'BeltLeft_{kk}_{ii}',
 
                                                                 pos = geom.structure.Position(f'BeltLeftPlacement_{kk}_{ii}',
                                                                 y = -st,
                                                                 x = yvar ,
-                                                                z = (zpl)),
+                                                                z = (zpos_i)),
                                                             	volume = belt,
                                                                 rot= fcRotation)
                 supportencLV.placements.append(BeltLeft.name)
 
                 BeltRight = geom.structure.Placement(f'BeltRight_{kk}_{ii}',
 
-                                                                pos = geom.structure.Position(f'BeltRigthPlacement_{kk}_{ii}',
+                                                                pos = geom.structure.Position(f'BeltRightPlacement_{kk}_{ii}',
                                                                 y = st,
                                                                 x = yvar ,
-                                                                z = zpl),
+                                                                z = zpos_i),
                                                             	volume = belt,
                                                                 rot= fcRotation)
                 supportencLV.placements.append(BeltRight.name)
-            zpl+=zbsp
 
-        cpBF =0
-        cpBBK =0
         xpl = zbsp/2
-        zpl = fzpl / 2 + Q('0.10cm')
-        for ii in range(5):
+        zpl = fzpl/2 + Q('25cm')
+        for ii in range(10):
+            xpos_i = (ii-4)*zbsp - xpl
             for jj in range (4):
-                yvar = None
-                belt = BeltHoleUniLog
+                yvar = ht - ((jj-0.5)*fIPortSpacing) - 2*fIPortHoleRad
+                belt = BeltUniLog
 
-                if jj == 3:
-                    yvar = ht
-                    belt = BeltUniLog
-                    if (ii % 3):
-                        belt = BeltHoleUniLog
-                if jj == 2:
-                    yvar = -((fISideLength / 2) +(fIFlangeHeight / 2) -Q('590.7cm') +(0.0 * fIPortSpacing) +(9 * fIPortHoleRad)) / 2
-                if jj ==1:
-                    yvar = -((fISideLength / 2) +(fIFlangeHeight / 2) -Q('590.7cm') -(2.0 * fIPortSpacing) +(9 * fIPortHoleRad)) / 2
-                    belt = BeltUniLog
-                    if ((ii +1) % 3):
-                        belt = BeltHoleUniLog
                 if jj == 0:
-                    yvar = -((fISideLength / 2) +(fIFlangeHeight / 2) -Q('590.7cm') -(4.0 * fIPortSpacing) +(9 * fIPortHoleRad)) / 2
-                    belt = BeltUniLog
-                    if ((ii +2) %3 ):
-                        belt = BeltHoleUniLog
-
-
-                if ii == 20:
-                    belt = BeltUniLog
+                    yvar =  ht - (jj*fIPortSpacing)
+                if (ii+jj+2 % 3 == 0) or (jj == 0):
+                    belt = BeltHoleUniLog
 
 
                 BeltBack = geom.structure.Placement(f'BeltBack_{jj}_{ii}',
                                                                 pos = geom.structure.Position(f'BeltBackPlacement_{jj}_{ii}',
-                                                                y = -xpl,
-                                                                x = yvar ,
-                                                                z = -zpl),
-                                                            	volume = belt,
-                                                                rot= fc3Rotation)
-                supportencLV.placements.append(BeltBack.name)
-
-                BeltBack = geom.structure.Placement(f'BeltBack2_{jj}_{ii}',
-                                                                pos = geom.structure.Position(f'BeltBackPlacement2_{jj}_{ii}',
-                                                                y = xpl,
-                                                                x = yvar ,
+                                                                y = xpos_i,
+                                                                x = yvar,
                                                                 z = -zpl),
                                                             	volume = belt,
                                                                 rot= fc3Rotation)
@@ -469,33 +420,20 @@ class SupportEncBuilder(gegede.builder.Builder):
                 BeltFront = geom.structure.Placement(f'BeltFront_{jj}_{ii}',
 
                                                                 pos = geom.structure.Position(f'BeltFrontPlacement_{jj}_{ii}',
-                                                                y = -xpl,
+                                                                y = xpos_i,
                                                                 x = yvar ,
                                                                 z = zpl),
                                                             	volume = belt,
                                                                 rot= fc3Rotation)
                 supportencLV.placements.append(BeltFront.name)
 
-                BeltFront = geom.structure.Placement(f'BeltFront2_{jj}_{ii}',
-
-                                                                pos = geom.structure.Position(f'BeltFrontPlacement2_{jj}_{ii}',
-                                                                y = xpl,
-                                                                x = yvar ,
-                                                                z = zpl),
-                                                            	volume = belt,
-                                                                rot= fc3Rotation)
-                supportencLV.placements.append(BeltFront.name)
-
-
-
-            xpl += zbsp
         return supportencLV
 
     def construct_place_IBeams(self, geom, supportencLV):
         IBeamTopFlange = geom.shapes.Box('IBeamTopFlange',
 					dy = (fIFlangeWidth /2),
 					dx = (fIFlangeThick /2),
-					dz = (fITopLength /2))#creating a IBeamTopFlanfe object
+					dz = (fITopLength /2))#creating a IBeamTopFlange object
         IBeamTopMid = geom.shapes.Box('IBeamTopMid',
 					dy = (fIFlangeWaist /2),
 					dx = (fIFlangeHeight /2),
@@ -532,17 +470,17 @@ class SupportEncBuilder(gegede.builder.Builder):
         IBeamSideMidtmp1 = geom.shapes.Boolean('IBeamSidetmp', type = 'subtraction',
 						first = IBeamSideMidtmp0,
 						second = IBeamPort,
-						pos = geom.structure.Position('PosOfIBeam3', x="0cm", y="0cm", z=((fISideLength/2) + (fIFlangeHeight/2) - Q('590.7cm'))),
+						pos = geom.structure.Position('PosOfIBeam3', x="0cm", y="0cm", z=((fISideLength/2) - fISidePortLoc)),
 						rot =fcRotation)
         IBeamSideMidtmp2 = geom.shapes.Boolean('IBeamSidetmp2', type = 'subtraction',
 						first = IBeamSideMidtmp1,
 						second = IBeamPort,
-						pos = geom.structure.Position('PosOfIBeam4', x="0cm", y="0cm", z=((fISideLength/2) + (fIFlangeHeight/2) - Q('590.7cm') - fIPortSpacing)),
+						pos = geom.structure.Position('PosOfIBeam4', x="0cm", y="0cm", z=((fISideLength/2) - fISidePortLoc - fIPortSpacing)),
 						rot =fcRotation)
         IBeamSideMid = geom.shapes.Boolean('IBeamSide', type = 'subtraction',
 						first = IBeamSideMidtmp2,
 						second = IBeamPort,
-						pos = geom.structure.Position('PosOfIBeam5', x="0cm", y="0cm", z=((fISideLength/2) + (fIFlangeHeight/2) - Q('590.7cm') - (2*fIPortSpacing))),
+						pos = geom.structure.Position('PosOfIBeam5', x="0cm", y="0cm", z=((fISideLength/2) - fISidePortLoc - (2*fIPortSpacing))),
 						rot =fcRotation)
 
         IBeamTopPosition = geom.structure.Position('TopPosition', y= Q('0cm'), x=((fIFlangeHeight /2) + (fIFlangeThick /2)), z= Q('0cm'))
@@ -592,7 +530,7 @@ class SupportEncBuilder(gegede.builder.Builder):
         cpIF = Q('0')
         cpIBk = Q('0')
         xpl = Q('0cm')
-        fzpl = Q('6473.2cm')
+        #  fzpl = Q('6473.2cm')
 
         for i in range(20):
                   IBeamTopPlacement = geom.structure.Placement(f'IBeamTopPLacement{i}',
@@ -679,7 +617,7 @@ class SupportEncBuilder(gegede.builder.Builder):
 
 
         xpl = Q('0cm')
-        zpl = (fzpl /2)
+        zpl = (fzpl /2) + Q('25cm') # from Luis' modifications, extra space for last belts
         for i in range(5):
             IBeamFrontPlacement = geom.structure.Placement(f'IBeamFrontPLacement{i}',
                                                                 rot = fc3Rotation,
