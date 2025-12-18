@@ -286,3 +286,45 @@ def construct_materials(geom):
                                              ("boron10", 0.01),
                                              ("oxygen", 0.222)))
 
+    m_radioshotcrete = geom.matter.Mixture("RadioShotcretePeteLein", density="2.4g/cc",
+                                      components = (("oxygen", 0.5654),
+                                                    ("iron", 0.0013),
+                                                    ("calcium", 0.2106),
+                                                    ("potassium", 0.0028),
+                                                    ("silicon", 0.0417),
+                                                    ("aluminum", 0.0051),
+                                                    ("magnesium", 0.0038),
+                                                    ("sodium", 0.0012),
+                                                    ("nitrogen", 0.0007),
+                                                    ("carbon", 0.1201),
+                                                    ("hydrogen", 0.0472)
+                                                    ))
+
+    m_radioconcrete = geom.matter.Mixture("RadioConcretePeteLein", density="2.4g/cc",
+                                      components = (("oxygen", 0.5654),
+                                                    ("iron", 0.0013),
+                                                    ("calcium", 0.2106),
+                                                    ("potassium", 0.0028),
+                                                    ("silicon", 0.0417),
+                                                    ("aluminum", 0.0051),
+                                                    ("magnesium", 0.0038),
+                                                    ("sodium", 0.0012),
+                                                    ("nitrogen", 0.0007),
+                                                    ("carbon", 0.1201),
+                                                    ("hydrogen", 0.0472)
+                                                    ))
+
+    m_radiorock = geom.matter.Mixture("RadioAverageDuneRock", density="2.65g/cc",
+                                      components = (("oxygen", 0.5874),
+                                                    ("iron", 0.0150),
+                                                    ("manganese", 0.0003),
+                                                    ("calcium", 0.0011),
+                                                    ("potassium", 0.0155),
+                                                    ("silicon", 0.1985),
+                                                    ("aluminium", 0.0494),
+                                                    ("magnesium", 0.0358),
+                                                    ("sodium", 0.0069),
+                                                    ("hydrogen", 0.09)
+                                      ))
+
+

@@ -43,6 +43,7 @@ class Params:
     _cryostat['HeightGaseousAr'] = Q('100cm')
     _cryostat['SteelThickness'] = Q('0.12cm') # membrane
 
+    # support structure dimensions (simple boxes)
     _detenc['SteelSupport_x'] = Q('100cm')
     _detenc['SteelSupport_y'] = Q('100cm')
     _detenc['SteelSupport_z'] = Q('100cm')
@@ -52,17 +53,36 @@ class Params:
     _detenc['SpaceSteelSupportToCeiling'] = Q('100cm')
     _detenc['RockThickness'] = Q('40000cm')
 
+    # includes current support structure design (and some modest buffer for shield walls)
+    _detenc['Spacing'] = Q('64.732/41.0m')
+    _detenc['IFlangeWidth'] = Q('40.2cm')
+    _detenc['IFlangeThick'] = Q('4cm')
+    _detenc['IFlangeWaist'] = Q('2.2cm')
+    _detenc['BeamDepth'] = Q('110.8cm')
+    _detenc['IFlangeHeight'] = _detenc['BeamDepth'] - 2*_detenc['IFlangeThick']
+    _detenc['ITopLength'] = Q('1894cm')
+    _detenc['ISideLength'] = Q('1784cm') - 2*_detenc['BeamDepth']
+    _detenc['IPortSpacing'] = Q('4m')
+    _detenc['ISidePortLoc'] = Q('5.907m')
+    _detenc['IBotPortLoc'] = Q('5m')
+    _detenc['IPortHoleRad'] = Q('40cm')
+    _detenc['ShieldWallThickness'] = Q('23cm')
+    _detenc['BeltBuffer'] = Q('25cm')
+    _detenc['ActualCryostat_x'] = Q('17.84m') + 2*_detenc['ShieldWallThickness'] + Q('0.2cm')
+    _detenc['ActualCryostat_y'] = Q('18.94m') + 2*_detenc['ShieldWallThickness'] + Q('0.2cm')
+    _detenc['ActualCryostat_z'] = Q('65.84m') + _detenc['IFlangeWidth'] + 2*_detenc['BeltBuffer'] + Q('10cm')
+
     # Cavern dimensions
     _detenc['archRadius'] = Q('12.84m')
     _detenc['archHalfAngle'] = Q('50deg')
     _detenc['Cavern_x'] = Q('23.15m')
     _detenc['Cavern_y'] = Q('19.80m')
     _detenc['Cavern_z'] = 2*(Q('3.3m') + Q('5.55m') + Q('6m') + Q('60.45m'))
-    _detenc['ConcreteBeamGap_x'] = Q('100mm')
+    _detenc['ConcreteBeamGap_x'] = Q('0mm')
     _detenc['ConcreteBeamGap_y'] = Q('427mm')
     _detenc['ConcreteBeamGap_z'] = Q('427mm')
-    _detenc['RadioRockThickness'] = Q('1cm')
-    _detenc['ShotCreteThickness'] = Q('4in')
+    _detenc['RadioRockThickness'] = Q('200cm')
+    _detenc['ShotCreteThickness'] = Q('6in')
     _detenc['ConcreteThickness'] = Q('11in')
     _detenc['GroutThickness'] = Q('1in')
 
@@ -231,8 +251,7 @@ class Params:
         type(self)._tpc['TPC_z'] = type(self)._tpc['lengthCRM']
 
         if not type(self)._world['simple'] and type(self)._world['workspace'] == 0:
-            #  type(self)._cryostat['Argon_x'] = Q('1380cm')
-            #  type(self)._cryostat['Argon_y'] = Q('1450cm')
+            # actual dimensions
             type(self)._cryostat['Argon_x'] = Q('1400cm')
             type(self)._cryostat['HeightGaseousAr'] = Q('5cm')
 
@@ -315,12 +334,12 @@ class Params:
                                                       type(self)._detenc['ConcreteBeamGap_x'] +         \
                                                       type(self)._detenc['ConcreteThickness'] +         \
                                                       type(self)._detenc['GroutThickness'] +            \
-                                                      0.5*type(self)._cryostat['Cryostat_x'] +            \
+                                                      0.5*type(self)._detenc['ActualCryostat_x'] +    \
                                                       0.5*type(self)._detenc['RadioRockThickness']
             type(self)._detenc['posCryoInDetEnc_y'] = Q('0m')
             type(self)._detenc['posCryoInDetEnc_z'] = -0.5*type(self)._detenc['DetEncZ'] +              \
                                                       type(self)._detenc['ConcreteBeamGap_z'] +         \
-                                                      0.5*type(self)._cryostat['Cryostat_z']
+                                                      0.5*type(self)._detenc['ActualCryostat_z']
 
             type(self)._detenc['OriginXSet'] =  type(self)._detenc['DetEncX']/2.0  -                    \
                                                 type(self)._detenc['ConcreteBeamGap_x'] -               \

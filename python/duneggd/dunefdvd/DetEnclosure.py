@@ -140,7 +140,7 @@ class DetEnclosureBuilder(gegede.builder.Builder):
                                         second = encTotal,
                                         pos    = pos)
 
-        rockLV   = geom.structure.Volume('volRadioRockShell', material='DUSEL_Rock', shape=RockBox)
+        rockLV   = geom.structure.Volume('volRadioRockShell', material='RadioAverageDuneRock', shape=RockBox)
         rock_pos  = geom.structure.Position('posRock', Q('0m'), Q('0m'), Q('0m'))
         placeRock = geom.structure.Placement('placeRock', volume=rockLV, pos=rock_pos)
         detencLV.placements.append(placeRock.name)
@@ -153,12 +153,12 @@ class DetEnclosureBuilder(gegede.builder.Builder):
                                         dy=0.5*globals.get("DetEncY"),
                                         dz=0.5*globals.get("DetEncZ"))
         GroutBox   = geom.shapes.Box('GroutBox',
-                                     dx=0.5*conc_t,
+                                     dx=0.5*grout_t,
                                      dy=0.5*globals.get("DetEncY"),
                                      dz=0.5*globals.get("DetEncZ"))
 
-        ConcreteLV   = geom.structure.Volume('volConcrete', material='Concrete', shape=ConcreteBox)
-        GroutLV      = geom.structure.Volume('volGrout', material='Concrete', shape=GroutBox)
+        ConcreteLV   = geom.structure.Volume('volConcrete', material='RadioConcretePeteLein', shape=ConcreteBox)
+        GroutLV      = geom.structure.Volume('volGrout', material='RadioConcretePeteLein', shape=GroutBox)
 
         conc_x = -0.5*globals.get("DetEncX") + 0.5*rock_t + 0.5*conc_t
         grout_x = -0.5*globals.get("DetEncX") + 0.5*rock_t + conc_t + 0.5*grout_t
@@ -232,7 +232,7 @@ class DetEnclosureBuilder(gegede.builder.Builder):
                                             second = ConcSubBox,
                                             pos    = ConcSubPos)
 
-        ShotLV = geom.structure.Volume('volShotbox', shape=ShotOuterBox, material='ShotRock')
+        ShotLV = geom.structure.Volume('volShotbox', shape=ShotOuterBox, material='RadioShotcretePeteLein')
         ShotPos = geom.structure.Position('posShotBox', 0.5*rock_t, Q('0m'), Q('0m'))
         ShotPla = geom.structure.Placement('placeShotBox', volume=ShotLV, pos=ShotPos)
         detencLV.placements.append(ShotPla.name)
@@ -240,12 +240,12 @@ class DetEnclosureBuilder(gegede.builder.Builder):
         #  # get the cryostat volume from the subbuilder and place it
         #  cryostat = self.get_builder("CryostatEnc")
         #  cryostatLV = cryostat.get_volume()
-        #  #  posCryoInDetEnc = geom.structure.Position("posCryoInDetEnc", x=globals.get("posCryoInDetEnc_x"),
-        #  #                                                               y=globals.get("posCryoInDetEnc_y"),
-        #  #                                                               z=globals.get("posCryoInDetEnc_z"))
-        posCryoInDetEnc = geom.structure.Position("posCryoInDetEnc", x = Q("-100cm"),
+        posCryoInDetEnc = geom.structure.Position("posCryoInDetEnc", x=globals.get("posCryoInDetEnc_x"),
                                                                      y=globals.get("posCryoInDetEnc_y"),
-                                                                     z= Q("-4000cm"))
+                                                                     z=globals.get("posCryoInDetEnc_z"))
+        #  posCryoInDetEnc = geom.structure.Position("posCryoInDetEnc", x = Q("-100cm"),
+        #                                                               y=globals.get("posCryoInDetEnc_y"),
+        #                                                               z= Q("-4000cm"))
         #  cryostat_place = geom.structure.Placement('place'+cryostat.name,
         #                                            volume = cryostatLV,
         #                                            pos = posCryoInDetEnc)
