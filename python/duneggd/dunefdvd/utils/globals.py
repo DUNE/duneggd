@@ -54,6 +54,12 @@ class Params:
     _detenc['RockThickness'] = Q('40000cm')
 
     # includes current support structure design (and some modest buffer for shield walls)
+    # outer cryostat membrane
+    _detenc['ShieldThickness'] = Q('77.48cm')
+    _detenc['ColdSkinThickness'] = Q('0.1cm')
+    _detenc['WoodThickness'] = Q('2.4cm')
+    _detenc['WarmSkinThickness'] = Q('0.1cm')
+    # ibeams, belts, shield walls, flooring etc
     _detenc['Spacing'] = Q('64.732/41.0m')
     _detenc['IFlangeWidth'] = Q('40.2cm')
     _detenc['IFlangeThick'] = Q('4cm')
@@ -67,10 +73,12 @@ class Params:
     _detenc['IBotPortLoc'] = Q('5m')
     _detenc['IPortHoleRad'] = Q('40cm')
     _detenc['ShieldWallThickness'] = Q('23cm')
+    _detenc['ShieldWallHeight'] = Q('100cm')
+    _detenc['ShieldWallWidth'] = Q('100cm')
     _detenc['BeltBuffer'] = Q('25cm')
-    _detenc['ActualCryostat_x'] = Q('17.84m') + 2*_detenc['ShieldWallThickness'] + Q('0.2cm')
-    _detenc['ActualCryostat_y'] = Q('18.94m') + 2*_detenc['ShieldWallThickness'] + Q('0.2cm')
-    _detenc['ActualCryostat_z'] = Q('65.84m') + _detenc['IFlangeWidth'] + 2*_detenc['BeltBuffer'] + Q('10cm')
+    _detenc['FullCryostat_x'] = Q('17.84m') + 2*_detenc['ShieldWallThickness'] + Q('0.2cm')
+    _detenc['FullCryostat_y'] = Q('18.94m') + 2*_detenc['ShieldWallThickness'] + Q('0.2cm')
+    _detenc['FullCryostat_z'] = Q('65.84m') + _detenc['IFlangeWidth'] + 2*_detenc['BeltBuffer'] + Q('10cm')
 
     # Cavern dimensions
     _detenc['archRadius'] = Q('12.84m')
@@ -334,12 +342,12 @@ class Params:
                                                       type(self)._detenc['ConcreteBeamGap_x'] +         \
                                                       type(self)._detenc['ConcreteThickness'] +         \
                                                       type(self)._detenc['GroutThickness'] +            \
-                                                      0.5*type(self)._detenc['ActualCryostat_x'] +    \
+                                                      0.5*type(self)._detenc['FullCryostat_x'] +    \
                                                       0.5*type(self)._detenc['RadioRockThickness']
             type(self)._detenc['posCryoInDetEnc_y'] = Q('0m')
             type(self)._detenc['posCryoInDetEnc_z'] = -0.5*type(self)._detenc['DetEncZ'] +              \
                                                       type(self)._detenc['ConcreteBeamGap_z'] +         \
-                                                      0.5*type(self)._detenc['ActualCryostat_z']
+                                                      0.5*type(self)._detenc['FullCryostat_z']
 
             type(self)._detenc['OriginXSet'] =  type(self)._detenc['DetEncX']/2.0  -                    \
                                                 type(self)._detenc['ConcreteBeamGap_x'] -               \

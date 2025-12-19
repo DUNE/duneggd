@@ -2,20 +2,6 @@ import gegede.builder
 from gegede import Quantity as Q
 from utils import *
 
-#Globals
-#--------------------#
-#  # these are nominal numbers
-#  fShieldThickness = Q('77.6cm')
-#  fColdSkinThickness = Q('0.18cm')
-#  fWoodThickness = Q('4.8cm')
-#  fWarmSkinThickness = Q('2.4cm')
-# these are numbers just for testing
-Offset = Q('0.1cm')
-fShieldThickness = Q('77.48cm')
-fColdSkinThickness = Q('0.1cm')
-fWoodThickness = Q('2.4cm')
-fWarmSkinThickness = Q('0.1cm')
-
 class CryostatEncBuilder(gegede.builder.Builder):
     def configure(self, **kwds):
         if not set(kwds).issubset(globals.Cryostat): # no unknown keywords
@@ -24,20 +10,22 @@ class CryostatEncBuilder(gegede.builder.Builder):
 
         # The builder hierarchy takes care of all the configuration parameters
         globals.Cryostat = kwds
+        self.fShieldThickness = globals.get("ShieldThickness")
+        self.fColdSkinThickness = globals.get("ColdSkinThickness")
+        self.fWoodThickness = globals.get("WoodThickness")
+        self.fWarmSkinThickness = globals.get("WarmSkinThickness")
+        self.Offset = Q('0.1cm')
 
     def construct(self, geom):
         globals.SetDerived()
 
         cryoencBox = geom.shapes.Box(self.name,
-                                     dx = globals.get("Cryostat_x")/2 +fWarmSkinThickness+ fWoodThickness +fShieldThickness+ fColdSkinThickness + Offset,
-                                     dy = globals.get("Cryostat_y")/2 +fWarmSkinThickness+ fWoodThickness +fShieldThickness+ fColdSkinThickness + Offset,
-                                     dz = globals.get("Cryostat_z")/2 +fWarmSkinThickness+ fWoodThickness +fShieldThickness+ fColdSkinThickness + Offset)
+                                     dx = globals.get("Cryostat_x")/2 + self.fWarmSkinThickness + self.fWoodThickness + self.fShieldThickness + self.fColdSkinThickness + self.Offset,
+                                     dy = globals.get("Cryostat_y")/2 + self.fWarmSkinThickness + self.fWoodThickness + self.fShieldThickness + self.fColdSkinThickness + self.Offset,
+                                     dz = globals.get("Cryostat_z")/2 + self.fWarmSkinThickness + self.fWoodThickness + self.fShieldThickness + self.fColdSkinThickness + self.Offset)
         cryoencLV = geom.structure.Volume('vol'+self.name, material="Air", shape=cryoencBox)
         self.add_volume(cryoencLV)
 
-        #  posCryoInDetEnc = geom.structure.Position("posCryoInDetEnc", x = Q("-100cm"),
-        #                                                               y=globals.get("posCryoInDetEnc_y"),
-        #                                                               z= Q("-4000cm"))
         cryostat = self.get_builder("Cryostat")
         cryostatLV = cryostat.get_volume()
 
@@ -47,9 +35,9 @@ class CryostatEncBuilder(gegede.builder.Builder):
 
         fSolidCryostat = geom.get_shape(cryostatLV)
         ShellOut = geom.shapes.Box('ShellOut',
-					dx = globals.get("Cryostat_x")/2 + fColdSkinThickness,
-					dy = globals.get("Cryostat_y")/2 + fColdSkinThickness,
-					dz = globals.get("Cryostat_z")/2 + fColdSkinThickness)
+					dx = globals.get("Cryostat_x")/2 + self.fColdSkinThickness,
+					dy = globals.get("Cryostat_y")/2 + self.fColdSkinThickness,
+					dz = globals.get("Cryostat_z")/2 + self.fColdSkinThickness)
         fShell = geom.shapes.Boolean('fShell', type = 'subtraction',
                                      first = ShellOut,
                                      second = fSolidCryostat)
@@ -59,14 +47,13 @@ class CryostatEncBuilder(gegede.builder.Builder):
         fPhysShell = geom.structure.Placement('fPhysShell',
                                               pos = "posCenter",
                                               volume = fLogicShell)
-
         cryoencLV.placements.append(fPhysShell.name)
 
         ###this is start of wood logical volume###
         sOutWood = geom.shapes.Box('InWood',
-					dx = globals.get("Cryostat_x")/2 + fWoodThickness + fColdSkinThickness,
-					dy = globals.get("Cryostat_y")/2 + fWoodThickness + fColdSkinThickness,
-					dz = globals.get("Cryostat_z")/2 + fWoodThickness + fColdSkinThickness)
+					dx = globals.get("Cryostat_x")/2 + self.fWoodThickness + self.fColdSkinThickness,
+					dy = globals.get("Cryostat_y")/2 + self.fWoodThickness + self.fColdSkinThickness,
+					dz = globals.get("Cryostat_z")/2 + self.fWoodThickness + self.fColdSkinThickness)
         sWood = geom.shapes.Boolean('Wood', type = 'subtraction',
 						first = sOutWood,
 						second = ShellOut)
@@ -78,9 +65,9 @@ class CryostatEncBuilder(gegede.builder.Builder):
 
         ###this is the start of foam logical volume###
         sOutShield = geom.shapes.Box('InShield',
-					dx = globals.get("Cryostat_x")/2 + fShieldThickness + fWoodThickness + fColdSkinThickness,
-					dy = globals.get("Cryostat_y")/2 + fShieldThickness + fWoodThickness + fColdSkinThickness,
-					dz = globals.get("Cryostat_z")/2 + fShieldThickness + fWoodThickness + fColdSkinThickness)
+					dx = globals.get("Cryostat_x")/2 + self.fShieldThickness + self.fWoodThickness + self.fColdSkinThickness,
+					dy = globals.get("Cryostat_y")/2 + self.fShieldThickness + self.fWoodThickness + self.fColdSkinThickness,
+					dz = globals.get("Cryostat_z")/2 + self.fShieldThickness + self.fWoodThickness + self.fColdSkinThickness)
         sShield = geom.shapes.Boolean('Foam', type = 'subtraction',
 						first = sOutShield,
 						second = sOutWood)
@@ -91,12 +78,11 @@ class CryostatEncBuilder(gegede.builder.Builder):
 
         cryoencLV.placements.append(FoamPla.name)
 
-
         ###this is the start of warmskin Logical volume###
         ShellOutW = geom.shapes.Box('ShellOutW',
-					dx = globals.get("Cryostat_x")/2 + fWarmSkinThickness + fWoodThickness + fShieldThickness + fColdSkinThickness,
-					dy = globals.get("Cryostat_y")/2 + fWarmSkinThickness + fWoodThickness + fShieldThickness + fColdSkinThickness,
-					dz = globals.get("Cryostat_z")/2 + fWarmSkinThickness + fWoodThickness + fShieldThickness + fColdSkinThickness)
+					dx = globals.get("Cryostat_x")/2 + self.fWarmSkinThickness + self.fWoodThickness + self.fShieldThickness + self.fColdSkinThickness,
+					dy = globals.get("Cryostat_y")/2 + self.fWarmSkinThickness + self.fWoodThickness + self.fShieldThickness + self.fColdSkinThickness,
+					dz = globals.get("Cryostat_z")/2 + self.fWarmSkinThickness + self.fWoodThickness + self.fShieldThickness + self.fColdSkinThickness)
         fShellW = geom.shapes.Boolean('WarmSkin', type = 'subtraction',
                                       first = ShellOutW,
                                       second = sOutShield)
@@ -104,7 +90,6 @@ class CryostatEncBuilder(gegede.builder.Builder):
         ShellOutPla = geom.structure.Placement('Warmskin',
                                                pos = "posCenter",
                                                volume = fLogicShellW)
-
         cryoencLV.placements.append(ShellOutPla.name)
 
         return
