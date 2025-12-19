@@ -8,7 +8,7 @@
 
 // Add global flag
 static bool gVolumeAdded = false;
-static bool gPrint = true; 
+static bool gPrint = true;
 static int gPrintLevel = 6;
 
 // Add these static variables for tracking
@@ -21,7 +21,13 @@ struct InvisiblePattern {
     bool setAllInvisible;
     InvisiblePattern(const TString& p, bool all) : pattern(p), setAllInvisible(all) {}
 };
+struct TransparentPattern {
+    TString pattern;
+    int setAllTransparent;
+    TransparentPattern(const TString& p, int all) : pattern(p), setAllTransparent(all) {}
+};
 static std::vector<InvisiblePattern> gInvisiblePatterns;
+static std::vector<TransparentPattern> gTransparentPatterns;
 
 // Add these global variables after other static variables
 static TGeoNode* gSpecialNode = nullptr;
@@ -81,6 +87,14 @@ std::pair<bool, bool> shouldBeInvisible(const TString& name) {
     }
     return std::make_pair(false, false);
 }
+std::pair<bool, int> shouldBeTransparent(const TString& name) {
+    for (const auto& pattern : gTransparentPatterns) {
+        if (name.Contains(pattern.pattern)) {
+            return std::make_pair(true, pattern.setAllTransparent);
+        }
+    }
+    return std::make_pair(false, 0);
+}
 
 // Add this helper function before traverseNode
 TString getMappedName(const TString& originalName) {
@@ -97,10 +111,10 @@ void traverseNode(TGeoNode* node, const TString& targetVolume, const TString& sp
     if (!node) return;
     TString originalName(node->GetName());
     TString mappedName = getMappedName(originalName);
-    TString parentName = node->GetMotherVolume() ? 
-                        getMappedName(node->GetMotherVolume()->GetName()) : 
+    TString parentName = node->GetMotherVolume() ?
+                        getMappedName(node->GetMotherVolume()->GetName()) :
                         "none";
-    
+
     // Get material information
     TString materialName = "unknown";
     if (node->GetVolume() && node->GetVolume()->GetMaterial()) {
@@ -130,6 +144,10 @@ void traverseNode(TGeoNode* node, const TString& targetVolume, const TString& sp
             node->SetAllInvisible();
         }
     }
+    auto [isTransparent, transparency] = shouldBeTransparent(originalName);
+    if (isTransparent) {
+        node->GetVolume()->SetTransparency(transparency);
+    }
     // Check if this is our target volume
     if (originalName.Contains(targetVolume) && !gVolumeAdded ) {
         TEveGeoTopNode* top = new TEveGeoTopNode(gGeoManager, node);
@@ -137,11 +155,6 @@ void traverseNode(TGeoNode* node, const TString& targetVolume, const TString& sp
         gVolumeAdded = true;
         //return;  // Stop traversing this branch once found
     }
-    // if(originalName.Contains(specialVolume)){
-    //     TEveGeoTopNode* top = new TEveGeoTopNode(gGeoManager, node);
-    //     gEve->AddGlobalElement(top);
-    // }
-
 
     // Continue traversing if target not found
     int nDaughters = node->GetNdaughters();
@@ -155,26 +168,47 @@ void gl()
 {
     gSystem->IgnoreSignal(kSigSegmentationViolation, true);
     TEveManager::Create();
-    TGeoManager::Import("dunevd_v6.gdml");
-    // TGeoManager::Import("protodunevd_v4_refactored.gdml");
-    // TGeoManager::Import("dunevd10kt_3view_30deg_v6_refactored_1x8x6.gdml");
+    TGeoManager::Import("dunevd_v6_full10kt_support_cavern.gdml");
 
     TGeoNode* world = gGeoManager->GetTopNode();
 
     // Define target volume name to be printed by the main gEve ...
     //TString targetVolume = "volTPC_1";  // Change this to your desired volume name
-    TString targetVolume = "volCryostat";
-    TString specialVolume = "volTPC";  // Change this to your desired special volume
+    TString targetVolume = "volWorld";
+    TString specialVolume = "volTPCActive";  // Change this to your desired special volume
     // TString targetVolume = "volTPCPlaneU";
     // TString specialVolume = "volTPCWireU";  // Change this to your desired special volume
 
     // Initialize invisible patterns with flags
+
+    gTransparentPatterns = {
+        TransparentPattern("RadioRock", 60),
+        TransparentPattern("ShotBox", 60),
+        TransparentPattern("Shotbox", 60),
+        TransparentPattern("Grout", 60),
+        TransparentPattern("Concrete", 60),
+        TransparentPattern("Shotcrete", 60),
+    };
+
     gInvisiblePatterns = {
-        // InvisiblePattern("Foam", true),
-        // InvisiblePattern("SteelSupport", true),
+        InvisiblePattern("ShellLog", true),
+        InvisiblePattern("FoamLog", true),
+        InvisiblePattern("WoodLog", true),
+        InvisiblePattern("ShellOutLog", true),
+        InvisiblePattern("Foam", true),
+        InvisiblePattern("SteelSupport", true),
         InvisiblePattern("SteelShell", true),
+        // InvisiblePattern("ShieldBlock", true),
+        // InvisiblePattern("ShieldingFloor", true),
+        // InvisiblePattern("boxshape", true),
+        // InvisiblePattern("Belt", true),
+        // InvisiblePattern("IBeam", true),
+        // InvisiblePattern("Shield", true),
+        // InvisiblePattern("boxshape", true),
+        // InvisiblePattern("SupportEnc", true),
         // InvisiblePattern("Arapuca", true),
         // InvisiblePattern("FieldShaper", true),
+        // InvisiblePattern("EnclosureTPC", true),
         // InvisiblePattern("Cathode", true),
         // InvisiblePattern("AnodePlate", true),
         // InvisiblePattern("TPC", true),
@@ -192,6 +226,7 @@ void gl()
     //     // NameMapping("volCathodeArapucaMeshRod_","volCathodeArapucaMeshRod")
     //     // Add more mappings as needed
     // };
+
     // Reset all flags and pointers
     gSpecialNode = nullptr;
     gSpecialNodeFound = false;

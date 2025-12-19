@@ -22,7 +22,9 @@ def construct_materials(geom):
     e_ar = geom.matter.Element("argon", "Ar", 18, "39.9480g/mole")
     e_s = geom.matter.Element("sulphur", "S", 16, "32.065g/mole")
     e_p = geom.matter.Element("phosphorus", "P", 15, "30.973g/mole")
-
+    e_mn = geom.matter.Element("manganese", "Mn", 25, "54.94g/mole")
+    e_b11 = geom.matter.Element("boron11", "B11", 4, "11.00g/mole")
+    e_b10 = geom.matter.Element("boron10", "B10", 4, "10.00g/mole")
 
     m_vacuum = geom.matter.Mixture("Vacuum", density = "1.e-25g/cc",
 						components = (("videRef", 1.0),))
@@ -264,4 +266,65 @@ def construct_materials(geom):
     m_vm2000 = geom.matter.Molecule("vm2000", density = "1.2g/cc",
 						elements = (("carbon", 2),
 									("hydrogen", 4)))
+    WoodMaterial = geom.matter.Mixture("Wood", density = "0.5g/cc",
+						components = (("hydrogen", 0.06),
+									("carbon", 0.5),
+									("oxygen", 0.44)))
+    m_dunesteel = geom.matter.Mixture("fDuneSteel", density = "7.93g/cc",
+						components =(("iron", 0.958),
+									("manganese", 0.018),
+									("nickel", 0.008),
+									("silicon", 0.006),
+									("copper", 0.005),
+									("chromium", 0.003),
+									("carbon", 0.002)))
+
+    m_bp = geom.matter.Mixture("BP", density = "0.95g/cc",
+                               components = (("hydrogen", 0.116),
+                                             ("carbon", 0.612),
+                                             ("boron11", 0.04),
+                                             ("boron10", 0.01),
+                                             ("oxygen", 0.222)))
+
+    m_radioshotcrete = geom.matter.Mixture("RadioShotcretePeteLein", density="2.4g/cc",
+                                      components = (("oxygen", 0.5654),
+                                                    ("iron", 0.0013),
+                                                    ("calcium", 0.2106),
+                                                    ("potassium", 0.0028),
+                                                    ("silicon", 0.0417),
+                                                    ("aluminum", 0.0051),
+                                                    ("magnesium", 0.0038),
+                                                    ("sodium", 0.0012),
+                                                    ("nitrogen", 0.0007),
+                                                    ("carbon", 0.1201),
+                                                    ("hydrogen", 0.0472)
+                                                    ))
+
+    m_radioconcrete = geom.matter.Mixture("RadioConcretePeteLein", density="2.4g/cc",
+                                      components = (("oxygen", 0.5654),
+                                                    ("iron", 0.0013),
+                                                    ("calcium", 0.2106),
+                                                    ("potassium", 0.0028),
+                                                    ("silicon", 0.0417),
+                                                    ("aluminum", 0.0051),
+                                                    ("magnesium", 0.0038),
+                                                    ("sodium", 0.0012),
+                                                    ("nitrogen", 0.0007),
+                                                    ("carbon", 0.1201),
+                                                    ("hydrogen", 0.0472)
+                                                    ))
+
+    m_radiorock = geom.matter.Mixture("RadioAverageDuneRock", density="2.65g/cc",
+                                      components = (("oxygen", 0.5874),
+                                                    ("iron", 0.0150),
+                                                    ("manganese", 0.0003),
+                                                    ("calcium", 0.0011),
+                                                    ("potassium", 0.0155),
+                                                    ("silicon", 0.1985),
+                                                    ("aluminium", 0.0494),
+                                                    ("magnesium", 0.0358),
+                                                    ("sodium", 0.0069),
+                                                    ("hydrogen", 0.09)
+                                      ))
+
 
