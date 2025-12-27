@@ -173,4 +173,4 @@ def main(x, u, v):
     if (v) : MakeInductionPlaneV(planeDimV)
     
 
-main(0, 1, 0)    
+main(1, 1, 1)    

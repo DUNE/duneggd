@@ -22,52 +22,52 @@ class WorldBuilder(gegede.builder.Builder):
                   **kwds):
         self.worldDim   = worldDim
         self.material   = worldMat
-        self.detEncBldr = self.get_builder("DetEnclosure")
-        self.cryoBldr   = self.detEncBldr.get_builder("Cryostat")
+        # self.detEncBldr = self.get_builder("DetEnclosure")
+        self.cryoBldr   = self.get_builder("Cryostat")
 
 
     #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
     def construct(self, geom):
 
         # Get relevant dimensions
-        detEncDim      = list(self.detEncBldr.detEncDim)
-        RadioRockThick = self.detEncBldr.RadioRockThickness
-        encBoundToDet  = list(self.detEncBldr.ConcreteBeamGap)
-        detDim         = list(self.detEncBldr.CryostatOuterDim)
-        InsulationBeam = self.cryoBldr.TotalCryoLayer
-        ConcreteThick  = self.detEncBldr.ConcreteThickness
-        GroutThick     = self.detEncBldr.GroutThickness
+        # detEncDim      = list(self.detEncBldr.detEncDim)
+        # RadioRockThick = self.detEncBldr.RadioRockThickness
+        # encBoundToDet  = list(self.detEncBldr.ConcreteBeamGap)
+        # detDim         = list(self.detEncBldr.CryostatOuterDim)
+        # InsulationBeam = self.cryoBldr.TotalCryoLayer
+        # ConcreteThick  = self.detEncBldr.ConcreteThickness
+        # GroutThick     = self.detEncBldr.GroutThickness
         
 
-        ########################### SET THE ORIGIN  #############################
-        #                                                                       #
-        # Position volDetEnclosure in the World Volume, displacing the world    #
-        #  origin relative to the detector enclosure, thereby putting it        #
-        #  anywhere in or around the detector we need.                          #
-        #                                                                       #
-        # Bring x=0 to -x of detEnc, then to det face, then to center of det    #
-        setXCenter    =   0.5*detEncDim[0] - encBoundToDet[0] - 0.5*detDim[0]   #
-        #                                                                       #
-        # Bring y=0 to halfway between the top&bototm APAs                      #
-        setYCenter    =   0.5*detEncDim[1] - encBoundToDet[1]                   #
-        setYCenter    -=  InsulationBeam + self.cryoBldr.APAToFloor             #
-        setYCenter    -=  self.cryoBldr.tpcDim[1]                               #
-        setYCenter    -=  0.5*self.cryoBldr.APAGap_y                            #
-        setYCenter    -=  0.5*RadioRockThick                                    #
-        setYCenter    -=  ConcreteThick                                         #
-        setYCenter    -=  GroutThick                                            #
-        #                                                                       #        
-        # Bring z=0 to back of detEnc, then to upstream face of detector.       #
-        setZCenter    =   0.5*detEncDim[2] - encBoundToDet[2]                   #
-        #  then through cryo steel and upstream dead LAr                        #
-        setZCenter    -=  InsulationBeam                                        #
-        setZCenter    -=  self.cryoBldr.APAToUpstreamWall                       #
+        # ########################### SET THE ORIGIN  #############################
+        # #                                                                       #
+        # # Position volDetEnclosure in the World Volume, displacing the world    #
+        # #  origin relative to the detector enclosure, thereby putting it        #
+        # #  anywhere in or around the detector we need.                          #
+        # #                                                                       #
+        # # Bring x=0 to -x of detEnc, then to det face, then to center of det    #
+        # setXCenter    =   0.5*detEncDim[0] - encBoundToDet[0] - 0.5*detDim[0]   #
+        # #                                                                       #
+        # # Bring y=0 to halfway between the top&bototm APAs                      #
+        # setYCenter    =   0.5*detEncDim[1] - encBoundToDet[1]                   #
+        # setYCenter    -=  InsulationBeam + self.cryoBldr.APAToFloor             #
+        # setYCenter    -=  self.cryoBldr.tpcDim[1]                               #
+        # setYCenter    -=  0.5*self.cryoBldr.APAGap_y                            #
+        # setYCenter    -=  0.5*RadioRockThick                                    #
+        # setYCenter    -=  ConcreteThick                                         #
+        # setYCenter    -=  GroutThick                                            #
+        # #                                                                       #        
+        # # Bring z=0 to back of detEnc, then to upstream face of detector.       #
+        # setZCenter    =   0.5*detEncDim[2] - encBoundToDet[2]                   #
+        # #  then through cryo steel and upstream dead LAr                        #
+        # setZCenter    -=  InsulationBeam                                        #
+        # setZCenter    -=  self.cryoBldr.APAToUpstreamWall                       #
 
 
 
         
-        detEncPos     = [ setXCenter, setYCenter, setZCenter ]                  #
-        #########################################################################
+        # detEncPos     = [ setXCenter, setYCenter, setZCenter ]                  #
+        # #########################################################################
 
 
         ########################### Above is math, below is GGD ###########################
@@ -92,11 +92,11 @@ class WorldBuilder(gegede.builder.Builder):
         self.add_volume(world_lv)
 
         # Get volDetEnclosure and place it
-        detEnc_lv       = self.detEncBldr.get_volume("volDetEnclosure")
-        detEnc_in_world = geom.structure.Position('DetEnc_in_World', detEncPos[0], detEncPos[1], detEncPos[2])
-        pD_in_W         = geom.structure.Placement('placeDetEnc_in_World',
-                                                   volume = detEnc_lv,
-                                                   pos    = detEnc_in_world)
+        cryo_lv       = self.cryoBldr.get_volume("volCryostat")
+        cryo_in_world = geom.structure.Position('Cryo_in_World', Q('0m'), Q('0m'), Q('0m'))
+        pD_in_W       = geom.structure.Placement('placeCryo_in_World',
+                                                   volume = cryo_lv,
+                                                   pos    = cryo_in_world)
         world_lv.placements.append(pD_in_W.name)
         return
 
@@ -136,11 +136,9 @@ class WorldBuilder(gegede.builder.Builder):
         MixturesNull = Mixtures.isnull()
         columns      = list(Mixtures.columns.values)
         for i in range(len(Mixtures)):
-            density     = str(Mixtures["Density"][i]) + "*" + str(Mixtures["dUnit"][i])
-            temperature = str(Mixtures["Temperature"][i]) + "*" + str(Mixtures["tUnit"][i])
-            pressure    = str(Mixtures["Pressure"][i]) + "*" + str(Mixtures["pUnit"][i])
-            components  = []
-            counter     = 8
+            density    = str(Mixtures["Density"][i]) + "*" + str(Mixtures["Unit"][i])
+            components = []
+            counter    = 4
 
             while (counter < len(columns)):
                 if (MixturesNull[columns[counter]][i] == False):
@@ -148,7 +146,5 @@ class WorldBuilder(gegede.builder.Builder):
                                        Mixtures[columns[counter+1]][i]))
                 counter += 2
             g.matter.Mixture(Mixtures["Name"][i],
-                             density     = density,                             
-                             components  = tuple(components),
-                             temperature = temperature,
-                             pressure    = pressure)
+                             density  = density,
+                             components = tuple(components))

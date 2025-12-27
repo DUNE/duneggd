@@ -5,8 +5,8 @@
 
 void CheckOverlaps() {
 
-  /* std::string GeoWithWires    = "larfd_rn200cm_noOpDet_v3_nowires.gdml"; */
-  std::string GeoWithoutWires = "larfd_rn200cm_noOpDet_v3_fixed_nowires.gdml";
+  std::string GeoWithWires    = "larfd_rn1cm_noOpDet_short_v3.gdml";
+  std::string GeoWithoutWires = "test.gdml";
 
   
   gSystem->Load("libGeom");
@@ -22,7 +22,7 @@ void CheckOverlaps() {
 
   /* TFile *tf1 = new TFile("overlaps.root", "RECREATE"); */
   /* gGeoManager->Write(); */
-  /* tf1->Close(); */
+  /* tf1->Close() */;
 
   TGeoManager::Import(GeoWithoutWires.c_str());
   

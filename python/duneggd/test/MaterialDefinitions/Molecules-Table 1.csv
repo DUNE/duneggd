@@ -1,0 +1,13 @@
+Molecule,Name,Density,Unit,Element1,Element1Amount,Element2,Element2Amount,Element3,Element3Amount,Element4,Element4Amount,,,,,,,,,,
+SiO2,SiO2,2.2,g/cc ,Silicon,1,Oxygen,2,,,,,,,,,,,,,,
+FeO,FeO,5.745,g/cc ,Iron,1,Oxygen,1,,,,,,,,,,,,,,
+Al2O3,Al2O3,3.97,g/cc ,Aluminum,2,Oxygen,3,,,,,,,,,,,,,,
+MgO,MgO,3.58,g/cc ,Magnesium,1,Oxygen,1,,,,,,,,,,,,,,
+CO2,CO2,1.562,g/cc ,Carbon,1,Oxygen,2,,,,,,,,,,,,,,
+CaO,CaO,3.35,g/cc ,Calcium,1,Oxygen,1,,,,,,,,,,,,,,
+NaO2,NaO2,2.27,g/cc ,Sodium,2,Oxygen,2,,,,,,,,,,,,,,
+P2O5,P2O5,1.562,g/cc ,Phosphorus,2,Oxygen,5,,,,,,,,,,,,,,
+Water,Water,1,g/cc ,Hydrogen,2,Oxygen,1,,,,,,,,,,,,,,
+Cellulose,Cellulose,0.54591,g/cc ,Carbon,6,Oxygen,5,Hydrogen,10,,,,,,,,,,,,
+PolyurethaneFoam,PolyurethaneFoam,0.13,g/cc ,Carbon,54,Oxygen,15,Nitrogen,4,Hydrogen,60,,,,,,,,,,
+SS304L,ColdCryoSteel,7.85,g/cc,Iron,1219,Carbon,3,Manganese,36,Phosphorus,1,Sulfur,1,Silicon,27,Chromium,365,Nickel,170,Aluminum,4
