@@ -4,7 +4,7 @@
 
 - Then, one can generate output gdml by running :
 ```
-gegede-cli dunevd_v6.cfg -o dunevd10_v6_full10kt_support_cavern.gdml
+gegede-cli dunevd_v6.cfg -o dunevd10kt_v6_full10kt_support_cavern.gdml
 ```
 
 May have to add current directory to `PYTHONPATH` before doing so with :
