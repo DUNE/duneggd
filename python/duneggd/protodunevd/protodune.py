@@ -190,16 +190,24 @@ class ProtoDUNEVDBuilder(gegede.builder.Builder):
         main_lv.placements.append(cryo_place.name)
 
         # Place beam elements - add this
-        beam_builder = self.get_builder("beamelements")
-        beam_builder.place_in_volume(geom, main_lv, cryo_vol)
+        try:
+            beam_builder = self.get_builder("beamelements")
+        except IndexError:
+            pass
+        else:
+            beam_builder.place_in_volume(geom, main_lv, cryo_vol)
 
         # Place steel support structure
         steel_builder = self.get_builder("steelsupport")
         steel_builder.place_in_volume(geom, main_lv)
 
         # Place foam padding
-        foam_builder = self.get_builder("foam")
-        foam_builder.place_in_volume(geom, main_lv)
+        try:
+            foam_builder = self.get_builder("foam")
+        except IndexError:
+            pass
+        else:
+            foam_builder.place_in_volume(geom, main_lv)
 
         # Place CRT modules
         crt_builder = self.get_builder('crt')
