@@ -35,10 +35,6 @@ void checkGeometryOverlaps(const char* gdmlFile, bool fullCheck = false) {
         checker.PrintOverlaps();
     } else {
         std::cout << "Performing basic overlap check..." << std::endl;
-        // Standard overlap checks
-        gGeoManager->CheckOverlaps(tolerance,"s");
-        // print more information
-        gGeoManager->PrintOverlaps();
         gGeoManager->CheckOverlaps(tolerance);
         auto fOverlaps = gGeoManager->GetListOfOverlaps();
         for (Int_t i = 0; i < fOverlaps->GetEntriesFast(); i++) {
@@ -46,6 +42,10 @@ void checkGeometryOverlaps(const char* gdmlFile, bool fullCheck = false) {
             overlap->Print();
             std::cout << "==============" << std::endl;
         }
+        gGeoManager->PrintOverlaps();
+        // Standard overlap checks with sampling
+        gGeoManager->CheckOverlaps(tolerance, "s");
+        // print more information
         gGeoManager->PrintOverlaps();
     }
 
@@ -55,6 +55,6 @@ void checkGeometryOverlaps(const char* gdmlFile, bool fullCheck = false) {
 
 void check_overlap(bool fullCheck = false) {
     // Replace "geometry.gdml" with the path to your GDML file
-    const char* gdmlFile = "dunevd_v6_full10kt_support_cavern.gdml";
+    const char* gdmlFile = "dunevd10kt_v7_full10kt_ggd_nowires.gdml";
     checkGeometryOverlaps(gdmlFile, fullCheck);
 }

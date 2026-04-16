@@ -131,6 +131,7 @@ void traverseNode(TGeoNode* node, const TString& targetVolume, const TString& sp
     }
     // Use original name for other checks
     if (!gSpecialNodeFound && originalName.Contains(specialVolume)) {
+        std::cout << "Found special : " << originalName << "\n";
         gSpecialNode = node;
         gSpecialNodeFound = true;
         //return;  // Stop traversing once special node is found
@@ -168,26 +169,31 @@ void gl()
 {
     gSystem->IgnoreSignal(kSigSegmentationViolation, true);
     TEveManager::Create();
-    TGeoManager::Import("dunevd_v6_full10kt_support_cavern.gdml");
+    TGeoManager::Import("dunevd10kt_v7_full10kt_ggd_nowires.gdml");
+    // TGeoManager::Import("dunevd10kt_v7_2x8x40_ggd_nowires.gdml");
 
     TGeoNode* world = gGeoManager->GetTopNode();
 
     // Define target volume name to be printed by the main gEve ...
     //TString targetVolume = "volTPC_1";  // Change this to your desired volume name
     TString targetVolume = "volWorld";
-    TString specialVolume = "volTPCActive";  // Change this to your desired special volume
+    TString specialVolume = "volTPC";  // Change this to your desired special volume
     // TString targetVolume = "volTPCPlaneU";
     // TString specialVolume = "volTPCWireU";  // Change this to your desired special volume
 
     // Initialize invisible patterns with flags
 
     gTransparentPatterns = {
+        TransparentPattern("Rock", 60),
         TransparentPattern("RadioRock", 60),
         TransparentPattern("ShotBox", 60),
         TransparentPattern("Shotbox", 60),
         TransparentPattern("Grout", 60),
         TransparentPattern("Concrete", 60),
         TransparentPattern("Shotcrete", 60),
+        TransparentPattern("FieldShaper", 60),
+        TransparentPattern("TPCEnclosure", 60),
+        TransparentPattern("EnclosureTPC", 60),
     };
 
     gInvisiblePatterns = {
@@ -206,12 +212,16 @@ void gl()
         // InvisiblePattern("Shield", true),
         // InvisiblePattern("boxshape", true),
         // InvisiblePattern("SupportEnc", true),
-        // InvisiblePattern("Arapuca", true),
-        // InvisiblePattern("FieldShaper", true),
+        InvisiblePattern("Arapuca", true),
+        InvisiblePattern("FieldShaper", true),
+        InvisiblePattern("GaseousArgon", true),
         // InvisiblePattern("EnclosureTPC", true),
+        // InvisiblePattern("EnclosureTPC", false),
+        // InvisiblePattern("TPCEnclosure", false),
         // InvisiblePattern("Cathode", true),
-        // InvisiblePattern("AnodePlate", true),
-        // InvisiblePattern("TPC", true),
+        // // InvisiblePattern("AnodePlate", true),
+        // InvisiblePattern("TPCPlane", true),
+        // InvisiblePattern("TPCActive", true),
         // InvisiblePattern("cryostat_steel", false),
         // InvisiblePattern("Wire", false),
         // InvisiblePattern("CRT", true),
