@@ -59,6 +59,10 @@ class CryostatBuilder(gegede.builder.Builder):
                                         dx = 0.5*globals.get("anodePlateWidth"),
                                         dy = 0.5*globals.get("widthCathode"),
                                         dz = 0.5*globals.get("lengthCathode"))
+        anodePlateBottomBox = geom.shapes.Box('AnodePlateBottom',
+                                              dx = 0.5*globals.get("anodePlateWidth"),
+                                              dy = 0.5*globals.get("widthCathode"),
+                                              dz = 0.5*globals.get("lengthAnodeBottom"))
 
         # define the logical volumes
         cryo_LV = make_volume(geom, "LAr", cryoBox, aux=True)
@@ -66,6 +70,7 @@ class CryostatBuilder(gegede.builder.Builder):
 
         # make the simple stuff
         anodePlate_LV = make_volume(geom, "vm2000", anodePlateBox)
+        anodePlateBottom_LV = make_volume(geom, "vm2000", anodePlateBottomBox)
         gasAr_LV = make_volume(geom, "ArGas", gasArBox)
         steelshell_LV = make_volume(geom, "STEEL_STAINLESS_Fe7Cr2Ni", steelshellBox)
 
@@ -110,7 +115,7 @@ class CryostatBuilder(gegede.builder.Builder):
 
             # place the volumes that go here
             tpcenc_LV = self.placeTPC(geom, tpc_LV, tpcenc_LV)
-            tpcenc_LV = self.placeCathodeAndAnode(geom, cathode_LV, anodePlate_LV, tpcenc_LV)
+            tpcenc_LV = self.placeCathodeAndAnode(geom, cathode_LV, anodePlate_LV, anodePlateBottom_LV, tpcenc_LV)
             if globals.get("nCRM_x") != 2:
                 tpcenc_LV = self.placeOpDetsCathode(geom, arapuca_LV[0], tpcenc_LV)
             else:
@@ -146,16 +151,36 @@ class CryostatBuilder(gegede.builder.Builder):
         pos_x = 0.5*globals.get("TPCEnclosure_x") - 0.5*globals.get("TPC_x") - globals.get("anodePlateWidth")
         posbottom_x = -pos_x
         pos_z = -0.5*globals.get("TPCEnclosure_z") + 0.5*globals.get("lengthCRM")
+        pos_z_bot = -0.5*globals.get("TPCEnclosure_z") + 0.5*globals.get("lengthCRM")
 
         idx = 0
         name = re.sub(r'vol', '', tpc_LV.name)
         for ii in range(globals.get("nCRM_z")):
+            if ii == 0:
+                pos_z_bot += globals.get("borderCRUBottom1side_z")
+            if ii > 0:
+                pos_z_bot += 2 * globals.get("borderCRUBottom1side_z")
             if ii % 2 == 0:
                 pos_z += globals.get("borderCRP")*(1 + int(ii > 0))
+                if (globals.get("nSST2_z") == 0) and (ii % 6 == 0) and (ii > 0):
+                    pos_z += globals.get("gapSST1_z")
+                if (globals.get("nSST2_z") > 0) and (ii == 2):
+                    pos_z += globals.get("gapSST2_z")
+                if (globals.get("nSST2_z") > 0) and (ii-2 % 6 == 0) and (ii > 2) and (ii < globals.get("nCRM_z") - 2):
+                    pos_z += globals.get("gapSST1_z")
+                if (globals.get("nSST2_z") > 0) and (ii-2 % 6 == 0) and (ii >= globals.get("nCRM_z") - 2):
+                    pos_z += globals.get("gapSST2_z")
+
             pos_y = -0.5*globals.get("TPCEnclosure_y") + 0.5*globals.get("widthCRM")
+            pos_y_bot = -0.5*globals.get("TPCEnclosure_ybottom") + 0.5*globals.get("widthCRM")
             for jj in range(globals.get("nCRM_y")):
                 if jj % 2 == 0:
                     pos_y += globals.get("borderCRP")*(1 + int(jj > 0))
+                    pos_y_bot += globals.get("borderCRUBottom_y")*(1 + int(jj > 0))
+
+                    if (jj % 4 == 0) and (jj > 0):
+                        pos_y += globals.get("gapSST_y")
+                        pos_y_bot += globals.get("gapSST_ybottom")
 
                 place_top = geom.structure.Placement('placeTop%s-%d' % (name, idx),
                                                      volume = tpc_LV,
@@ -169,15 +194,17 @@ class CryostatBuilder(gegede.builder.Builder):
                                                          volume = tpc_LV,
                                                          pos = geom.structure.Position('posBot%s-%d' % (name, idx),
                                                                                        x = posbottom_x,
-                                                                                       y = pos_y,
-                                                                                       z = pos_z))
+                                                                                       y = pos_y_bot,
+                                                                                       z = pos_z_bot))
                     tpcenc_LV.placements.append(place_bot.name)
                 idx += 1
                 pos_y += globals.get("widthCRM")
+                pos_y_bot += globals.get("widthCRM")
             pos_z += globals.get("lengthCRM")
+            pos_z_bot += globals.get("lengthCRM")
         return tpcenc_LV
 
-    def placeCathodeAndAnode(self, geom, c_LV, a_LV, tpcenc_LV):
+    def placeCathodeAndAnode(self, geom, c_LV, a_LV, a_bot_LV, tpcenc_LV):
         if not globals.get("Cathode_switch"):
             return tpcenc_LV
 
@@ -187,12 +214,19 @@ class CryostatBuilder(gegede.builder.Builder):
         cathode_z = -0.5*globals.get("TPCEnclosure_z") + 0.5*globals.get("lengthCathode")
         anode_toppos = 0.5*globals.get("TPCEnclosure_x") - 0.5*globals.get("anodePlateWidth")
         anode_botpos = -0.5*globals.get("TPCEnclosure_x") + 0.5*globals.get("anodePlateWidth")
+        cathode_z_bot = -0.5*globals.get("TPCEnclosure_z") + 0.5*globals.get("lengthCathodeBottom")
+        cathode_y_bot = -0.5*globals.get("TPCEnclosure_ybottom") + 0.5*globals.get("widthCathodeBottom")
+        anode_posz_bot = -0.5*globals.get("TPCEnclosure_z") + 0.5*globals.get("lengthCRM") + globals.get("borderCRUBottom1side_z")
+        posz_bot = -0.5*globals.get("TPCEnclosure_z") + 0.5*globals.get("lengthCRM")
+
 
         idx = 0
+        idx_bot = 0
         for ii in range(globals.get("nCRM_z")//2):
             for jj in range(globals.get("nCRM_y")//2):
                 name_c = re.sub(r'vol', '', c_LV.name)
                 name_a = re.sub(r'vol', '', a_LV.name)
+                name_a_bot = re.sub(r'vol', '', a_bot_LV.name)
                 place_c = geom.structure.Placement('place%s%d_inTPCEnc'%(c_LV.name, idx),
                                                    volume = c_LV,
                                                    pos = geom.structure.Position('pos%s-%d'%(name_c, idx),
@@ -210,20 +244,51 @@ class CryostatBuilder(gegede.builder.Builder):
                 tpcenc_LV.placements.append(place_a.name)
 
                 if globals.get("nCRM_x") == 2:
-                    place_ab = geom.structure.Placement('place%s%d_inTPCEncBottom'%(name_a, idx),
-                                                        volume = a_LV,
+                    place_ab = geom.structure.Placement('place%s%d_inTPCEncBottom'%(name_a_bot, idx_bot),
+                                                        volume = a_bot_LV,
                                                         pos = geom.structure.Position('pos%sBottom-%d' %            \
-                                                                                            (name_a, idx),
+                                                                                            (name_a_bot, idx_bot),
                                                                                       x = anode_botpos,
-                                                                                      y = cathode_y,
-                                                                                      z = cathode_z),
+                                                                                      y = cathode_y_bot,
+                                                                                      z = anode_posz_bot),
                                                         rot = "rIdentity")
                     tpcenc_LV.placements.append(place_ab.name)
+                    idx_bot += 1
+                    # dead material on one side only
+                    anode_posz_bot2 = anode_posz_bot + globals.get("lengthAnodeBottom") + (2 * globals.get("borderCRUBottom1side_z"))
+                    place_ab2 = geom.structure.Placement('place%s%d_inTPCEncBottom'%(name_a_bot, idx_bot),
+                                                        volume = a_bot_LV,
+                                                        pos = geom.structure.Position('pos%sBottom-%d' %            \
+                                                                                            (name_a_bot, idx_bot),
+                                                                                      x = anode_botpos,
+                                                                                      y = cathode_y_bot,
+                                                                                      z = anode_posz_bot2),
+                                                        rot = "rIdentity")
+                    tpcenc_LV.placements.append(place_ab2.name)
 
                 idx += 1
+                idx_bot += 1
                 cathode_y += globals.get("widthCathode")
+                cathode_y_bot += globals.get("widthCathodeBottom")
+                if ((jj+1) % 2 == 0) and (jj > 0):
+                    cathode_y += globals.get("gapSST_y")
+                    cathode_y_bot += globals.get("gapSST_ybottom")
+
             cathode_z += globals.get("lengthCathode")
+            cathode_z_bot += globals.get("lengthCathodeBottom")
+            anode_posz_bot += 2 * (globals.get("lengthAnodeBottom") + 2*globals.get("borderCRUBottom1side_z"))
+            if (globals.get("nSST2_z") == 0) and ((ii+1) % 3 == 0) and (ii > 0):
+                cathode_z += globals.get("gapSST1_z")
+            if (globals.get("nSST2_z") > 0) and (ii == 0):
+                cathode_z += globals.get("gapSST2_z")
+            if (globals.get("nSST2_z") > 0) and (ii % 3 == 0) and (ii > 0) and (ii < globals.get("nCRM_z")/2 - 2):
+                cathode_z += globals.get("gapSST1_z")
+            if (globals.get("nSST2_z") > 0) and (ii % 3 == 0) and (ii >= globals.get("nCRM_z")/2 - 2):
+                cathode_z += globals.get("gapSST2_z")
+
             cathode_y = -0.5*globals.get("TPCEnclosure_y") + 0.5*globals.get("widthCathode")
+            cathode_y_bot = -0.5*globals.get("TPCEnclosure_ybottom") + 0.5*globals.get("widthCathodeBottom")
+
         return tpcenc_LV
 
     # upstream logic needed for arapuca vs arapurca double passed as argument
@@ -265,7 +330,19 @@ class CryostatBuilder(gegede.builder.Builder):
                     tpcenc_LV.placements.append(place.name)
                 idx += 1
                 frCenter_z += globals.get("lengthCathode")
+                if (globals.get("nSST2_z") == 0) and ((jj+1) % 3 == 0) and (jj > 0):
+                    frCenter_z += globals.get("gapSST1_z")
+                if (globals.get("nSST2_z") > 0) and (jj == 0):
+                    frCenter_z += globals.get("gapSST2_z")
+                if (globals.get("nSST2_z") > 0) and (jj % 3 == 0) and (jj > 0) and (jj < globals.get("nCRM_z")/2 - 2):
+                    frCenter_z += globals.get("gapSST1_z")
+                if (globals.get("nSST2_z") > 0) and (jj % 3 == 0) and (jj >= globals.get("nCRM_z")/2 - 2):
+                    frCenter_z += globals.get("gapSST2_z")
+
             frCenter_y += globals.get("widthCathode")
+            if ((ii+1) % 2 == 0) and (ii > 0):
+                frCenter_y += globals.get("gapSST_y")
+
             frCenter_z = -0.5*globals.get("TPCEnclosure_z") + 0.5*globals.get("lengthCathode")
         return tpcenc_LV
 
