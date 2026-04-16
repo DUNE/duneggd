@@ -15,9 +15,9 @@ class WorldBuilder(gegede.builder.Builder):
 
     def __init__(self, name):
         super(WorldBuilder, self).__init__(name)
-        
+
         # Initialize parameters as None
-        self.cryo = None 
+        self.cryo = None
         self.tpc = None
         self.steel = None
         self.beam = None
@@ -29,22 +29,22 @@ class WorldBuilder(gegede.builder.Builder):
         # Add the subbuilders
         # for name, builder in self.builders.items():
         #     self.add_builder(name, builder)
-    
 
-    def configure(self, material='Air', width=None, height=None, depth=None, 
-                 tpc_parameters=None, cryostat_parameters=None, 
+
+    def configure(self, material='Air', width=None, height=None, depth=None,
+                 tpc_parameters=None, cryostat_parameters=None,
                  steel_parameters=None, beam_parameters=None, crt_parameters=None,
-                 cathode_parameters=None, xarapuca_parameters=None,  
-                 fieldcage_parameters=None,  
-                 pmt_parameters=None,  
-                 FoamPadding=None, AirThickness=None, DP_CRT_switch=None, 
+                 cathode_parameters=None, xarapuca_parameters=None,
+                 fieldcage_parameters=None,
+                 pmt_parameters=None,
+                 FoamPadding=None, AirThickness=None, DP_CRT_switch=None,
                  HD_CRT_switch=None,  # Add this line
                  cathode_switch=True, fieldcage_switch=True, arapucamesh_switch=True,  # Add these lines
-                 print_config=False,  
+                 print_config=False,
                  print_construct=False,  # Add this line
                  **kwds):
         self.material = material
-        
+
         if print_config:
             print('Configure World')
         # Add guard against double configuration
@@ -65,15 +65,15 @@ class WorldBuilder(gegede.builder.Builder):
             # Create a dictionary from the string with proper Quantity objects
             eval_globals = {'Q': Q}
             self.tpc = eval(tpc_parameters, eval_globals)
-            
+
             # Calculate derived TPC parameters
             self.tpc['widthCRP'] = self.tpc['widthPCBActive'] + 2 * self.tpc['borderCRP']
-            self.tpc['lengthCRP'] = (2 * self.tpc['lengthPCBActive'] + 
-                                   2 * self.tpc['borderCRP'] + 
+            self.tpc['lengthCRP'] = (2 * self.tpc['lengthPCBActive'] +
+                                   2 * self.tpc['borderCRP'] +
                                    self.tpc['gapCRU'])
 
             # Active TPC dimensions based on CRP
-            self.tpc['widthTPCActive'] = (self.tpc['nCRM_x']/2) * self.tpc['widthCRP'] 
+            self.tpc['widthTPCActive'] = (self.tpc['nCRM_x']/2) * self.tpc['widthCRP']
             self.tpc['lengthTPCActive'] = (self.tpc['nCRM_z']/2) * self.tpc['lengthCRP']
 
             # Total readout plane thickness
@@ -83,27 +83,27 @@ class WorldBuilder(gegede.builder.Builder):
         if cryostat_parameters:
             eval_globals = {'Q': Q}
             self.cryo = eval(cryostat_parameters, eval_globals)
-            
+
             # Calculate derived parameters
-            self.cryo['xLArBuffer'] = (self.cryo['Argon_x'] - 
-                                      self.tpc['driftTPCActive'] - 
-                                      self.cryo['HeightGaseousAr'] - 
+            self.cryo['xLArBuffer'] = (self.cryo['Argon_x'] -
+                                      self.tpc['driftTPCActive'] -
+                                      self.cryo['HeightGaseousAr'] -
                                       self.tpc['ReadoutPlane'])
-            
-            self.cryo['Upper_xLArBuffer'] = (self.cryo['Upper_xLArBuffer_base'] - 
+
+            self.cryo['Upper_xLArBuffer'] = (self.cryo['Upper_xLArBuffer_base'] -
                                             self.tpc['ReadoutPlane'])
-            
-            self.cryo['Lower_xLArBuffer'] = (self.cryo['Lower_xLArBuffer_base'] - 
+
+            self.cryo['Lower_xLArBuffer'] = (self.cryo['Lower_xLArBuffer_base'] -
                                             self.tpc['ReadoutPlane'])
-            
-            self.cryo['yLArBuffer'] = (self.cryo['Argon_y'] - 
+
+            self.cryo['yLArBuffer'] = (self.cryo['Argon_y'] -
                                       self.tpc['widthTPCActive']) * 0.5
-            
-            self.cryo['zLArBuffer'] = (self.cryo['Argon_z'] - 
+
+            self.cryo['zLArBuffer'] = (self.cryo['Argon_z'] -
                                       self.tpc['lengthTPCActive']) * 0.5
-            
+
             # print(self.tpc['lengthTPCActive'],self.tpc['widthTPCActive'],self.tpc['ReadoutPlane'])
-            
+
             self.cryo['Cryostat_x'] = self.cryo['Argon_x'] + 2 * self.cryo['SteelThickness']
             self.cryo['Cryostat_y'] = self.cryo['Argon_y'] + 2 * self.cryo['SteelThickness']
             self.cryo['Cryostat_z'] = self.cryo['Argon_z'] + 2 * self.cryo['SteelThickness']
@@ -115,49 +115,49 @@ class WorldBuilder(gegede.builder.Builder):
             self.steel = eval(steel_parameters, eval_globals)
 
             # Calculate detector enclosure dimensions
-            self.DetEncX = (self.cryo['Cryostat_x'] + 
-                                    2*(self.steel['SteelSupport_x'] + self.FoamPadding) + 
+            self.DetEncX = (self.cryo['Cryostat_x'] +
+                                    2*(self.steel['SteelSupport_x'] + self.FoamPadding) +
                                     2*self.steel['SpaceSteelSupportToWall'])
-            
-            self.DetEncY = (self.cryo['Cryostat_y'] + 
-                                    2*(self.steel['SteelSupport_y'] + self.FoamPadding) + 
+
+            self.DetEncY = (self.cryo['Cryostat_y'] +
+                                    2*(self.steel['SteelSupport_y'] + self.FoamPadding) +
                                     self.steel['SpaceSteelSupportToCeiling'])
-            
-            self.DetEncZ = (self.cryo['Cryostat_z'] + 
-                                    2*(self.steel['SteelSupport_z'] + self.FoamPadding) + 
+
+            self.DetEncZ = (self.cryo['Cryostat_z'] +
+                                    2*(self.steel['SteelSupport_z'] + self.FoamPadding) +
                                     2*self.steel['SpaceSteelSupportToWall'])
 
             # Calculate position parameters
-            self.steel['posCryoInDetEnc'] = {'x': Q('0cm'), 
-                                            'y': Q('0cm'), 
+            self.steel['posCryoInDetEnc'] = {'x': Q('0cm'),
+                                            'y': Q('0cm'),
                                             'z': Q('0cm')}
 
             # Calculate steel structure positions
-            self.steel['posTopSteelStruct'] = (self.cryo['Argon_y']/2 + 
-                                            self.FoamPadding + 
+            self.steel['posTopSteelStruct'] = (self.cryo['Argon_y']/2 +
+                                            self.FoamPadding +
                                             self.steel['SteelSupport_y'])
-            
-            self.steel['posBotSteelStruct'] = -(self.cryo['Argon_y']/2 + 
-                                            self.FoamPadding + 
+
+            self.steel['posBotSteelStruct'] = -(self.cryo['Argon_y']/2 +
+                                            self.FoamPadding +
                                             self.steel['SteelSupport_y'])
-            
-            self.steel['posZBackSteelStruct'] = (self.cryo['Argon_z']/2 + 
-                                                self.FoamPadding + 
+
+            self.steel['posZBackSteelStruct'] = (self.cryo['Argon_z']/2 +
+                                                self.FoamPadding +
                                                 self.steel['SteelSupport_z'])
-            
-            self.steel['posZFrontSteelStruct'] = -(self.cryo['Argon_z']/2 + 
-                                                self.FoamPadding + 
+
+            self.steel['posZFrontSteelStruct'] = -(self.cryo['Argon_z']/2 +
+                                                self.FoamPadding +
                                                 self.steel['SteelSupport_z'])
-            
-            self.steel['posLeftSteelStruct'] = (self.cryo['Argon_x']/2 + 
-                                            self.FoamPadding + 
+
+            self.steel['posLeftSteelStruct'] = (self.cryo['Argon_x']/2 +
+                                            self.FoamPadding +
                                             self.steel['SteelSupport_x'])
-            
-            self.steel['posRightSteelStruct'] = -(self.cryo['Argon_x']/2 + 
-                                                self.FoamPadding + 
+
+            self.steel['posRightSteelStruct'] = -(self.cryo['Argon_x']/2 +
+                                                self.FoamPadding +
                                                 self.steel['SteelSupport_x'])
 
-            # Adjust for CRT if needed  
+            # Adjust for CRT if needed
             if self.DP_CRT_switch == True:
                 self.steel['posTopSteelStruct'] -= Q('29.7cm')
                 self.steel['posBotSteelStruct'] += Q('29.7cm')
@@ -221,16 +221,16 @@ class WorldBuilder(gegede.builder.Builder):
 
         # Pass parameters to sub builders
         for name, builder in self.builders.items():
-            if name == 'detenclosure':
+            if name == 'volDetEnclosure':
                 builder.configure(cryostat_parameters=self.cryo,
                                   tpc_parameters=self.tpc,
                                   steel_parameters=self.steel,
                                   beam_parameters=self.beam,
                                   crt_parameters=self.crt,
                                   cathode_parameters=self.cathode,
-                                  xarapuca_parameters=self.xarapuca,  
-                                  fieldcage_parameters=self.fieldcage,  
-                                  pmt_parameters=self.pmt,  
+                                  xarapuca_parameters=self.xarapuca,
+                                  fieldcage_parameters=self.fieldcage,
+                                  pmt_parameters=self.pmt,
                                   DetEncX=self.DetEncX,
                                   DetEncY=self.DetEncY,
                                   DetEncZ=self.DetEncZ,
@@ -250,7 +250,7 @@ class WorldBuilder(gegede.builder.Builder):
     # define materials ...
     def construct_materials(self, geom):
         """Define all materials used in the geometry"""
-    
+
         if(self.print_construct):
             print('Define Materials')
 
@@ -273,7 +273,7 @@ class WorldBuilder(gegede.builder.Builder):
         na = geom.matter.Element("Sodium", "Na", 11, "22.99g/mole")
         ti = geom.matter.Element("Titanium", "Ti", 22, "47.867g/mole")
         p = geom.matter.Element("Phosphorus", "P", 15, "30.974g/mole")
-        
+
         # Define air
         air = geom.matter.Mixture("Air", density = "0.001225g/cc",
                                 components = (("Nitrogen", 0.781),
@@ -281,17 +281,17 @@ class WorldBuilder(gegede.builder.Builder):
                                             ("Argon", 0.010)))
 
         # Define stainless steel
-        steel = geom.matter.Mixture("STEEL_STAINLESS_Fe7Cr2Ni", 
+        steel = geom.matter.Mixture("STEEL_STAINLESS_Fe7Cr2Ni",
                     density = "7.9300g/cc",
                     components = (("Iron", 0.7298),
-                            ("Chromium", 0.1792), 
+                            ("Chromium", 0.1792),
                             ("Nickel", 0.0900),
                             ("Carbon", 0.0010)))
 
         # Define air-steel mixture for support structure
         mixture_density = Q("0.001225g/cc") * self.steel["FracMassOfAir"] + \
                         Q("7.9300g/cc") * self.steel["FracMassOfSteel"]
-                        
+
         air_steel_mix = geom.matter.Mixture("AirSteelMixture",
                                         density = mixture_density,
                                         components = (
@@ -300,7 +300,7 @@ class WorldBuilder(gegede.builder.Builder):
 
         # After elements and before other material definitions...
         vacuum = geom.matter.Mixture("Vacuum",
-                                density="1e-25g/cc",  
+                                density="1e-25g/cc",
                                 components=(("Air", 1.0),))  # Using air components at very low density
 
 
@@ -328,7 +328,7 @@ class WorldBuilder(gegede.builder.Builder):
                                             components = (
                                                 ("Copper", 0.981),
                                                 ("Beryllium", 0.019)))
-        
+
         # After other material definitions...
         aluminum = geom.matter.Mixture("ALUMINUM_Al",
                                     density="2.699g/cc",
@@ -366,7 +366,7 @@ class WorldBuilder(gegede.builder.Builder):
                                             ("Na2O", 0.010),
                                             ("TiO2", 0.013)))
         # Define GlassWool mixture
-        glass_wool = geom.matter.Mixture("GlassWool", 
+        glass_wool = geom.matter.Mixture("GlassWool",
                                        density="0.035g/cc",
                                        components=(("SiO2", 0.65),
                                                  ("Al2O3", 0.09),
@@ -379,26 +379,32 @@ class WorldBuilder(gegede.builder.Builder):
                                     elements=(("Carbon", 1),
                                             ("Hydrogen", 2),
                                             ("Oxygen", 1)))
-        
+
         # Define Polystyrene
         polystyrene = geom.matter.Molecule("Polystyrene",
                                           density="1.06g/cc",
                                           elements=(("Carbon", 8),
                                                   ("Hydrogen", 8)))
 
+        # Define vm2000
+        vm2000 = geom.matter.Molecule("vm2000",
+                                          density="1.2g/cc",
+                                          elements=(("Carbon", 2),
+                                                  ("Hydrogen", 4)))
+
         # Define Nitrogen gas at 1atm, 80K
         nigas = geom.matter.Mixture("NiGas1atm80K",
                                    density="0.0039g/cc",
                                    components=(("Nitrogen", 1.0),))
-        
+
         # Define ProtoDUNEBWFoam
-        proto_foam = geom.matter.Molecule("ProtoDUNEBWFoam", 
+        proto_foam = geom.matter.Molecule("ProtoDUNEBWFoam",
                                         density="0.021g/cc",
                                         elements=(("Carbon", 17),
                                                 ("Hydrogen", 16),
                                                 ("Nitrogen", 2),
                                                 ("Oxygen", 4)))
-        
+
         # Define ProtoDUNE RPUF foam
         rpuf_foam = geom.matter.Molecule("foam_protoDUNE_RPUF_assayedSample",
                                         density="0.09g/cc",
@@ -426,7 +432,7 @@ class WorldBuilder(gegede.builder.Builder):
                 x='90deg', y='0deg', z='0deg'
             ),
             'rPlus90AboutY': geom.structure.Rotation(
-                'rPlus90AboutY', 
+                'rPlus90AboutY',
                 x='90deg', y='90deg', z='0deg'
             ),
             'rMinus90AboutX': geom.structure.Rotation(
@@ -445,7 +451,7 @@ class WorldBuilder(gegede.builder.Builder):
                 'rMinus90AboutYMinus90AboutX',
                 x='270deg', y='270deg', z='0deg'
             ),
-            
+
             # 180 degree rotations
             'rPlus180AboutX': geom.structure.Rotation(
                 'rPlus180AboutX',
@@ -459,13 +465,13 @@ class WorldBuilder(gegede.builder.Builder):
                 'rPlus180AboutXPlus180AboutY',
                 x='180deg', y='180deg', z='0deg'
             ),
-            
+
             # Identity rotation
             'rIdentity': geom.structure.Rotation(
                 'rIdentity',
                 x='0deg', y='0deg', z='0deg'
             ),
-            
+
             # Special rotations for different parts
             'rot04': geom.structure.Rotation(
                 'rot04',
@@ -507,7 +513,7 @@ class WorldBuilder(gegede.builder.Builder):
                 y='0deg',
                 z='0deg'
             )
-            
+
             # V wire rotation
             rotations['rVWireAboutX'] = geom.structure.Rotation(
                 'rVWireAboutX',
@@ -524,38 +530,39 @@ class WorldBuilder(gegede.builder.Builder):
             print('Construct World')
         # Define materials first
         self.construct_materials(geom)
-        
+
         geom.structure.Position('center', x=Q('0m'), y=Q('0m'), z=Q('0m'))
 
         # Define standard rotations and store in geometry
         self.construct_rotations(geom)
-       
 
-        # print("A", self.DetEncX, self.DetEncY, self.DetEncZ)    
 
-        shape = geom.shapes.Box(self.name + '_shape', 
+        # print("A", self.DetEncX, self.DetEncY, self.DetEncZ)
+
+        shape = geom.shapes.Box(self.name + '_shape',
                               dx=self.DetEncX + 2*self.AirThickness,
                               dy=self.DetEncY + 2*self.AirThickness,
                               dz=self.DetEncZ + 2*self.AirThickness)
-        
-        volume = geom.structure.Volume(self.name + '_volume',
+
+        # LArSoft strict rules on naming world volume
+        volume = geom.structure.Volume('volWorld',
                                      material=self.material,
                                      shape=shape)
-        
+
         self.add_volume(volume)
 
-        
-        pd_builder = self.get_builder("detenclosure")
+
+        pd_builder = self.get_builder("volDetEnclosure")
         pd_vol = pd_builder.get_volume()
 
         # Create a placement for the cryostat in the detector enclosure
         # Place it at the center (0,0,0) since the PERL script shows posCryoInDetEnc=(0,0,0)
         pd_pos = geom.structure.Position(
             "pd_pos",
-            x=self.OriginXSet, 
+            x=self.OriginXSet,
             y=self.OriginYSet,
             z=self.OriginZSet)
-        
+
         pd_place = geom.structure.Placement(
             "pd_place",
             volume=pd_vol,
@@ -563,5 +570,3 @@ class WorldBuilder(gegede.builder.Builder):
 
         # Add the cryostat placement to the detector enclosure volume
         volume.placements.append(pd_place.name)
-
-

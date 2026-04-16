@@ -18,7 +18,7 @@ class XARAPUCABuilder(gegede.builder.Builder):
 
     def configure(self, xarapuca_parameters=None, cathode_parameters=None, print_config=False, print_construct=False, **kwargs):
         """Configure the X-ARAPUCA geometry.
-        
+
         Args:
             xarapuca_parameters: Dictionary containing X-ARAPUCA parameters
             cathode_parameters: Dictionary containing cathode parameters
@@ -30,7 +30,7 @@ class XARAPUCABuilder(gegede.builder.Builder):
             print('Configure XARAPUCA <- Cryostat <- ProtoDUNE-VD <- World')
         if hasattr(self, '_configured'):
             return
-        
+
         # Store parameters
         if xarapuca_parameters:
             self.params = xarapuca_parameters
@@ -41,50 +41,56 @@ class XARAPUCABuilder(gegede.builder.Builder):
 
         # Calculate additional parameters
         if self.params and self.cathode:
-            
-            
+
+
             # Calculate positions of the 4 arapucas with respect to the Frame center
             self.list_posx_bot = []
             self.list_posz_bot = []
-            
+
             # First arapuca
-            self.list_posx_bot.append(-2*self.cathode['widthCathodeVoid'] - 
-                                    2.0*self.cathode['CathodeBorder'] + 
-                                    self.params['GapPD'] + 
+            self.list_posx_bot.append(-1.0*self.cathode['widthCathodeVoid'] -
+                                    2.0*self.cathode['CathodeBorder'] -
+                                    self.params['GapPD'] -
                                     0.5*self.params['ArapucaOut_x'])
-            self.list_posz_bot.append(0.5*self.cathode['lengthCathodeVoid'] + 
+            self.list_posz_bot.append(-0.5*self.cathode['lengthCathodeVoid'] -
                                     self.cathode['CathodeBorder'])
-            
+
             # Second arapuca
-            self.list_posx_bot.append(-self.cathode['CathodeBorder'] - 
-                                    self.params['GapPD'] - 
+            self.list_posx_bot.append(self.cathode['widthCathodeVoid'] +
+                                    self.cathode['CathodeBorder'] -
+                                    self.params['GapPD'] -
                                     0.5*self.params['ArapucaOut_x'])
-            self.list_posz_bot.append(-1.5*self.cathode['lengthCathodeVoid'] - 
+            self.list_posz_bot.append(-1.5*self.cathode['lengthCathodeVoid'] -
                                     2.0*self.cathode['CathodeBorder'])
-            
-            # Third arapuca (mirror of second)
-            self.list_posx_bot.append(-self.list_posx_bot[1])
+
+            # Third arapuca
+            self.list_posx_bot.append(-self.cathode['CathodeBorder'] -
+                                    self.params['GapPD'] -
+                                    0.5*self.params['ArapucaOut_x'])
             self.list_posz_bot.append(-self.list_posz_bot[1])
-            
-            # Fourth arapuca (mirror of first)
-            self.list_posx_bot.append(-self.list_posx_bot[0])
+
+            # Fourth arapuca
+            self.list_posx_bot.append(2.0*self.cathode['widthCathodeVoid'] +
+                                    2.0*self.cathode['CathodeBorder'] -
+                                    self.params['GapPD'] -
+                                    0.5*self.params['ArapucaOut_x'])
             self.list_posz_bot.append(-self.list_posz_bot[0])
 
         if self.params:
             # Calculate derived mesh parameters
             self.params['MeshInnerStructureSeparation'] = (
-                self.params['MeshInnerStructureSeparation_base'] + 
+                self.params['MeshInnerStructureSeparation_base'] +
                 self.params['MeshRodOuterRadius']
             )
-            
+
             # Calculate number of mesh bars for cathode X-ARAPUCA
             if self.cathode:
                 self.params['CathodeArapucaMeshNumberOfBars_vertical'] = int(
-                    self.cathode['lengthCathodeVoid'] / 
+                    self.cathode['lengthCathodeVoid'] /
                     self.params['CathodeArapucaMeshRodSeparation']
                 )
                 self.params['CathodeArapucaMeshNumberOfBars_horizontal'] = int(
-                    self.cathode['widthCathodeVoid'] / 
+                    self.cathode['widthCathodeVoid'] /
                     self.params['CathodeArapucaMeshRodSeparation']
                 )
 
@@ -95,7 +101,7 @@ class XARAPUCABuilder(gegede.builder.Builder):
 
     def construct_cathode_mesh(self, geom):
         """Construct mesh for double-sided cathode X-ARAPUCAs"""
-        
+
 
         # Create outer module box to contain the mesh
         module_shape = geom.shapes.Box(
@@ -117,7 +123,7 @@ class XARAPUCABuilder(gegede.builder.Builder):
         horiz_rod = geom.shapes.Tubs(
             "CathodeArapucaMeshRod_horizontal",
             rmin=Q('0cm'),
-            rmax=self.params['CathodeArapucaMeshRodRadius'], 
+            rmax=self.params['CathodeArapucaMeshRodRadius'],
             dz=self.cathode['lengthCathodeVoid']/2.,
         )
 
@@ -139,7 +145,7 @@ class XARAPUCABuilder(gegede.builder.Builder):
                 material="STEEL_STAINLESS_Fe7Cr2Ni",
                 shape=vert_rod
             )
-            
+
             # Place vertical rod in module
             pos = geom.structure.Position(
                 f"posCathodeMeshRod_vertical{i}",
@@ -149,7 +155,7 @@ class XARAPUCABuilder(gegede.builder.Builder):
                 self.params['CathodeArapucaMesh_verticalOffset'] + \
                 i*self.params['CathodeArapucaMeshRodSeparation']
             )
-            
+
             place = geom.structure.Placement(
                 f"placeCathodeMeshRod_vertical{i}",
                 volume=vert_rod_vol,
@@ -158,13 +164,13 @@ class XARAPUCABuilder(gegede.builder.Builder):
             )
             mesh_vol.placements.append(place.name)
 
-        # Add horizontal rods  
+        # Add horizontal rods
         n_horiz = int(self.params['CathodeArapucaMeshNumberOfBars_horizontal'])
         for i in range(n_horiz):
             # Create volume for horizontal rod
             horiz_rod_vol = geom.structure.Volume(
                 f"volCathodeArapucaMeshRod_horizontal_{i}",
-                material="STEEL_STAINLESS_Fe7Cr2Ni", 
+                material="STEEL_STAINLESS_Fe7Cr2Ni",
                 shape=horiz_rod
             )
 
@@ -190,17 +196,17 @@ class XARAPUCABuilder(gegede.builder.Builder):
 
     def construct_membrane_mesh(self, geom):
         """Construct mesh for membrane X-ARAPUCAs following PERL implementation"""
-        
+
         # Create module box
         module = geom.shapes.Box(
             "ArapucaMeshModule",
-            dx=(self.params['MeshInnerStructureLength_horizontal'] 
+            dx=(self.params['MeshInnerStructureLength_horizontal']
              + 2*(self.params['MeshOuterRadius'] + self.params['MeshTorRad']))/2,
             dy=(2*self.params['MeshRodOuterRadius'] + Q('1cm'))/2,
-            dz=(self.params['MeshInnerStructureLength_vertical'] + 
-            2*(self.params['MeshOuterRadius'] +Q('1cm')  
+            dz=(self.params['MeshInnerStructureLength_vertical'] +
+            2*(self.params['MeshOuterRadius'] +Q('1cm')
             #    + self.params['MeshTorRad'])  this volume leads to a overlapping situation
-            ))/2 
+            ))/2
         )
 
         # Create main mesh volume
@@ -213,7 +219,7 @@ class XARAPUCABuilder(gegede.builder.Builder):
         # Create base shapes
         corner = geom.shapes.Torus(
             "ArapucaMeshCorner",
-            rmin=Q('0cm'), 
+            rmin=Q('0cm'),
             rmax=self.params['MeshOuterRadius'],
             rtor=self.params['MeshTorRad'],
             startphi=Q('0deg'),
@@ -228,7 +234,7 @@ class XARAPUCABuilder(gegede.builder.Builder):
         )
 
         tube_horiz = geom.shapes.Tubs(
-            "ArapucaMeshtube_horizontal", 
+            "ArapucaMeshtube_horizontal",
             rmin=Q('0cm'),
             rmax=self.params['MeshOuterRadius'],
             dz=self.params['MeshTubeLength_horizontal']/2.
@@ -242,7 +248,7 @@ class XARAPUCABuilder(gegede.builder.Builder):
                 "rot": {'x': '90deg', 'y': '0deg', 'z': '0deg'}
             },
             {
-                "name": "union2", 
+                "name": "union2",
                 "second": tube_horiz,
                 "pos": (-(self.params['MeshTubeLength_horizontal']/2 + self.params['MeshTorRad']),
                         Q('0cm'),
@@ -295,19 +301,19 @@ class XARAPUCABuilder(gegede.builder.Builder):
         mesh_shape = tube_vert  # Start with vertical tube
         for i, params in enumerate(mesh_params, 1):
             pos = geom.structure.Position(
-                f"Mesh{params['name']}", 
-                x=params['pos'][0], 
-                y=params['pos'][1], 
+                f"Mesh{params['name']}",
+                x=params['pos'][0],
+                y=params['pos'][1],
                 z=params['pos'][2]
             )
-            
+
             rot = geom.structure.Rotation(
-                f"Meshrot{i}", 
-                x=params['rot']['x'], 
-                y=params['rot']['y'], 
+                f"Meshrot{i}",
+                x=params['rot']['x'],
+                y=params['rot']['y'],
                 z=params['rot']['z']
             )
-            
+
             mesh_shape = geom.shapes.Boolean(
                 f"Meshunion{i}",
                 type='union',
@@ -354,7 +360,7 @@ class XARAPUCABuilder(gegede.builder.Builder):
             )
         )
 
-        rod_vol_horiz = geom.structure.Volume( 
+        rod_vol_horiz = geom.structure.Volume(
             "volArapucaMeshRod_horizontal",
             material="STEEL_STAINLESS_Fe7Cr2Ni",
             shape=geom.shapes.Tubs(
@@ -373,7 +379,7 @@ class XARAPUCABuilder(gegede.builder.Builder):
             volume=rod_vol_vert,
             pos=geom.structure.Position(
             f"meshrod_v_{i}_pos",
-            x=-5*self.params['MeshInnerStructureSeparation'] + 
+            x=-5*self.params['MeshInnerStructureSeparation'] +
             i*self.params['MeshInnerStructureSeparation'],
             y=Q('0.00001cm') + 2*self.params['MeshRodOuterRadius'],
             z=Q('0cm')
@@ -385,13 +391,13 @@ class XARAPUCABuilder(gegede.builder.Builder):
         for i in range(self.params['MeshInnerStructureNumberOfBars_horizontal']):
             mesh_vol.placements.append(
             geom.structure.Placement(
-            f"meshrod_h_{i}_place", 
+            f"meshrod_h_{i}_place",
             volume=rod_vol_horiz,
             pos=geom.structure.Position(
             f"meshrod_h_{i}_pos",
             x=Q('0cm'),
             y=Q('0cm'),
-            z=-4*self.params['MeshInnerStructureSeparation'] + 
+            z=-4*self.params['MeshInnerStructureSeparation'] +
             i*self.params['MeshInnerStructureSeparation']
             ),
             rot='rot90AboutY'
@@ -408,14 +414,14 @@ class XARAPUCABuilder(gegede.builder.Builder):
         """Construct the X-ARAPUCA geometry."""
         if self.print_construct:
             print('Construct XARAPUCA <- Cryostat <- ProtoDUNE-VD <- World')
-    
+
         # Regular ARAPUCA shapes
         out_box = geom.shapes.Box("XARAPUCA_out_shape",
                                 dx=self.params['ArapucaOut_x']/2.0,
                                 dy=self.params['ArapucaOut_y']/2.0,
                                 dz=self.params['ArapucaOut_z']/2.0)
 
-        in_box = geom.shapes.Box("XARAPUCA_in_shape", 
+        in_box = geom.shapes.Box("XARAPUCA_in_shape",
                             dx=self.params['ArapucaIn_x']/2.0,
                             dy=self.params['ArapucaOut_y']/2.0,  # Note: Uses ArapucaOut_y
                             dz=self.params['ArapucaIn_z']/2.0)
@@ -436,7 +442,7 @@ class XARAPUCABuilder(gegede.builder.Builder):
                                     dx=self.params['ArapucaAcceptanceWindow_x']/2.0,
                                     dy=self.params['ArapucaAcceptanceWindow_y']/2.0,
                                     dz=self.params['ArapucaAcceptanceWindow_z']/2.0)
-    
+
 
 
         # Double ARAPUCA shapes
@@ -457,30 +463,30 @@ class XARAPUCABuilder(gegede.builder.Builder):
                                             dy=(self.params['ArapucaOut_y'] - Q('0.02cm'))/2.0,
                                             dz=self.params['ArapucaAcceptanceWindow_z']/2.0)
 
-       
+
         # Create volumes
         # Regular ARAPUCA
         wall_vol = geom.structure.Volume("volXARAPUCAWall",
                                     material="G10",
                                     shape=wall_shape)
-
-        window_vol = geom.structure.Volume("volXARAPUCAWindow", 
+        # Strict larsoft rules on sensitive volume naming volOpDetSensitive*
+        window_vol = geom.structure.Volume("volOpDetSensitive_XARAPUCAWindow",
                                         material="LAr",
                                         shape=window_shape)
-        window_vol.params.append(("SensDet","PhotonDetector"))
+        #window_vol.params.append(("SensDet","PhotonDetector"))
 
         # Double ARAPUCA
         double_wall_vol = geom.structure.Volume("volXARAPUCADoubleWall",
-                                            material="G10", 
+                                            material="G10",
                                             shape=double_wall_shape)
-
-        double_window_vol = geom.structure.Volume("volXARAPUCADoubleWindow",
+        # Strict larsoft rules on sensitive volume naming volOpDetSensitive*
+        double_window_vol = geom.structure.Volume("volOpDetSensitive_XARAPUCADoubleWindow",
                                                 material="LAr",
                                                 shape=double_window_shape)
-        double_window_vol.params.append(("SensDet","PhotonDetector"))
+        #double_window_vol.params.append(("SensDet","PhotonDetector"))
 
 
-       
+
 
 
         # Add volumes to builder
@@ -491,39 +497,32 @@ class XARAPUCABuilder(gegede.builder.Builder):
 
         self.construct_cathode_mesh(geom)
         self.construct_membrane_mesh(geom)
-        
+
 
     def calculate_cathode_positions(self, idx, cathode_center_x, cathode_center_y, cathode_center_z):
         '''Calculate positions of X-ARAPUCAs over the cathode'''
         positions = []
-        
+
         for i in range(4):
             # Calculate x,y,z position for each ARAPUCA
             # Use the existing position calculations from PERL
-            x = cathode_center_x  
-            if i == 0:
-                y = -2*self.cathode['widthCathodeVoid'] - 2.0*self.cathode['CathodeBorder'] + self.params['GapPD'] + 0.5*self.params['ArapucaOut_x'] + cathode_center_y
-                z = 0.5*self.cathode['lengthCathodeVoid'] + self.cathode['CathodeBorder'] + cathode_center_z
-            elif i == 1:
-                y = -self.cathode['CathodeBorder'] - self.params['GapPD'] - 0.5*self.params['ArapucaOut_x'] + cathode_center_y
-                z = -1.5*self.cathode['lengthCathodeVoid'] - 2.0*self.cathode['CathodeBorder'] + cathode_center_z
-            elif i == 2:
-                y = -(-self.cathode['CathodeBorder'] - self.params['GapPD'] - 0.5*self.params['ArapucaOut_x']) + cathode_center_y
-                z = -(-1.5*self.cathode['lengthCathodeVoid'] - 2.0*self.cathode['CathodeBorder']) + cathode_center_z
+            z = cathode_center_z + self.list_posz_bot[i]
+            x = cathode_center_x
+
+            if (idx == 0 and i == 0):
+                y = cathode_center_y + self.list_posx_bot[2]
             else:
-                y = -(-2*self.cathode['widthCathodeVoid'] - 2.0*self.cathode['CathodeBorder'] + self.params['GapPD'] + 0.5*self.params['ArapucaOut_x']) + cathode_center_y # Mirror of position 0
-                z = -(0.5*self.cathode['lengthCathodeVoid'] + self.cathode['CathodeBorder']) + cathode_center_z # Mirror of position 0
-                
-            if (idx == 1 and i == 3):
-                y = -(-self.cathode['CathodeBorder'] - self.params['GapPD'] - 0.5*self.params['ArapucaOut_x']) + cathode_center_y
+                y = cathode_center_y + self.list_posx_bot[i]
+
+            y = y - self.params['heightElectronicBox']
 
             positions.append((x,y,z))
-            
+
         return positions
 
     def calculate_lateral_positions(self, frame_center_x, frame_center_y, frame_center_z):
         '''Calculate positions of X-ARAPUCAs on lateral walls
-        
+
         Returns:
             List of tuples (x, y, y_sens, z, rotation) containing:
             - x,y,z: Main ARAPUCA position
@@ -534,31 +533,31 @@ class XARAPUCABuilder(gegede.builder.Builder):
 
         # print(self.params['VerticalPDdist'])
 
-        # Calculate positions for 8 ARAPUCAs    
+        # Calculate positions for 8 ARAPUCAs
         x = frame_center_x
 
         # print(frame_center_x, self.params['Upper_FirstFrameVertDist'], self.params['VerticalPDdist'], self.params['Lower_FirstFrameVertDist'])
 
         for i in range(8):
-            
+
             y = frame_center_y
             z = frame_center_z
-            
+
             # Handle Y positions and rotations
             if i < 4:
                 # Left side
-                y_sens = (y + 0.5*self.params['ArapucaOut_y'] - 
-                        0.5*self.params['ArapucaAcceptanceWindow_y'] - 
+                y_sens = (y + 0.5*self.params['ArapucaOut_y'] -
+                        0.5*self.params['ArapucaAcceptanceWindow_y'] -
                         Q('0.01cm'))
                 rotation = 'rIdentity'
             else:
                 # Right side - adjust Y position
-                y = (y + 2*self.cathode['widthCathode'] + 
-                    2*(self.params['CathodeFrameToFC'] + 
-                        self.params['FCToArapucaSpaceLat'] - 
+                y = (y + 2*self.cathode['widthCathode'] +
+                    2*(self.params['CathodeFrameToFC'] +
+                        self.params['FCToArapucaSpaceLat'] -
                         self.params['ArapucaOut_y']/2))
-                y_sens = (y - 0.5*self.params['ArapucaOut_y'] + 
-                        0.5*self.params['ArapucaAcceptanceWindow_y'] + 
+                y_sens = (y - 0.5*self.params['ArapucaOut_y'] +
+                        0.5*self.params['ArapucaAcceptanceWindow_y'] +
                         Q('0.01cm'))
                 rotation = 'rPlus180AboutX'
 
@@ -567,7 +566,7 @@ class XARAPUCABuilder(gegede.builder.Builder):
                 # First tile position from top anode
                 x = frame_center_x + self.params['Upper_FirstFrameVertDist']
             elif i == 1 or i == 5:
-                # Second tile position 
+                # Second tile position
                 x -= self.params['VerticalPDdist'] + Q('1cm') # need to add 1cm to avoid overlapping
             elif i == 2 or i == 6:
                 # First tile position from bottom anode
@@ -580,67 +579,67 @@ class XARAPUCABuilder(gegede.builder.Builder):
             positions.append({
                 'index': i,
                 'x': x,
-                'y': y, 
+                'y': y,
                 'y_sens': y_sens,
                 'z': z,
                 'rotation': rotation
             })
 
         return positions
-    
+
     def place_lateral_xarapucas(self, geom, volume, frame_center_x, frame_center_y, frame_center_z):
         '''Place the lateral ARAPUCAs in the given volume'''
-        
+
         positions = self.calculate_lateral_positions(
             frame_center_x,
-            frame_center_y, 
+            frame_center_y,
             frame_center_z
         )
 
         lat_z = 0
 
         wall_vol = self.get_volume('volXARAPUCAWall')
-        window_vol = self.get_volume('volXARAPUCAWindow')
+        window_vol = self.get_volume('volOpDetSensitive_XARAPUCAWindow')
         mesh_vol = self.get_volume('volArapucaMesh')
 
         for pos in positions:
             i = pos['index']
 
             # print(pos['x'], pos['y'], pos['z'])
-            
+
             # Place main ARAPUCA volume
             main_pos = geom.structure.Position(
                 f"posArapuca{i}-Lat-{lat_z}",
                 x=pos['x'],
                 y=pos['y'],
                 z=pos['z'])
-                
+
             main_place = geom.structure.Placement(
                 f"placeArapuca{i}-Lat-{lat_z}",
                 volume=wall_vol,
                 pos=main_pos,
                 rot=pos['rotation'])
-            
+
             volume.placements.append(main_place.name)
 
-            # Place sensitive volume 
+            # Place sensitive volume
             sens_pos = geom.structure.Position(
                 f"posOpArapuca{i}-Lat-{lat_z}",
                 x=pos['x'],
                 y=pos['y_sens'],
                 z=pos['z'])
-                
+
             sens_place = geom.structure.Placement(
                 f"placeOpArapuca{i}-Lat-{lat_z}",
                 volume=window_vol,
                 pos=sens_pos)
-                
+
             volume.placements.append(sens_place.name)
 
             if hasattr(self, 'arapucamesh_switch') and self.arapucamesh_switch:
                 mesh_y = pos['y'] + self.params['Distance_Mesh_Window'] if i<4 else \
                         pos['y'] - self.params['Distance_Mesh_Window']
-                        
+
                 mesh_place = geom.structure.Placement(
                     f"lateral_arapuca_mesh_place_{i}",
                     volume=mesh_vol,
@@ -651,5 +650,3 @@ class XARAPUCABuilder(gegede.builder.Builder):
                     rot='rot90AboutY' if i<4 else 'rot05'
                 )
                 volume.placements.append(mesh_place.name)
-
-       
