@@ -288,66 +288,70 @@ class Params:
 
         if cls._tpc['nCRM_x'] == 1:
             cls._cryostat['xLArBuffer'] = cls._cryostat['Argon_x'] - cls._tpc['driftTPCActive'] -                          \
-                                                 cls._cryostat['HeightGaseousAr'] - cls._tpc['ReadoutPlane'] -                    \
+                                                 cls._cryostat['HeightGaseousAr'] - cls._tpc['ReadoutPlane'] -             \
                                                  cls._cathode['heightCathode']
         else:
             cls._cryostat['xLArBuffer'] = cls._cryostat['Argon_x'] - 2*cls._tpc['driftTPCActive'] -                        \
-                                                 cls._cryostat['HeightGaseousAr'] - 2*cls._tpc['ReadoutPlane'] -                  \
+                                                 cls._cryostat['HeightGaseousAr'] - 2*cls._tpc['ReadoutPlane'] -           \
                                                  cls._cathode['heightCathode']
         cls._cryostat['yLArBuffer'] = 0.5 * (cls._cryostat['Argon_y'] - cls._tpc['widthTPCActive'])
         cls._cryostat['zLArBuffer'] = 0.5 * (cls._cryostat['Argon_z'] - cls._tpc['lengthTPCActive'])
         cls._cryostat['Cryostat_x'] = cls._cryostat['Argon_x'] + 2*cls._cryostat['SteelThickness']
         cls._cryostat['Cryostat_y'] = cls._cryostat['Argon_y'] + 2*cls._cryostat['SteelThickness']
         cls._cryostat['Cryostat_z'] = cls._cryostat['Argon_z'] + 2*cls._cryostat['SteelThickness']
-        cls._cryostat['TPCEnclosure_x'] = cls._cryostat['Argon_x'] -                                                              \
-                                                 cls._cryostat['HeightGaseousAr'] +                                                      \
-                                                 cls._tpc['nCRM_x']*cls._tpc['anodePlateWidth'] -                                 \
+        cls._cryostat['TPCEnclosure_x'] = cls._cryostat['Argon_x'] -                                                       \
+                                                 cls._cryostat['HeightGaseousAr'] +                                        \
+                                                 cls._tpc['nCRM_x']*cls._tpc['anodePlateWidth'] -                          \
                                                  cls._cryostat['xLArBuffer']
 
-        cls._cryostat['TPCEnclosure_y'] = cls._tpc['nCRM_y']*(cls._tpc['widthCRM'] + cls._tpc['borderCRP']) + (cls._tpc['nSST_y'] - 1) * cls._tpc['gapSST_y']
-        cls._cryostat['TPCEnclosure_ybottom'] = cls._tpc['nCRM_y']*(cls._tpc['widthCRM'] + cls._tpc['borderCRUBottom_y']) + cls._tpc['gapSST_ybottom']
-        cls._cryostat['TPCEnclosure_z'] = cls._tpc['nCRM_z']*(cls._tpc['lengthCRM'] + cls._tpc['borderCRP']) + (cls._tpc['nSST1_z'] - 1) * cls._tpc['gapSST1_z'] + cls._tpc['nSST2_z'] * cls._tpc['gapSST2_z']
+        cls._cryostat['TPCEnclosure_y'] = cls._tpc['nCRM_y']*(cls._tpc['widthCRM'] + cls._tpc['borderCRP']) +              \
+                                          (cls._tpc['nSST_y'] - 1) * cls._tpc['gapSST_y']
+        cls._cryostat['TPCEnclosure_ybottom'] = cls._tpc['nCRM_y']*(cls._tpc['widthCRM'] + cls._tpc['borderCRUBottom_y'])+ \
+                                                cls._tpc['gapSST_ybottom']
+        cls._cryostat['TPCEnclosure_z'] = cls._tpc['nCRM_z']*(cls._tpc['lengthCRM'] + cls._tpc['borderCRP']) +             \
+                                          (cls._tpc['nSST1_z'] - 1) * cls._tpc['gapSST1_z'] +                              \
+                                          cls._tpc['nSST2_z'] * cls._tpc['gapSST2_z']
 
 
 
         # Enclosure parameters
         cls._detenc['FracMassOfAir'] = 1 - cls._detenc['FracMassOfSteel']
-        cls._detenc['DetEncX']  =    cls._cryostat['Cryostat_x'] +                                                                \
-                                            2*(cls._detenc['SteelSupport_x'] +                                                           \
-                                            cls._detenc['FoamPadding']) +                                                                \
+        cls._detenc['DetEncX']  =    cls._cryostat['Cryostat_x'] +                                                         \
+                                            2*(cls._detenc['SteelSupport_x'] +                                             \
+                                            cls._detenc['FoamPadding']) +                                                  \
                                             cls._detenc['SpaceSteelSupportToCeiling']
-        cls._detenc['DetEncY']  =    cls._cryostat['Cryostat_y'] +                                                                \
-                                            2*(cls._detenc['SteelSupport_y'] +                                                           \
-                                            cls._detenc['FoamPadding']) +                                                                \
+        cls._detenc['DetEncY']  =    cls._cryostat['Cryostat_y'] +                                                         \
+                                            2*(cls._detenc['SteelSupport_y'] +                                             \
+                                            cls._detenc['FoamPadding']) +                                                  \
                                             2*cls._detenc['SpaceSteelSupportToWall']
-        cls._detenc['DetEncZ']  =    cls._cryostat['Cryostat_z'] +                                                                \
-                                            2*(cls._detenc['SteelSupport_z'] +                                                           \
-                                            cls._detenc['FoamPadding']) +                                                                \
+        cls._detenc['DetEncZ']  =    cls._cryostat['Cryostat_z'] +                                                         \
+                                            2*(cls._detenc['SteelSupport_z'] +                                             \
+                                            cls._detenc['FoamPadding']) +                                                  \
                                             2*cls._detenc['SpaceSteelSupportToWall']
 
-        cls._detenc['posCryoInDetEnc_x'] = - cls._detenc['DetEncX']/2 +                                                           \
-                                                    cls._detenc['SteelSupport_x'] +                                                      \
-                                                    cls._detenc['FoamPadding'] +                                                         \
+        cls._detenc['posCryoInDetEnc_x'] = - cls._detenc['DetEncX']/2 +                                                    \
+                                                    cls._detenc['SteelSupport_x'] +                                        \
+                                                    cls._detenc['FoamPadding'] +                                           \
                                                     cls._cryostat['Cryostat_x']/2
         cls._detenc['posCryoInDetEnc_y'] = Q('0m')
         cls._detenc['posCryoInDetEnc_z'] = Q('0m')
 
         cls._detenc['OriginXSet'] =  cls._detenc['DetEncX']/2.0 - cls._detenc['SteelSupport_x'] -                          \
-                                            cls._detenc['FoamPadding'] - cls._cryostat['SteelThickness'] -                        \
-                                            cls._cryostat['xLArBuffer'] - cls._tpc['driftTPCActive']/2.0 -                        \
+                                            cls._detenc['FoamPadding'] - cls._cryostat['SteelThickness'] -                 \
+                                            cls._cryostat['xLArBuffer'] - cls._tpc['driftTPCActive']/2.0 -                 \
                                             cls._cathode['heightCathode']
         if cls._tpc['nCRM_x'] == 2:
             cls._detenc['OriginXSet'] =  cls._detenc['DetEncX']/2.0 - cls._detenc['SteelSupport_x'] -                      \
-                                                cls._detenc['FoamPadding'] - cls._cryostat['SteelThickness'] -                    \
-                                                cls._cryostat['xLArBuffer'] - cls._tpc['driftTPCActive']/2.0 -                    \
+                                                cls._detenc['FoamPadding'] - cls._cryostat['SteelThickness'] -             \
+                                                cls._cryostat['xLArBuffer'] - cls._tpc['driftTPCActive']/2.0 -             \
                                                 cls._cathode['heightCathode']/2.
 
         cls._detenc['OriginYSet'] =  cls._detenc['DetEncY']/2.0 - cls._detenc['SpaceSteelSupportToWall'] -                 \
-                                            cls._detenc['SteelSupport_y'] - cls._detenc['FoamPadding'] -                          \
-                                            cls._cryostat['SteelThickness'] - cls._cryostat['yLArBuffer'] -                       \
+                                            cls._detenc['SteelSupport_y'] - cls._detenc['FoamPadding'] -                   \
+                                            cls._cryostat['SteelThickness'] - cls._cryostat['yLArBuffer'] -                \
                                             cls._tpc['widthTPCActive']/2.0
         cls._detenc['OriginZSet'] =  cls._detenc['DetEncZ']/2.0 - cls._detenc['SpaceSteelSupportToWall'] -                 \
-                                            cls._detenc['SteelSupport_z'] - cls._detenc['FoamPadding'] -                          \
+                                            cls._detenc['SteelSupport_z'] - cls._detenc['FoamPadding'] -                   \
                                             cls._cryostat['SteelThickness'] - cls._cryostat['zLArBuffer']
 
         if not cls._world['simple'] and (cls._world['workspace'] == 0 or cls._world['workspace'] == 4):
@@ -355,44 +359,44 @@ class Params:
             cls._detenc['DetEncY'] = cls._detenc['Cavern_y']
             cls._detenc['DetEncZ'] = cls._detenc['Cavern_z']
 
-            cls._detenc['posCryoInDetEnc_x'] = -0.5*cls._detenc['DetEncX'] +              \
-                                                      cls._detenc['ConcreteBeamGap_x'] +         \
-                                                      cls._detenc['ConcreteThickness'] +         \
-                                                      cls._detenc['GroutThickness'] +            \
-                                                      0.5*cls._detenc['FullCryostat_x'] +    \
+            cls._detenc['posCryoInDetEnc_x'] = -0.5*cls._detenc['DetEncX'] +                                               \
+                                                      cls._detenc['ConcreteBeamGap_x'] +                                   \
+                                                      cls._detenc['ConcreteThickness'] +                                   \
+                                                      cls._detenc['GroutThickness'] +                                      \
+                                                      0.5*cls._detenc['FullCryostat_x'] +                                  \
                                                       0.5*cls._detenc['RadioRockThickness']
             cls._detenc['posCryoInDetEnc_y'] = Q('0m')
-            cls._detenc['posCryoInDetEnc_z'] = -0.5*cls._detenc['DetEncZ'] +              \
-                                                      cls._detenc['ConcreteBeamGap_z'] +         \
+            cls._detenc['posCryoInDetEnc_z'] = -0.5*cls._detenc['DetEncZ'] +                                               \
+                                                      cls._detenc['ConcreteBeamGap_z'] +                                   \
                                                       0.5*cls._detenc['FullCryostat_z']
 
-            cls._detenc['OriginXSet'] =  cls._detenc['DetEncX']/2.0  -                    \
-                                                cls._detenc['ConcreteBeamGap_x'] -               \
-                                                cls._detenc['ConcreteThickness'] -               \
-                                                cls._detenc['GroutThickness'] -                  \
-                                                0.5*cls._detenc['RadioRockThickness'] -          \
-                                                cls._cryostat['SteelThickness'] -                \
-                                                cls._cryostat['xLArBuffer'] -                    \
-                                                cls._tpc['driftTPCActive']/2.0 -                 \
+            cls._detenc['OriginXSet'] =  cls._detenc['DetEncX']/2.0  -                                                     \
+                                                cls._detenc['ConcreteBeamGap_x'] -                                         \
+                                                cls._detenc['ConcreteThickness'] -                                         \
+                                                cls._detenc['GroutThickness'] -                                            \
+                                                0.5*cls._detenc['RadioRockThickness'] -                                    \
+                                                cls._cryostat['SteelThickness'] -                                          \
+                                                cls._cryostat['xLArBuffer'] -                                              \
+                                                cls._tpc['driftTPCActive']/2.0 -                                           \
                                                 cls._cathode['heightCathode']/2.
-            cls._detenc['OriginYSet'] =  cls._detenc['DetEncY']/2.0 -                     \
-                                                cls._cryostat['SteelThickness'] -                \
-                                                cls._cryostat['yLArBuffer'] -                    \
+            cls._detenc['OriginYSet'] =  cls._detenc['DetEncY']/2.0 -                                                      \
+                                                cls._cryostat['SteelThickness'] -                                          \
+                                                cls._cryostat['yLArBuffer'] -                                              \
                                                 cls._tpc['widthTPCActive']/2.0
-            cls._detenc['OriginZSet'] =  cls._detenc['DetEncZ']/2.0 -                     \
-                                                cls._cryostat['SteelThickness'] -                \
-                                                cls._detenc['ConcreteBeamGap_z'] -               \
+            cls._detenc['OriginZSet'] =  cls._detenc['DetEncZ']/2.0 -                                                      \
+                                                cls._cryostat['SteelThickness'] -                                          \
+                                                cls._detenc['ConcreteBeamGap_z'] -                                         \
                                                 cls._cryostat['zLArBuffer']
 
 
         # FieldCage parameters
         cls._fieldcage['FieldShaperLongTubeLength']  =  cls._tpc['lengthTPCActive']
         cls._fieldcage['FieldShaperShortTubeLength'] =  cls._tpc['widthTPCActive']
-        cls._fieldcage['FieldShaperLength'] = cls._fieldcage['FieldShaperLongTubeLength'] +                                       \
-                                                     2*cls._fieldcage['FieldShaperOuterRadius'] +                                        \
+        cls._fieldcage['FieldShaperLength'] = cls._fieldcage['FieldShaperLongTubeLength'] +                                \
+                                                     2*cls._fieldcage['FieldShaperOuterRadius'] +                          \
                                                      2*cls._fieldcage['FieldShaperTorRad']
-        cls._fieldcage['FieldShaperWidth'] =  cls._fieldcage['FieldShaperShortTubeLength'] +                                      \
-                                                     2*cls._fieldcage['FieldShaperOuterRadius'] +                                        \
+        cls._fieldcage['FieldShaperWidth'] =  cls._fieldcage['FieldShaperShortTubeLength'] +                               \
+                                                     2*cls._fieldcage['FieldShaperOuterRadius'] +                          \
                                                      2*cls._fieldcage['FieldShaperTorRad']
         cls._fieldcage['NFieldShapers']  = (cls._tpc['driftTPCActive']/cls._fieldcage['FieldShaperSeparation']) - 1
         cls._fieldcage['FieldCageSizeX'] = cls._fieldcage['FieldShaperSeparation']*cls._fieldcage['NFieldShapers'] +       \
@@ -410,8 +414,8 @@ class Params:
         # Arapuca parameters
         cls._arapuca['list_posy_bot'] = [0]*4
         cls._arapuca['list_posz_bot'] = [0]*4
-        cls._arapuca['list_posy_bot'][0]= -2.0*cls._cathode['widthCathodeVoid'] -                                                 \
-                                                 2.0*cls._cathode['CathodeBorder'] +                                                     \
+        cls._arapuca['list_posy_bot'][0]= -2.0*cls._cathode['widthCathodeVoid'] -                                          \
+                                                 2.0*cls._cathode['CathodeBorder'] +                                       \
                                                  cls._arapuca['GapPD'] + 0.5*cls._arapuca['ArapucaOut_x']
         cls._arapuca['list_posz_bot'][0]= -(0.5*cls._cathode['lengthCathodeVoid'] + cls._cathode['CathodeBorder'])
         cls._arapuca['list_posy_bot'][1]= cls._cathode['CathodeBorder'] + cls._arapuca['GapPD'] +                          \
