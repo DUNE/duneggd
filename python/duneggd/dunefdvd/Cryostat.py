@@ -166,9 +166,9 @@ class CryostatBuilder(gegede.builder.Builder):
                     pos_z += globals.get("gapSST1_z")
                 if (globals.get("nSST2_z") > 0) and (ii == 2):
                     pos_z += globals.get("gapSST2_z")
-                if (globals.get("nSST2_z") > 0) and (ii-2 % 6 == 0) and (ii > 2) and (ii < globals.get("nCRM_z") - 2):
+                if (globals.get("nSST2_z") > 0) and ((ii-2) % 6 == 0) and (ii > 2) and (ii < globals.get("nCRM_z") - 2):
                     pos_z += globals.get("gapSST1_z")
-                if (globals.get("nSST2_z") > 0) and (ii-2 % 6 == 0) and (ii >= globals.get("nCRM_z") - 2):
+                if (globals.get("nSST2_z") > 0) and ((ii-2) % 6 == 0) and (ii >= globals.get("nCRM_z") - 2):
                     pos_z += globals.get("gapSST2_z")
 
             pos_y = -0.5*globals.get("TPCEnclosure_y") + 0.5*globals.get("widthCRM")
