@@ -321,7 +321,7 @@ def construct_materials(geom):
                                                     ("calcium", 0.0011),
                                                     ("potassium", 0.0155),
                                                     ("silicon", 0.1985),
-                                                    ("aluminium", 0.0494),
+                                                    ("aluminum", 0.0494),
                                                     ("magnesium", 0.0358),
                                                     ("sodium", 0.0069),
                                                     ("hydrogen", 0.09)
