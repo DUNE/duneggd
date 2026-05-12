@@ -182,7 +182,7 @@ class ProtoDUNEVDBuilder(gegede.builder.Builder):
             z=Q('0cm'))
         
         cryo_place = geom.structure.Placement(
-            "cryo_place",
+            cryo_vol.name+"_PV",
             volume=cryo_vol,
             pos=cryo_pos)
 

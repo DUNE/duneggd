@@ -275,11 +275,11 @@ class CryostatBuilder(gegede.builder.Builder):
                         rot1 = 'r180aboutX_180aboutY'
 
                     # Place the TPCs, making sure to rotate the right one
-                    pTPC0_in_C = geom.structure.Placement('place'+pos0Name,
+                    pTPC0_in_C = geom.structure.Placement(tpc0_lv.name+'_PVplace'+pos0Name,
                                                           volume = tpc0_lv,
                                                           pos    = tpc0_in_cryo,
                                                           rot    = rot0 )
-                    pTPC1_in_C = geom.structure.Placement('place'+pos1Name,
+                    pTPC1_in_C = geom.structure.Placement(tpc1_lv.name+'_PVplace'+pos1Name,
                                                           volume = tpc1_lv,
                                                           pos    = tpc1_in_cryo,
                                                           rot    = rot1 )

@@ -96,19 +96,19 @@ class TPCBuilder(gegede.builder.Builder):
 
 
         # place each plane and active volume in TPC volume
-        pPlaneZ_in_TPC = geom.structure.Placement('placePlaneZ_in_'+self.name,
+        pPlaneZ_in_TPC = geom.structure.Placement(readPlaneZ_lv.name+'_PV_'+self.name,
                                                   volume = readPlaneZ_lv,
                                                   pos = readPlaneZ_in_tpc)
         
-        pPlaneV_in_TPC = geom.structure.Placement('placePlaneV_in_'+self.name,
+        pPlaneV_in_TPC = geom.structure.Placement(readPlaneV_lv.name+'_PV_'+self.name,
                                                   volume = readPlaneV_lv,
                                                   pos = readPlaneV_in_tpc)
         
-        pPlaneU_in_TPC = geom.structure.Placement('placePlaneU_in_'+self.name,
+        pPlaneU_in_TPC = geom.structure.Placement(readPlaneU_lv.name+'_PV_'+self.name,
                                                   volume = readPlaneU_lv,
                                                   pos = readPlaneU_in_tpc)
         
-        pActive_in_TPC = geom.structure.Placement('placeActive_in_'+self.name,
+        pActive_in_TPC = geom.structure.Placement(tpcActive_lv.name+'_PV',
                                                   volume = tpcActive_lv,
                                                   pos = tpcActive_in_tpc)
 

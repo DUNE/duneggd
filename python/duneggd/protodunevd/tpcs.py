@@ -380,7 +380,7 @@ class TPCBuilder(gegede.builder.Builder):
                             z=wire[1])  # xcenter
                         rot = "rUWireAboutX"
                         place = geom.structure.Placement(
-                            f"placeWireU{wid}_{quad}",
+                            f"{wire_vol.name}_PV",
                             volume=wire_vol,
                             pos=pos,
                             rot=rot)
@@ -409,7 +409,7 @@ class TPCBuilder(gegede.builder.Builder):
                             z=wire[1])  # xcenter
                         rot = "rVWireAboutX"
                         place = geom.structure.Placement(
-                            f"placeWireV{wid}_{quad}",
+                            f"{wire_vol.name}_PV",
                             volume=wire_vol,
                             pos=pos,
                             rot=rot)
@@ -449,7 +449,7 @@ class TPCBuilder(gegede.builder.Builder):
                         z=zpos)
                     rot = "rPlus90AboutX"
                     place = geom.structure.Placement(
-                        f"placeWireZ{wid}_{quad}",
+                        f"{wire_vol_z.name}_PV_{wid}",
                         volume=wire_vol_z,
                         pos=pos,
                         rot=rot)
@@ -467,7 +467,7 @@ class TPCBuilder(gegede.builder.Builder):
             # Place all volumes
             for name, (x, y, z) in placements.items():
                 pos = geom.structure.Position(f"pos{name}{quad}_pos", x=x, y=Q('0cm'), z=Q('0cm'))
-                place = geom.structure.Placement(f"pos{name.split('_')[-1]}{quad}", 
+                place = geom.structure.Placement(f"{vols[name].name}_PV_{quad}", 
                                               volume=vols[name], 
                                               pos=pos)
                 vols['tpc'].placements.append(place.name)
@@ -559,7 +559,7 @@ class TPCBuilder(gegede.builder.Builder):
                     z=myposTPCZ
                 )
                 place_top = geom.structure.Placement(
-                    f"placeTopTPC_{idx}",
+                    f"{tpc_vol.name}_PVTop{idx}",
                     volume=tpc_vol,
                     pos=pos_top
                 )
@@ -573,7 +573,7 @@ class TPCBuilder(gegede.builder.Builder):
                     z=myposTPCZ 
                 )
                 place_bot = geom.structure.Placement(
-                    f"placeBotTPC_{idx}",
+                    f"{tpc_vol.name}_PVBot{idx}",
                     volume=tpc_vol,
                     pos=pos_bot,
                     rot='rPlus180AboutY'  # Rotate bottom TPC

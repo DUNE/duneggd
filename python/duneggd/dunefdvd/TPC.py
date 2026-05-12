@@ -71,10 +71,9 @@ class TPCBuilder(gegede.builder.Builder):
                                                   y = Q(str(w[2])+'cm'),
                                                   z = Q(str(w[1])+'cm'))
                     id = str(n) if plane != 'Z' else w[0]
-                    wire_place = geom.structure.Placement('place%sWire%s%d'%(self.name, plane, n),
-                                                          volume = wires.get_volume(
-                                                                     "vol%sWire%s%s"%(self.name, plane, id)
-                                                                   ),
+                    wire_vol = wires.get_volume("vol%sWire%s%s"%(self.name, plane, id))
+                    wire_place = geom.structure.Placement(wire_vol.name+('_PV%d'%n),
+                                                          volume = wire_vol,
                                                           pos = pos,
                                                           rot = rotation)
                     # place the wires inside each place
@@ -93,7 +92,7 @@ class TPCBuilder(gegede.builder.Builder):
         self.add_volume(tpc_LV)
         # place the individual place
         for plane in ['U', 'V', 'Z']:
-            tpc_place = geom.structure.Placement('place%sPlane%s'%(self.name, plane),
+            tpc_place = geom.structure.Placement(tpcplanes_LV[plane].name+'_PV',
                                                  volume = tpcplanes_LV[plane],
                                                  pos = geom.structure.Position('posPlane%s'%plane,
                                                                                x = postpcs[plane][0],
@@ -102,7 +101,7 @@ class TPCBuilder(gegede.builder.Builder):
                                                  rot = "rIdentity")
             tpc_LV.placements.append(tpc_place.name)
         # place the active block
-        tpcactive_place = geom.structure.Placement('place%sActive'%self.name,
+        tpcactive_place = geom.structure.Placement(tpcactive_LV.name+'_PV',
                                                    volume = tpcactive_LV,
                                                    pos = geom.structure.Position('posActive',
                                                                                  x = tpcactive_pos[0],

@@ -242,7 +242,7 @@ class DetEncLArBuilder(gegede.builder.Builder):
                                               self.MainDetCenter[1],
                                               self.MainDetCenter[2])
         
-        place_cryo_in_E = geom.structure.Placement('place'+posName,
+        place_cryo_in_E = geom.structure.Placement(cryo_lv.name+'_PV',
                                                     volume = cryo_lv,
                                                     pos    = cryo_in_enc)
         detEnc_lv.placements.append(place_cryo_in_E.name)

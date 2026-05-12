@@ -116,7 +116,7 @@ class ArapucaBuilder(gegede.builder.Builder):
                                           pos = "posCenter",
                                           rot = rotArapuca
                                           )
-        place2 = geom.structure.Placement('placeopdet_in'+arapucaenc_LV.name,
+        place2 = geom.structure.Placement(opdet_LV.name+'_PV',
                                           volume = opdet_LV,
                                           pos = opdet_pos,
                                           )

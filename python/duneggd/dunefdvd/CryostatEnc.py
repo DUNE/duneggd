@@ -23,14 +23,14 @@ class CryostatEncBuilder(gegede.builder.Builder):
                                      dx = globals.get("Cryostat_x")/2 + self.fWarmSkinThickness + self.fWoodThickness + self.fShieldThickness + self.fColdSkinThickness + self.Offset,
                                      dy = globals.get("Cryostat_y")/2 + self.fWarmSkinThickness + self.fWoodThickness + self.fShieldThickness + self.fColdSkinThickness + self.Offset,
                                      dz = globals.get("Cryostat_z")/2 + self.fWarmSkinThickness + self.fWoodThickness + self.fShieldThickness + self.fColdSkinThickness + self.Offset)
-        cryoencLV = geom.structure.Volume('vol'+self.name, material="Air", shape=cryoencBox)
+        cryoencLV = geom.structure.Volume('volEnclosureCryostat', material="Air", shape=cryoencBox)
         self.add_volume(cryoencLV)
 
         cryostat = self.get_builder("Cryostat")
         cryostatLV = cryostat.get_volume()
 
         ###this is the start of Cryostat logical volume ###
-        cryostat_place = geom.structure.Placement('Cryostat_Place', pos = "posCenter", volume = cryostatLV)
+        cryostat_place = geom.structure.Placement(cryostatLV.name+'_PV', pos = "posCenter", volume = cryostatLV)
         cryoencLV.placements.append(cryostat_place.name)
 
         fSolidCryostat = geom.get_shape(cryostatLV)

@@ -182,7 +182,7 @@ class CryostatBuilder(gegede.builder.Builder):
                         pos_y += globals.get("gapSST_y")
                         pos_y_bot += globals.get("gapSST_ybottom")
 
-                place_top = geom.structure.Placement('placeTop%s-%d' % (name, idx),
+                place_top = geom.structure.Placement(tpc_LV.name+('_PV_Top%d'%idx),
                                                      volume = tpc_LV,
                                                      pos = geom.structure.Position('posTop%s-%d' % (name, idx),
                                                                                    x = pos_x,
@@ -190,7 +190,7 @@ class CryostatBuilder(gegede.builder.Builder):
                                                                                    z = pos_z))
                 tpcenc_LV.placements.append(place_top.name)
                 if globals.get("nCRM_x") == 2:
-                    place_bot = geom.structure.Placement('placeBot%s-%d' % (name, idx),
+                    place_bot = geom.structure.Placement(tpc_LV.name+('_PV_Bot%d'%idx),
                                                          volume = tpc_LV,
                                                          pos = geom.structure.Position('posBot%s-%d' % (name, idx),
                                                                                        x = posbottom_x,
@@ -227,13 +227,13 @@ class CryostatBuilder(gegede.builder.Builder):
                 name_c = re.sub(r'vol', '', c_LV.name)
                 name_a = re.sub(r'vol', '', a_LV.name)
                 name_a_bot = re.sub(r'vol', '', a_bot_LV.name)
-                place_c = geom.structure.Placement('place%s%d_inTPCEnc'%(c_LV.name, idx),
+                place_c = geom.structure.Placement(c_LV.name+('_PV%d'%idx),
                                                    volume = c_LV,
                                                    pos = geom.structure.Position('pos%s-%d'%(name_c, idx),
                                                                                  x = cathode_x,
                                                                                  y = cathode_y,
                                                                                  z = cathode_z))
-                place_a = geom.structure.Placement('place%s%d_inTPCEnc'%(a_LV.name, idx),
+                place_a = geom.structure.Placement(a_LV.name+('_PV%d'%idx),
                                                    volume = a_LV,
                                                    pos = geom.structure.Position('pos%s-%d'%(name_a, idx),
                                                                                  x = anode_toppos,
@@ -244,7 +244,7 @@ class CryostatBuilder(gegede.builder.Builder):
                 tpcenc_LV.placements.append(place_a.name)
 
                 if globals.get("nCRM_x") == 2:
-                    place_ab = geom.structure.Placement('place%s%d_inTPCEncBottom'%(name_a_bot, idx_bot),
+                    place_ab = geom.structure.Placement(a_bot_LV.name+('_PV%d'%idx_bot),
                                                         volume = a_bot_LV,
                                                         pos = geom.structure.Position('pos%sBottom-%d' %            \
                                                                                             (name_a_bot, idx_bot),
@@ -256,7 +256,7 @@ class CryostatBuilder(gegede.builder.Builder):
                     idx_bot += 1
                     # dead material on one side only
                     anode_posz_bot2 = anode_posz_bot + globals.get("lengthAnodeBottom") + (2 * globals.get("borderCRUBottom1side_z"))
-                    place_ab2 = geom.structure.Placement('place%s%d_inTPCEncBottom'%(name_a_bot, idx_bot),
+                    place_ab2 = geom.structure.Placement(a_bot_LV.name+('_PV%d'%idx_bot),
                                                         volume = a_bot_LV,
                                                         pos = geom.structure.Position('pos%sBottom-%d' %            \
                                                                                             (name_a_bot, idx_bot),

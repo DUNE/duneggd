@@ -86,9 +86,9 @@ class TPCPlaneBuilder(gegede.builder.Builder):
         newcolumns = self.WirePosition.columns.tolist()
 
         for i in range(len(newcolumns)):
-            if (newcolumns[i].find('X'         ) is -1 and
-                newcolumns[i].find('Y'         ) is -1 and
-                newcolumns[i].find('Front/Back') is -1):
+            if (newcolumns[i].find('X'         ) == -1 and
+                newcolumns[i].find('Y'         ) == -1 and
+                newcolumns[i].find('Front/Back') == -1):
                 self.WirePosition.drop([newcolumns[i]], axis=1, inplace=True)
 
         newcolumns = self.WirePosition.columns.tolist()
@@ -107,7 +107,7 @@ class TPCPlaneBuilder(gegede.builder.Builder):
             elif self.WirePosition.columns[i] == 'Y.1' or self.WirePosition.columns[i] == 'Y.3':
                 newcolumns[i] = 'YEnd'
                 self.YEndIndex = i+1
-            elif self.WirePosition.columns[i].find('Front/Back') is not -1:
+            elif self.WirePosition.columns[i].find('Front/Back') != -1:
                 newcolumns[i] = 'Front'
                 self.FrontOrBack = i+1
 
@@ -319,7 +319,7 @@ class TPCPlaneBuilder(gegede.builder.Builder):
                                                 wirePos[1],
                                                 wirePos[2])
         
-        pWire_in_Plane = geom.structure.Placement('place_'+posName,
+        pWire_in_Plane = geom.structure.Placement(wire_lv.name+'_PV_'+str(num),
                                                   volume = wire_lv,
                                                   pos = wire_in_plane,
                                                   rot = wireRot)

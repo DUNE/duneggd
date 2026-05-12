@@ -31,7 +31,7 @@ class DetEnclosureBuilder(gegede.builder.Builder):
         posCryoInDetEnc = geom.structure.Position("posCryoInDetEnc", x=globals.get("posCryoInDetEnc_x"),
                                                                      y=globals.get("posCryoInDetEnc_y"),
                                                                      z=globals.get("posCryoInDetEnc_z"))
-        cryostat_place = geom.structure.Placement('place'+cryostat.name,
+        cryostat_place = geom.structure.Placement(cryostatLV.name+'_PV_InDetEnc',
                                                   volume = cryostatLV,
                                                   pos = posCryoInDetEnc)
         detencLV.placements.append(cryostat_place.name)
