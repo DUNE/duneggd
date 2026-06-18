@@ -219,6 +219,15 @@ def construct_materials(geom):
 									  ("oxygen", 0.320),
 									  ("hydrogen", 0.080)))
 
+    m_mylar = geom.matter.Molecule("Mylar", density = "1.40g/cc",
+                        elements = (("hydrogen", 4),
+                                    ("carbon", 5),
+                                    ("oxygen", 2)))
+
+    m_ptp = geom.matter.Molecule("pTP", density = "1.079g/cc",
+                        elements = (("carbon", 18),
+                                    ("hydrogen", 14)))
+
     m_nigas1atm80k = geom.matter.Mixture("NiGas1atm80K", density = "0.0039g/cc",
 						components = (("nitrogen", 1.000),))
 

@@ -68,11 +68,11 @@ class DetectorBuilder(gegede.builder.Builder):
         # first check to see if ecal barrel fits in magnet, otherwise nudge it to fit
         # need to do this before using and magnet dimensions for positioning
         if( self.magInDim[1] < ecalBarDim[1] ):
-             print "DetectorBuilder: Barrel ECAL ("+str(ecalBarDim[1])+" high) does not fit inside magnet ("+str(self.magInDim[1])+")"
+             print ("DetectorBuilder: Barrel ECAL ("+str(ecalBarDim[1])+" high) does not fit inside magnet ("+str(self.magInDim[1])+")")
              self.magInDim[1]  = ecalBarDim[1]
              self.magOutDim[1] = self.magInDim[1] + 2*self.magThickness
-             print "       ... nudging magnet inner and outer height dimensions to "+str(self.magInDim[1])+" and "+str(self.magOutDim[1])
-             print "       ... this affects PRC placements, which fit tightly around magnet"
+             print ("       ... nudging magnet inner and outer height dimensions to "+str(self.magInDim[1])+" and "+str(self.magOutDim[1]))
+             print ("       ... this affects PRC placements, which fit tightly around magnet")
 
         # vol is a bounding box ~ not corresponding to physical volume.
         #  assume Barrel biggest in x and y
@@ -133,45 +133,45 @@ class DetectorBuilder(gegede.builder.Builder):
        ########################### Check Assumptions ###########################
         
         if( muidDownDim[2] == muidUpDim[2] ):
-            print "DetectorBuilder: Up and Downstream MuIDs the same thickness in beam direction"
+            print ("DetectorBuilder: Up and Downstream MuIDs the same thickness in beam direction")
 
         # For the Boolean shapes, make sure the inner/outer dimensions match 
         #  where they should -- barrel is a "tube" in z and magnet a "tube" in x
         if( muidBarInDim[2] != muidBarOutDim[2] ):
-            print "DetectorBuilder: MuID barrel not same length in z on inside and outside"
-            print "     inner barrel is "+str(muidBarInDim[2])+" and outer barrel is "+str(muidBarOutDim[2])+" in z"
+            print ("DetectorBuilder: MuID barrel not same length in z on inside and outside")
+            print ("     inner barrel is "+str(muidBarInDim[2])+" and outer barrel is "+str(muidBarOutDim[2])+" in z")
         if( self.magInDim[0] != self.magOutDim[0] ):
-            print "DetectorBuilder: Magnet not same length in x on inside and outside"
-            print "     inner magnet is "+str(self.magInDim[0])+" and outer magnet is "+str(self.magOutDim[0])+" in x"
+            print ("DetectorBuilder: Magnet not same length in x on inside and outside")
+            print ("     inner magnet is "+str(self.magInDim[0])+" and outer magnet is "+str(self.magOutDim[0])+" in x")
 
         # The MuID barrel should tightly hug the magnet,
         #   and be the same dimension in z
         if( muidBarInDim[0] != self.magOutDim[0] ):
-            print "DetectorBuilder: MuID barrel not touching magnet in x"
-            print "     inner barrel is "+str(muidBarInDim[0])+" and magnet is "+str(self.magOutDim[0])+" in x"
+            print ("DetectorBuilder: MuID barrel not touching magnet in x")
+            print ("     inner barrel is "+str(muidBarInDim[0])+" and magnet is "+str(self.magOutDim[0])+" in x")
         if( muidBarInDim[1] != self.magOutDim[1] ):
-            print "DetectorBuilder: MuID barrel not touching magnet in y"
-            print "     inner barrel is "+str(muidBarInDim[1])+" and outer magnet is "+str(self.magOutDim[1])+" in y"
+            print ("DetectorBuilder: MuID barrel not touching magnet in y")
+            print ("     inner barrel is "+str(muidBarInDim[1])+" and outer magnet is "+str(self.magOutDim[1])+" in y")
         if( muidBarInDim[2] != self.magOutDim[2] ):
-            print "DetectorBuilder: MuID barrel not same length in z as magnet"
-            print "     barrel is "+str(muidBarInDim[2])+" and outer magnet is "+str(self.magOutDim[2])+" in z"
+            print ("DetectorBuilder: MuID barrel not same length in z as magnet")
+            print ("     barrel is "+str(muidBarInDim[2])+" and outer magnet is "+str(self.magOutDim[2])+" in z")
 
         # Check that the ECAL, positioned tightly around the STT, fits
         #   inside the inner dimensions of the magnet.
         if( (ecalUpPos[2] - 0.5*ecalUpDim[2]) < (magPos[2] - 0.5*self.magInDim[2]) ):
-            print "DetectorBuilder: Upstream ECAL upstream z face ("+str(ecalUpPos[2] - 0.5*ecalUpDim[2])+") overlaps magnet ("+str(magPos[2] - 0.5*self.magInDim[2])+")"
-            print "      ... downstream ECAL downstream face is "+str(magPos[2] + 0.5*self.magInDim[2] - (ecalDownPos[2] + 0.5*ecalDownDim[2]))+" away from magnet"
+            print ("DetectorBuilder: Upstream ECAL upstream z face ("+str(ecalUpPos[2] - 0.5*ecalUpDim[2])+") overlaps magnet ("+str(magPos[2] - 0.5*self.magInDim[2])+")")
+            print ("      ... downstream ECAL downstream face is "+str(magPos[2] + 0.5*self.magInDim[2] - (ecalDownPos[2] + 0.5*ecalDownDim[2]))+" away from magnet")
         if( (ecalDownPos[2] + 0.5*ecalDownDim[2]) > (magPos[2] + 0.5*self.magInDim[2]) ):
-            print "DetectorBuilder: Downstream ECAL downstream z face ("+str(ecalDownPos[2] + 0.5*ecalDownDim[2])+") overlaps magnet ("+str(magPos[2] + 0.5*self.magInDim[2])+")"
-            print "      ... upstream ECAL upstream face is "+str(ecalUpPos[2] - 0.5*ecalUpDim[2] - (magPos[2] - 0.5*self.magInDim[2]))+" away from magnet"
+            print ("DetectorBuilder: Downstream ECAL downstream z face ("+str(ecalDownPos[2] + 0.5*ecalDownDim[2])+") overlaps magnet ("+str(magPos[2] + 0.5*self.magInDim[2])+")")
+            print ("      ... upstream ECAL upstream face is "+str(ecalUpPos[2] - 0.5*ecalUpDim[2] - (magPos[2] - 0.5*self.magInDim[2]))+" away from magnet")
         if( self.magInDim[2] < ecalUpDim[2] + sttDim[2] + ecalDownDim[2] ):
-            print "DetectorBuilder: STT+ECAL ends ("+str(ecalUpDim[2] + sttDim[2] + ecalDownDim[2])+") do not fit inside magnet ("+str(self.magInDim[2])+")"
+            print ("DetectorBuilder: STT+ECAL ends ("+str(ecalUpDim[2] + sttDim[2] + ecalDownDim[2])+") do not fit inside magnet ("+str(self.magInDim[2])+")")
  
         if(       muidDownDim[1] > muidBarDim[1] 
                or muidDownDim[2] > muidBarDim[2]
                or muidUpDim[1]   > muidBarDim[1]
                or muidUpDim[2]   > muidBarDim[2]  ):
-            print "DetectorBuilder: MuID Ends have larger xy dimensions than Barrel"
+            print ("DetectorBuilder: MuID Ends have larger xy dimensions than Barrel")
 
         ############################ Finish Checking ############################
         #########################################################################

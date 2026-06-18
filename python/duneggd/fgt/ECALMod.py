@@ -46,7 +46,8 @@ class ECALModBuilder(gegede.builder.Builder):
         # Calculate ECAL dimensions 
         self.ecalModDim    = list(SBPlaneDim) # get the right x and y dimension
         self.ecalModDim[2] = self.nSBPlanes*(self.leadThickness + SBPlaneDim[2])
-        print 'ECALModBuilder: set ECAL z dimension to '+str(self.ecalModDim[2])+' (configured as '+str(self.ecalThickness)+')'
+        print ('ECALModBuilder: set ECAL z dimension to '+str(self.ecalModDim[2])+' (configured as '+str(self.ecalThickness)+')')
+
       
         # Make main shape/volume for this builder
         ecalModBox = geom.shapes.Box( self.name,
@@ -64,25 +65,24 @@ class ECALModBuilder(gegede.builder.Builder):
         for i in range(self.nSBPlanes):
             zpos = -0.5*self.ecalModDim[2]+ (i+0.5)*SBPlaneDim[2]+(i+1)*self.leadThickness
 
-	    rotPlane = 'identity'
-	    if(self.altPlaneOrient): rotPlane = 'r90aboutZ'
-
-            if i%2==0:
-               rsbp_in_ecalend  = geom.structure.Position('SBPlane-'+str(i)+'_in_'+self.name, 
+        rotPlane = 'identity'
+        if(self.altPlaneOrient): rotPlane = 'r90aboutZ'
+        if i%2==0:
+            rsbp_in_ecalend  = geom.structure.Position('SBPlane-'+str(i)+'_in_'+self.name, 
                                                           '0cm', '0cm', zpos)
-               prsbp_in_ecalend = geom.structure.Placement('placeSBPlane-'+str(i)+'_in_'+self.name,
+            prsbp_in_ecalend = geom.structure.Placement('placeSBPlane-'+str(i)+'_in_'+self.name,
                                                            volume = SBPlane_lv, 
                                                            pos = rsbp_in_ecalend)
-               ecalMod_lv.placements.append( prsbp_in_ecalend.name )
-               n1=n1+1
-            else:
-                rsbp_in_ecalend  = geom.structure.Position('SBPlane-'+str(i)+'_in_'+self.name, 
+            ecalMod_lv.placements.append( prsbp_in_ecalend.name )
+            n1=n1+1
+        else:
+            rsbp_in_ecalend  = geom.structure.Position('SBPlane-'+str(i)+'_in_'+self.name, 
                                                            '0cm', '0cm', zpos)
-                prsbp_in_ecalend = geom.structure.Placement('placeSBPlane-'+str(i)+'_in_'+self.name,
+            prsbp_in_ecalend = geom.structure.Placement('placeSBPlane-'+str(i)+'_in_'+self.name,
                                                             volume = SBPlane_lv, 
                                                             pos = rsbp_in_ecalend, rot=rotPlane)
-                ecalMod_lv.placements.append( prsbp_in_ecalend.name )
-                n2=n2+1
+            ecalMod_lv.placements.append( prsbp_in_ecalend.name )
+            n2=n2+1
                 
         #print 'ECALModBuilder:',i+1 ,'SBPlanes', 'in '+str(self.name)
         #print n1, 'SBPlanes have scint. bars oriented along X direction and', n2, 'SBPlanes have scint. bars oriented along Y direction for '+str(self.name) 

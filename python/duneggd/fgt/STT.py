@@ -79,7 +79,8 @@ class STTBuilder(gegede.builder.Builder):
                          + 2*self.targetCMod_z
                          + self.nRadiatorModules*self.radiatorMod_z ]
 
-        print 'STTBuilder: set STT z dimension to '+str(self.sttDim[2])+' (configured as '+str(self.stt_z)+')'
+        print ('STTBuilder: set STT z dimension to '+str(self.sttDim[2])+' (configured as '+str(self.stt_z)+')')
+
         sttBox = geom.shapes.Box( self.name, 
                                   dx=0.5*self.sttDim[0], 
                                   dy=0.5*self.sttDim[1], 
@@ -269,8 +270,8 @@ class STTBuilder(gegede.builder.Builder):
                                              z_down)
 
         if(self.printZpos):
-            print "plane "+str(j)+": "+str(z_up)
-            print "plane "+str(j+1)+": "+str(z_down)
+            print ("plane "+str(j)+": "+str(z_up))
+            print ("plane "+str(j+1)+": "+str(z_down))
 
         # stPlane defined with tubes vertical by default. 
         # Rotate X plany around z to get horizontal tubes

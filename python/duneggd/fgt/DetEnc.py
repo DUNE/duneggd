@@ -62,18 +62,18 @@ class DetEncBuilder(gegede.builder.Builder):
             detBox = geom.shapes.Box( 'Detector',              dx=0.5*self.detDim[0], 
                                       dy=0.5*self.detDim[1],  dz=0.5*self.detDim[2])
             det_lv = geom.structure.Volume('volDetector', material=self.detEncMat, shape=detBox)
-            print "DetectorBuilder: Detector Enclosure has no detector volumes in it:"
+            print ("DetectorBuilder: Detector Enclosure has no detector volumes in it:")
         else:
             det_lv      = self.detBldr.get_volume('volDetector')
 
 
         # Get dimensions if not configured, print method
         if (self.configDetDim):
-            print "DetectorBuilder: Detector box configured:"
+            print ("DetectorBuilder: Detector box configured:")
         else:
             self.detDim = list(self.detBldr.detDim)
-            print "DetectorBuilder: Detector box calculated:"
-        print     "                 x="+str(self.detDim[0])+" y="+str(self.detDim[1])+" z="+str(self.detDim[2])
+            print ("DetectorBuilder: Detector box calculated:")
+        print     ("                 x="+str(self.detDim[0])+" y="+str(self.detDim[1])+" z="+str(self.detDim[2]))
             
         
         self.encBoundToDet = [ 0.5*self.detEncDim[0] - 0.5*self.detDim[0], # x: center it for now

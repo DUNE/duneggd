@@ -72,7 +72,8 @@ class TargetPlaneBuilder(gegede.builder.Builder):
         # Calculate spaceing based off of number of target tubes
         self.tTube_interval = (self.targetPlaneDim[0] - self.tTube_outerDia) / self.nTubesPerTarget
         if( self.tTube_interval <= self.tTube_outerDia ):
-            print " WARNING: target tube interval "+str(self.tTube_interval)+", diameter "+str(self.tTube_outerDia);
+            print (" WARNING: target tube interval "+str(self.tTube_interval)+", diameter "+str(self.tTube_outerDia));
+
 
 
         # Check parameter consistency in case interval is asserted
@@ -80,9 +81,9 @@ class TargetPlaneBuilder(gegede.builder.Builder):
         if( calculatedWidth > self.targetPlaneDim[0] ):
             # TODO: Make a set of warning string templates for printing things like this
             # parameters would be (builder name, iterated volume name, # of iterations, interval, mother volume)
-            print "TargetBuilder: "+str(self.nTubesPerTarget)+" target tubes at a "+str(self.tTube_interval)+" interval don't fit in Target Plane"
+            print ("TargetBuilder: "+str(self.nTubesPerTarget)+" target tubes at a "+str(self.tTube_interval)+" interval don't fit in Target Plane")
             self.tTube_interval = ( self.targetPlaneDim[0] - self.tTube_outerDia )/(self.nTubesPerTarget-1)
-            print "TargetBuilder: Reset interval to "+str(self.tTube_interval)
+            print ("TargetBuilder: Reset interval to "+str(self.tTube_interval))
 
 
         # Place tubes

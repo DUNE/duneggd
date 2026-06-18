@@ -335,7 +335,7 @@ class WorldBuilder(gegede.builder.Builder):
         #densRad = fracC3H6*0.946 + (1-fracC3H6)*0.001225
         #dRad = str(densRad)+"*g/cc"
         dRad = "0.1586875*g/cc"
-        print "Radiator dens: " + dRad
+        print ("Radiator dens: " + dRad)
         RadBlend = g.matter.Mixture( "RadiatorBlend", density = dRad, 
                                      components = (
                                          ("Air",  1-fracC3H6),
@@ -350,8 +350,8 @@ class WorldBuilder(gegede.builder.Builder):
         dArCO2 = str(densArCO2)+"*g/cc"
         dXeCO2 = str(densXeCO2)+"*g/cc"
 
-        print "ArC02 dens: " + dArCO2
-        print "XeC02 dens: " + dXeCO2
+        print ("ArC02 dens: " + dArCO2)
+        print ("XeC02 dens: " + dXeCO2)
 
         stGas_Xe = g.matter.Mixture( "stGas_Xe", density = dXeCO2, 
                                       components = (

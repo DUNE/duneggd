@@ -4,7 +4,7 @@ World builder for DUNE FD-VD
 
                                   |--> FieldCage
 World -> DetEnclosure -> Cryostat |--> TPC -> Wires
-                                  |--> Arapuca
+                                  |--> Apex
                                   |--> CathodeGrid
 '''
 

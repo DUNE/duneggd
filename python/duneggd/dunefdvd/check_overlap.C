@@ -55,6 +55,6 @@ void checkGeometryOverlaps(const char* gdmlFile, bool fullCheck = false) {
 
 void check_overlap(bool fullCheck = false) {
     // Replace "geometry.gdml" with the path to your GDML file
-    const char* gdmlFile = "dunevd10kt_v7_full10kt_ggd_nowires.gdml";
+    const char* gdmlFile = "dunevd_v7.gdml";
     checkGeometryOverlaps(gdmlFile, fullCheck);
 }

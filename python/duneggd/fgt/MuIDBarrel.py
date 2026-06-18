@@ -92,9 +92,9 @@ class MuIDBarrelBuilder(gegede.builder.Builder):
                 ypos_mids = -0.5*(self.gap_tworpctrays+rpcTrayDim_mids[1])
                 ypos_midf = -0.5*(self.gap_tworpctrays+rpcTrayDim_midf[1])
                 if (j==1):
-					    ypos = -ypos
-					    ypos_mids = -ypos_mids
-					    ypos_midf = -ypos_midf
+                    ypos = -ypos
+                    ypos_mids = -ypos_mids
+                    ypos_midf = -ypos_midf
 
                 brpct_in_muid  = geom.structure.Position( 'brpct-'+str(i*2+j)+'_in_'+self.name,
                                                          xpos,  ypos,  zpos)

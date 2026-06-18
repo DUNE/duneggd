@@ -44,7 +44,8 @@ class SBPlaneBuilder(gegede.builder.Builder):
         # Place the bars in the plane
         nScintBarsPerPlane = int(math.floor((self.SBPlaneDim[0]/self.ScintBarDim[0])))
         if self.nScintBars != nScintBarsPerPlane:
-           print 'SBPlaneBuilder: making'+str(nScintBarsPerPlane)+' scintillator bars per plane, should be '+str(self.nScintBars)
+           print ('SBPlaneBuilder: making'+str(nScintBarsPerPlane)+' scintillator bars per plane, should be '+str(self.nScintBars))
+
   
         for i in range(nScintBarsPerPlane):
             xpos = -0.5*self.SBPlaneDim[0] + (i+0.5)*self.ScintBarDim[0]
