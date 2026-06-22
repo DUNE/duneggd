@@ -330,10 +330,12 @@ class CryostatBuilder(gegede.builder.Builder):
             return cryo_LV
 
         ara_dep = globals.get("Arapuca_z")
-        ara_len = globals.get("Arapuca_y")
-        ara_off = globals.get("ArapucaOffset") 
-        ara_space = globals.get("AraVertSpacing") 
+        ara_len = globals.get("Arapuca_y")  
         ptp_dep = globals.get("ptpWidth")
+
+        vert_space = globals.get("AraVertSpacing")
+        long_space = globals.get("AraLongWallSpace")
+        short_space = globals.get("AraShortWallSpace")
 
         cryo_x = globals.get("Cryostat_x")
         cryo_y = globals.get("Cryostat_y")
@@ -342,21 +344,27 @@ class CryostatBuilder(gegede.builder.Builder):
         FC_x = 2*globals.get("FieldCageSizeX")
         FC_y = globals.get("FieldCageSizeY")
         FC_z = globals.get("FieldCageSizeZ")
+        
+        cathode_x = 0.5*globals.get("TPCEnclosure_x") - globals.get("TPC_x") -                                      \
+                    globals.get("anodePlateWidth") - 0.5*globals.get("heightCathode")
+        
+        tpcenc_x = 0.5*(globals.get("Argon_x") - globals.get("TPCEnclosure_x")) -                               \
+                       globals.get("HeightGaseousAr") + globals.get("anodePlateWidth")
+        
+        longwall_y = 2*globals.get("widthCathode") + 2*globals.get("gapSST_y")
+        
+        shortwall_z = 10*globals.get("lengthCathode") + 2.5*globals.get("gapSST1_z") + globals.get("gapSST2_z") 
 
         # Long sides
         ncols=120
-        nrows=12
-        zpos=0.0 
-
-
-        for i in range(ncols):
-            xpos = (-cryo_x/2) + (cryo_x/2 - (nrows*ara_len+(nrows-1)*ara_space))/2.0 + ara_len/2.0
-            # lower edge of cryostat + space between closest edges of cryostat & lower XARAPUCA + y_arapuca_side/2 in m
-
-            zpos = (-cryo_z/2) + (i+0.5)*ara_len
-            for j in range(nrows):
-                araL = geom.structure.Position('LeftAraP%d_%d' % (i,j), x=xpos, y=-FC_y/2.+ara_off+ara_len/2, z=zpos)
-                araR = geom.structure.Position('RightAraP%d_%d' % (i,j), x=xpos, y=FC_y/2.-ara_off-ara_len/2, z=zpos)
+        nrows=12 
+        
+        zpos = -shortwall_z + 0.5*ara_len
+        for i in range(1, ncols+1):
+            xpos = tpcenc_x + cathode_x + 0.5*(ara_len+vert_space)
+            for j in range(1, nrows+1):
+                araL = geom.structure.Position('LeftAraP%d_%d' % (i,j), x=xpos, y=-longwall_y, z=zpos)
+                araR = geom.structure.Position('RightAraP%d_%d' % (i,j), x=xpos, y=longwall_y, z=zpos)
                 
                 placeLeft = geom.structure.Placement('ArapucaLeft%d_%d' % (i,j), 
                                                  volume = "volArapucaEnc",
@@ -369,14 +377,18 @@ class CryostatBuilder(gegede.builder.Builder):
                 
                 cryo_LV.placements.append(placeRight.name)
                 cryo_LV.placements.append(placeLeft.name)
+                
+                # Change vert_space in if statement to create 6x6 arapuca panels
+                if (j % 6 == 0):
+                    xpos += (ara_len + vert_space)
+                else:
+                    xpos += (ara_len + vert_space)
 
-                xpos += (ara_len + ara_space)
 
-
-            xpos = cryo_x/2 - (cryo_x/2 - (nrows*ara_len+(nrows-1)*ara_space))/2.0 - ara_len/2.0
-            for j in range(nrows,2*nrows):
-                araL = geom.structure.Position('LeftAraP%d_%d' % (i,j), x=xpos, y=-FC_y/2.+ara_off+ara_len/2, z=zpos)
-                araR = geom.structure.Position('RightAraP%d_%d' % (i,j), x=xpos, y=FC_y/2.-ara_off-ara_len/2, z=zpos)
+            xpos = tpcenc_x + cathode_x - 0.5*(ara_len+vert_space)
+            for j in range(nrows+1 ,2*nrows+1):
+                araL = geom.structure.Position('LeftAraP%d_%d' % (i,j), x=xpos, y=-longwall_y, z=zpos)
+                araR = geom.structure.Position('RightAraP%d_%d' % (i,j), x=xpos, y=longwall_y, z=zpos)
 
                 placeLeft = geom.structure.Placement('ArapucaLeft%d_%d' % (i,j),
                                                  volume = "volArapucaEnc",
@@ -390,20 +402,30 @@ class CryostatBuilder(gegede.builder.Builder):
                 cryo_LV.placements.append(placeRight.name)
                 cryo_LV.placements.append(placeLeft.name)
                 
-                xpos -= (ara_len + ara_space)
+                # Change vert_space in if statement to create 6x6 arapuca panels
+                if (j % 6 == 0):
+                    xpos -= (ara_len + vert_space)
+                else:
+                    xpos -= (ara_len + vert_space)
+            
+            # Change long_space in if statement to create 6x6 arapuca panels
+            if (i % 6 == 0):
+                zpos += (ara_len + long_space)
+            else:
+                zpos += (ara_len + long_space)
 
 
         # Short sides
         ncols=24
         nrows=12
         ypos=0.0
-
-        for i in range(ncols):
-            xpos = -cryo_x/2.0 + (cryo_x/2.0 - (nrows*ara_len+(nrows-1)*ara_space))/2.0 + ara_len/2
-            ypos = -FC_y/2.0 + (FC_y - (ncols*ara_len+(ncols-1)*ara_space))/2.0 + ara_len/2.0 + i*(ara_len+ara_space)
-            for j in range(nrows):
-                araF = geom.structure.Position('FrontAraP%d_%d' % (i,j), x=xpos, y=ypos, z=FC_z/2.-ara_off-ara_len/2)
-                araB = geom.structure.Position('BackAraP%d_%d' % (i,j), x=xpos, y=ypos, z=-FC_z/2.+ara_off+ara_len/2)
+        
+        ypos = -longwall_y + 0.5*ara_len # -FC_y/2.0 + (FC_y - (ncols*ara_len+(ncols-1)*vert_space))/2.0 + ara_len/2.0
+        for i in range(1, ncols+1):
+            xpos = tpcenc_x + cathode_x + 0.5*(ara_len+vert_space)
+            for j in range(1, nrows+1):
+                araF = geom.structure.Position('FrontAraP%d_%d' % (i,j), x=xpos, y=ypos, z=shortwall_z)
+                araB = geom.structure.Position('BackAraP%d_%d' % (i,j), x=xpos, y=ypos, z=-shortwall_z)
 
                 placeFront = geom.structure.Placement('ArapucaFront%d_%d' % (i,j),
                                                  volume = "volArapucaEnc",
@@ -416,14 +438,17 @@ class CryostatBuilder(gegede.builder.Builder):
                 
                 cryo_LV.placements.append(placeFront.name)
                 cryo_LV.placements.append(placeBack.name)
-            
-                xpos += (ara_len + ara_space)
                 
+                # Change vert_space in if statement to create 6x6 arapuca panels
+                if (j % 6 == 0):
+                    xpos += (ara_len + vert_space)
+                else:
+                    xpos += (ara_len + vert_space)
 
-            xpos = cryo_x/2.0 - (cryo_x/2.0 - (nrows*ara_len+(nrows-1)*ara_space))/2 - ara_len/2
-            for j in range(nrows, 2*nrows):
-                araF = geom.structure.Position('FrontAraP%d_%d' % (i,j), x=xpos, y=ypos, z=FC_z/2.-ara_off-ara_len/2)
-                araB = geom.structure.Position('BackAraP%d_%d' % (i,j), x=xpos, y=ypos, z=-FC_z/2.+ara_off+ara_len/2)
+            xpos = tpcenc_x + cathode_x - 0.5*(ara_len+vert_space)
+            for j in range(nrows+1, 2*nrows+1):
+                araF = geom.structure.Position('FrontAraP%d_%d' % (i,j), x=xpos, y=ypos, z=shortwall_z)
+                araB = geom.structure.Position('BackAraP%d_%d' % (i,j), x=xpos, y=ypos, z=-shortwall_z)
 
                 placeFront = geom.structure.Placement('ArapucaFront%d_%d' % (i,j),                                                
                                                  volume = "volArapucaEnc",
@@ -437,7 +462,17 @@ class CryostatBuilder(gegede.builder.Builder):
                 cryo_LV.placements.append(placeFront.name)
                 cryo_LV.placements.append(placeBack.name)
                 
-                xpos -= (ara_len + ara_space)
+                # Change vert_space in if statement to create 6x6 arapuca panels
+                if (j % 6 == 0):
+                    xpos -= (ara_len + vert_space)
+                else:
+                    xpos -= (ara_len + vert_space)
+            
+            # Change short_space in if statement to create 6x6 arapuca panels
+            if (i % 6 == 0):
+                ypos += (ara_len + short_space)
+            else:
+                ypos += (ara_len + short_space)
 
         return cryo_LV
 

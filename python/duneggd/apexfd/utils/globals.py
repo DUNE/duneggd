@@ -397,8 +397,8 @@ class Params:
 
 
         # FieldCage parameters
-        cls._fieldcage['FieldShaperLongTubeLength']  =  cls._tpc['lengthTPCActive']
-        cls._fieldcage['FieldShaperShortTubeLength'] =  cls._tpc['widthTPCActive']
+        cls._fieldcage['FieldShaperLongTubeLength']  =  cls._tpc['lengthTPCActive'] + cls._fieldcage['FieldShaperTorRad']
+        cls._fieldcage['FieldShaperShortTubeLength'] =  cls._tpc['widthTPCActive'] + 3*cls._fieldcage['FieldShaperTorRad']
         cls._fieldcage['FieldShaperLength'] = cls._fieldcage['FieldShaperLongTubeLength'] +                                \
                                                      2*cls._fieldcage['FieldShaperOuterRadius'] +                          \
                                                      2*cls._fieldcage['FieldShaperTorRad']
@@ -417,29 +417,18 @@ class Params:
         cls._cathode['widthCathodeBottom'] =2*(cls._tpc['widthCRM'] + cls._tpc['borderCRUBottom_y'])
         cls._cathode['lengthCathode']=2*(cls._tpc['lengthCRM'] + cls._tpc['borderCRP'])
         cls._cathode['lengthCathodeBottom'] =2*(cls._tpc['lengthCRM'] + cls._tpc['borderCRUBottom_z'])
-        '''
-        # Arapuca parameters
-        cls._arapuca['list_posy_bot'] = [0]*4
-        cls._arapuca['list_posz_bot'] = [0]*4
-        cls._arapuca['list_posy_bot'][0]= -2.0*cls._cathode['widthCathodeVoid'] -                                          \
-                                                 2.0*cls._cathode['CathodeBorder'] +                                       \
-                                                 cls._arapuca['GapPD'] + 0.5*cls._arapuca['ArapucaOut_x']
-        cls._arapuca['list_posz_bot'][0]= -(0.5*cls._cathode['lengthCathodeVoid'] + cls._cathode['CathodeBorder'])
-        cls._arapuca['list_posy_bot'][1]= cls._cathode['CathodeBorder'] + cls._arapuca['GapPD'] +                          \
-                                                 0.5*cls._arapuca['ArapucaOut_x']
-        cls._arapuca['list_posz_bot'][1]=-1.5*cls._cathode['lengthCathodeVoid'] - 2.0*cls._cathode['CathodeBorder']
-        cls._arapuca['list_posy_bot'][2]=-cls._arapuca['list_posy_bot'][1]
-        cls._arapuca['list_posz_bot'][2]=-cls._arapuca['list_posz_bot'][1]
-        cls._arapuca['list_posy_bot'][3]=-cls._arapuca['list_posy_bot'][0]
-        cls._arapuca['list_posz_bot'][3]=-cls._arapuca['list_posz_bot'][0]
-        '''
+        
+        # Apex parameters
+        cls._apex['AraShortWallSpace'] = (4*cls._cathode['widthCathode'] + 4*cls._tpc['gapSST_y'] - (24 * cls._apex['Arapuca_x'])) / 23
+        cls._apex['AraLongWallSpace'] = (20*cls._cathode['lengthCathode'] + 5*cls._tpc['gapSST1_z'] + 2*cls._tpc['gapSST2_z'] - (120 * cls._apex['Arapuca_x'])) / 119
+
         # add it to global list
         cls._params.update(cls._tpc)
         cls._params.update(cls._cryostat)
         cls._params.update(cls._detenc)
         cls._params.update(cls._fieldcage)
         cls._params.update(cls._cathode)
-        #cls._params.update(cls._arapuca)
+        cls._params.update(cls._apex)
         cls._hasDerived = True
 
     def get(self, key):
