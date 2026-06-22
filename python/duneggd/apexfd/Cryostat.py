@@ -351,9 +351,9 @@ class CryostatBuilder(gegede.builder.Builder):
         tpcenc_x = 0.5*(globals.get("Argon_x") - globals.get("TPCEnclosure_x")) -                               \
                        globals.get("HeightGaseousAr") + globals.get("anodePlateWidth")
         
-        longwall_y = 2*globals.get("widthCathode") + 2*globals.get("gapSST_y")
+        longwall_y = 2*globals.get("widthCathode")# + globals.get("gapSST_y")
         
-        shortwall_z = 10*globals.get("lengthCathode") + 2.5*globals.get("gapSST1_z") + globals.get("gapSST2_z") 
+        shortwall_z = 10*globals.get("lengthCathode") + 2.5*globals.get("gapSST1_z")# + globals.get("gapSST2_z") 
 
         # Long sides
         ncols=120
@@ -361,7 +361,7 @@ class CryostatBuilder(gegede.builder.Builder):
         
         zpos = -shortwall_z + 0.5*ara_len
         for i in range(1, ncols+1):
-            xpos = tpcenc_x + cathode_x + 0.5*(ara_len+vert_space)
+            xpos = tpcenc_x + cathode_x + 0.5*(ara_len+vert_space) + globals.get('heightCathode')
             for j in range(1, nrows+1):
                 araL = geom.structure.Position('LeftAraP%d_%d' % (i,j), x=xpos, y=-longwall_y, z=zpos)
                 araR = geom.structure.Position('RightAraP%d_%d' % (i,j), x=xpos, y=longwall_y, z=zpos)
@@ -378,14 +378,12 @@ class CryostatBuilder(gegede.builder.Builder):
                 cryo_LV.placements.append(placeRight.name)
                 cryo_LV.placements.append(placeLeft.name)
                 
-                # Change vert_space in if statement to create 6x6 arapuca panels
+                xpos += (ara_len + vert_space)
                 if (j % 6 == 0):
-                    xpos += (ara_len + vert_space)
-                else:
-                    xpos += (ara_len + vert_space)
+                    xpos += globals.get('LargeVertSpacing')
 
 
-            xpos = tpcenc_x + cathode_x - 0.5*(ara_len+vert_space)
+            xpos = tpcenc_x + cathode_x - 0.5*(ara_len+vert_space) - globals.get('heightCathode')
             for j in range(nrows+1 ,2*nrows+1):
                 araL = geom.structure.Position('LeftAraP%d_%d' % (i,j), x=xpos, y=-longwall_y, z=zpos)
                 araR = geom.structure.Position('RightAraP%d_%d' % (i,j), x=xpos, y=longwall_y, z=zpos)
@@ -402,17 +400,14 @@ class CryostatBuilder(gegede.builder.Builder):
                 cryo_LV.placements.append(placeRight.name)
                 cryo_LV.placements.append(placeLeft.name)
                 
-                # Change vert_space in if statement to create 6x6 arapuca panels
+                xpos -= (ara_len + vert_space)
                 if (j % 6 == 0):
-                    xpos -= (ara_len + vert_space)
-                else:
-                    xpos -= (ara_len + vert_space)
+                    xpos -= globals.get('LargeVertSpacing')
             
-            # Change long_space in if statement to create 6x6 arapuca panels
             if (i % 6 == 0):
                 zpos += (ara_len + long_space)
             else:
-                zpos += (ara_len + long_space)
+                zpos += (ara_len)
 
 
         # Short sides
@@ -420,9 +415,9 @@ class CryostatBuilder(gegede.builder.Builder):
         nrows=12
         ypos=0.0
         
-        ypos = -longwall_y + 0.5*ara_len # -FC_y/2.0 + (FC_y - (ncols*ara_len+(ncols-1)*vert_space))/2.0 + ara_len/2.0
+        ypos = -longwall_y + 0.5*ara_len
         for i in range(1, ncols+1):
-            xpos = tpcenc_x + cathode_x + 0.5*(ara_len+vert_space)
+            xpos = tpcenc_x + cathode_x + 0.5*(ara_len+vert_space) + globals.get('heightCathode')
             for j in range(1, nrows+1):
                 araF = geom.structure.Position('FrontAraP%d_%d' % (i,j), x=xpos, y=ypos, z=shortwall_z)
                 araB = geom.structure.Position('BackAraP%d_%d' % (i,j), x=xpos, y=ypos, z=-shortwall_z)
@@ -439,13 +434,11 @@ class CryostatBuilder(gegede.builder.Builder):
                 cryo_LV.placements.append(placeFront.name)
                 cryo_LV.placements.append(placeBack.name)
                 
-                # Change vert_space in if statement to create 6x6 arapuca panels
+                xpos += (ara_len + vert_space)
                 if (j % 6 == 0):
-                    xpos += (ara_len + vert_space)
-                else:
-                    xpos += (ara_len + vert_space)
+                    xpos += globals.get('LargeVertSpacing')
 
-            xpos = tpcenc_x + cathode_x - 0.5*(ara_len+vert_space)
+            xpos = tpcenc_x + cathode_x - 0.5*(ara_len+vert_space) - globals.get('heightCathode')
             for j in range(nrows+1, 2*nrows+1):
                 araF = geom.structure.Position('FrontAraP%d_%d' % (i,j), x=xpos, y=ypos, z=shortwall_z)
                 araB = geom.structure.Position('BackAraP%d_%d' % (i,j), x=xpos, y=ypos, z=-shortwall_z)
@@ -462,17 +455,106 @@ class CryostatBuilder(gegede.builder.Builder):
                 cryo_LV.placements.append(placeFront.name)
                 cryo_LV.placements.append(placeBack.name)
                 
-                # Change vert_space in if statement to create 6x6 arapuca panels
+                xpos -= (ara_len + vert_space)
                 if (j % 6 == 0):
-                    xpos -= (ara_len + vert_space)
-                else:
-                    xpos -= (ara_len + vert_space)
+                    xpos -= globals.get('LargeVertSpacing')
             
-            # Change short_space in if statement to create 6x6 arapuca panels
             if (i % 6 == 0):
                 ypos += (ara_len + short_space)
             else:
-                ypos += (ara_len + short_space)
+                ypos += (ara_len)
+
+        # Vertical bars for longer laterals
+        BarDepth = globals.get('VerticalBar_y')
+        vertBar = geom.shapes.Box('VerticalBar', dx=globals.get('VerticalBar_x')/2, dy=globals.get('VerticalBar_y')/2, dz=globals.get('VerticalBar_z')/2)
+        vertBarLV = make_volume(geom, "G10", vertBar)
+        
+        ncols = 60
+        zpos = -shortwall_z + ara_len
+        for i in range(1, ncols+1):
+            LBpos = geom.structure.Position('LBpos%d' % (i),
+                                                      x = -FC_x/4+tpcenc_x+cathode_x,
+                                                      y = -longwall_y + BarDepth,
+                                                      z = zpos)
+            LTpos = geom.structure.Position('LTpos%d' % (i),
+                                                      x = FC_x/4+tpcenc_x+cathode_x,
+                                                      y = -longwall_y + BarDepth,
+                                                      z = zpos)
+            RBpos = geom.structure.Position('RBpos%d' % (i),
+                                                      x = -FC_x/4+tpcenc_x+cathode_x,
+                                                      y = longwall_y - BarDepth,
+                                                      z = zpos)
+            RTpos = geom.structure.Position('RTpos%d' % (i),
+                                                      x = FC_x/4+tpcenc_x+cathode_x,
+                                                      y = longwall_y - BarDepth,
+                                                      z = zpos)
+
+            LeftBottom = geom.structure.Placement('LeftBottom%d' % (i),
+                                                  volume = vertBarLV.name,
+                                                  pos = LBpos)
+            LeftTop = geom.structure.Placement('LeftTop%d' % (i),
+                                               volume = vertBarLV.name,
+                                               pos = LTpos)
+            RightBottom = geom.structure.Placement('RightBottom%d' % (i),
+                                                   volume = vertBarLV.name,
+                                                   pos = RBpos)
+            RightTop = geom.structure.Placement('RightTop%d' % (i),
+                                                volume = vertBarLV.name,
+                                                pos = RTpos)
+            
+            cryo_LV.placements.append(LeftBottom.name)
+            cryo_LV.placements.append(LeftTop.name)
+            cryo_LV.placements.append(RightBottom.name)
+            cryo_LV.placements.append(RightTop.name)
+            
+            zpos += 2*ara_len
+
+            if (i % 3 == 0):
+                zpos += long_space
+        
+        # Vertical bars for shorter laterals
+        ncols = 12
+        ypos = -longwall_y + ara_len
+        for i in range(1, ncols+1):
+            FBpos = geom.structure.Position('FBpos%d' % (i),
+                                                      x = -FC_x/4+tpcenc_x+cathode_x,
+                                                      y = ypos,
+                                                      z = shortwall_z - BarDepth)
+            FTpos = geom.structure.Position('FTpos%d' % (i),
+                                                      x = FC_x/4+tpcenc_x+cathode_x,
+                                                      y = ypos,
+                                                      z = shortwall_z - BarDepth)
+            BBpos = geom.structure.Position('BBpos%d' % (i),
+                                                      x = -FC_x/4+tpcenc_x+cathode_x,
+                                                      y = ypos,
+                                                      z = -shortwall_z + BarDepth)
+            BTpos = geom.structure.Position('BTpos%d' % (i),
+                                                      x = FC_x/4+tpcenc_x+cathode_x,
+                                                      y = ypos,
+                                                      z = -shortwall_z + BarDepth)
+
+            FrontBottom = geom.structure.Placement('FrontBottom%d' % (i),
+                                                  volume = vertBarLV.name,
+                                                  pos = FBpos)
+            FrontTop = geom.structure.Placement('FrontTop%d' % (i),
+                                               volume = vertBarLV.name,
+                                               pos = FTpos)
+            BackBottom = geom.structure.Placement('BackBottom%d' % (i),
+                                                   volume = vertBarLV.name,
+                                                   pos = BBpos)
+            BackTop = geom.structure.Placement('BackTop%d' % (i),
+                                                volume = vertBarLV.name,
+                                                pos = BTpos)
+
+            cryo_LV.placements.append(FrontBottom.name)
+            cryo_LV.placements.append(FrontTop.name)
+            cryo_LV.placements.append(BackBottom.name)
+            cryo_LV.placements.append(BackTop.name)
+
+            ypos += 2*ara_len
+
+            if (i % 3 == 0):
+                ypos += short_space
 
         return cryo_LV
 

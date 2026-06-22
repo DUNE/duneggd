@@ -114,28 +114,15 @@ class Params:
     _cathode['CathodeBorder'] = Q('4.0cm')
     _cathode['widthCathodeVoid'] = Q('76.35cm')
     _cathode['lengthCathodeVoid'] = Q('67.0cm')
-    '''
-    _arapuca['ArapucaOut_x'] = Q('65.0cm')
-    _arapuca['ArapucaOut_y'] = Q('2.5cm')
-    _arapuca['ArapucaOut_z'] = Q('65.0cm')
-    _arapuca['ArapucaIn_x'] = Q('60.0cm')
-    _arapuca['ArapucaIn_y'] = Q('2.0cm')
-    _arapuca['ArapucaIn_z'] = Q('60.0cm')
-    _arapuca['ArapucaAcceptanceWindow_x'] = Q('60.0cm')
-    _arapuca['ArapucaAcceptanceWindow_y'] = Q('1.0cm')
-    _arapuca['ArapucaAcceptanceWindow_z'] = Q('60.0cm')
-    _arapuca['GapPD'] = Q('0.5cm')
-    _arapuca['FrameToArapucaSpace'] = Q('1.0cm')
-    _arapuca['FrameToArapucaSpaceLat'] = Q('10.0cm')
-    _arapuca['VerticalPDdist'] = Q('75.0cm')
-    _arapuca['FirstFrameVertDist'] = Q('40.0cm')
-    '''
+    
     _apex['Arapuca_x'] = Q('50.0cm')
     _apex['Arapuca_y'] = Q('50.0cm')
     _apex['Arapuca_z'] = Q('0.7cm')
     _apex['ptpWidth'] = Q('2.0um')
     _apex['ArapucaOffset'] = Q('7.0cm')
     _apex['AraVertSpacing'] = Q('0.5cm')
+    _apex['VerticalBar_y'] = Q('7.5cm')
+    _apex['VerticalBar_z'] = Q('7.5cm')
 
     _params.update(_world)
     _params.update(_tpc)
@@ -397,8 +384,8 @@ class Params:
 
 
         # FieldCage parameters
-        cls._fieldcage['FieldShaperLongTubeLength']  =  cls._tpc['lengthTPCActive'] + cls._fieldcage['FieldShaperTorRad']
-        cls._fieldcage['FieldShaperShortTubeLength'] =  cls._tpc['widthTPCActive'] + 3*cls._fieldcage['FieldShaperTorRad']
+        cls._fieldcage['FieldShaperLongTubeLength']  =  cls._tpc['lengthTPCActive']
+        cls._fieldcage['FieldShaperShortTubeLength'] =  cls._tpc['widthTPCActive']
         cls._fieldcage['FieldShaperLength'] = cls._fieldcage['FieldShaperLongTubeLength'] +                                \
                                                      2*cls._fieldcage['FieldShaperOuterRadius'] +                          \
                                                      2*cls._fieldcage['FieldShaperTorRad']
@@ -418,9 +405,11 @@ class Params:
         cls._cathode['lengthCathode']=2*(cls._tpc['lengthCRM'] + cls._tpc['borderCRP'])
         cls._cathode['lengthCathodeBottom'] =2*(cls._tpc['lengthCRM'] + cls._tpc['borderCRUBottom_z'])
         
-        # Apex parameters
-        cls._apex['AraShortWallSpace'] = (4*cls._cathode['widthCathode'] + 4*cls._tpc['gapSST_y'] - (24 * cls._apex['Arapuca_x'])) / 23
-        cls._apex['AraLongWallSpace'] = (20*cls._cathode['lengthCathode'] + 5*cls._tpc['gapSST1_z'] + 2*cls._tpc['gapSST2_z'] - (120 * cls._apex['Arapuca_x'])) / 119
+        # Apex parameters 
+        cls._apex['AraShortWallSpace'] = (4*cls._cathode['widthCathode'] + 4*cls._tpc['gapSST_y'] - (24 * cls._apex['Arapuca_x'])) / 3
+        cls._apex['AraLongWallSpace'] = (20*cls._cathode['lengthCathode'] + 5*cls._tpc['gapSST1_z'] + 2*cls._tpc['gapSST2_z'] - (120 * cls._apex['Arapuca_x'])) / 19
+        cls._apex['VerticalBar_x'] = cls._fieldcage['FieldCageSizeX'] - Q('0.1m')
+        cls._apex['LargeVertSpacing'] = cls._apex['VerticalBar_x'] - (12 * cls._apex['Arapuca_x']) - (11 * cls._apex['AraVertSpacing'])
 
         # add it to global list
         cls._params.update(cls._tpc)
