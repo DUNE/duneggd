@@ -367,11 +367,11 @@ class CryostatBuilder(gegede.builder.Builder):
                 araR = geom.structure.Position('RightAraP%d_%d' % (i,j), x=xpos, y=longwall_y, z=zpos)
                 
                 placeLeft = geom.structure.Placement('ArapucaLeft%d_%d' % (i,j), 
-                                                 volume = "volArapucaEnc",
+                                                 volume = "ArapucaEnc",
                                                  pos = 'LeftAraP%d_%d' % (i,j),
                                                  rot = "rPlus90AboutX")
                 placeRight = geom.structure.Placement('ArapucaRight%d_%d' % (i,j),  
-                                                 volume = "volArapucaEnc",
+                                                 volume = "ArapucaEnc",
                                                  pos = 'RightAraP%d_%d' % (i,j),
                                                  rot = "rMinus90AboutX")
                 
@@ -389,11 +389,11 @@ class CryostatBuilder(gegede.builder.Builder):
                 araR = geom.structure.Position('RightAraP%d_%d' % (i,j), x=xpos, y=longwall_y, z=zpos)
 
                 placeLeft = geom.structure.Placement('ArapucaLeft%d_%d' % (i,j),
-                                                 volume = "volArapucaEnc",
+                                                 volume = "ArapucaEnc",
                                                  pos = 'LeftAraP%d_%d' % (i,j),
                                                  rot = "rPlus90AboutX")
                 placeRight = geom.structure.Placement('ArapucaRight%d_%d' % (i,j),
-                                                 volume = "volArapucaEnc",
+                                                 volume = "ArapucaEnc",
                                                  pos = 'RightAraP%d_%d' % (i,j),
                                                  rot = "rMinus90AboutX")
                 
@@ -423,11 +423,11 @@ class CryostatBuilder(gegede.builder.Builder):
                 araB = geom.structure.Position('BackAraP%d_%d' % (i,j), x=xpos, y=ypos, z=-shortwall_z)
 
                 placeFront = geom.structure.Placement('ArapucaFront%d_%d' % (i,j),
-                                                 volume = "volArapucaEnc",
+                                                 volume = "ArapucaEnc",
                                                  pos = 'FrontAraP%d_%d' % (i,j),
                                                  rot = "rPlus180AboutX")
                 placeBack = geom.structure.Placement('ArapucaBack%d_%d' % (i,j),
-                                                 volume = "volArapucaEnc",
+                                                 volume = "ArapucaEnc",
                                                  pos = 'BackAraP%d_%d' % (i,j),
                                                  rot = "rIdentity")
                 
@@ -444,11 +444,11 @@ class CryostatBuilder(gegede.builder.Builder):
                 araB = geom.structure.Position('BackAraP%d_%d' % (i,j), x=xpos, y=ypos, z=-shortwall_z)
 
                 placeFront = geom.structure.Placement('ArapucaFront%d_%d' % (i,j),                                                
-                                                 volume = "volArapucaEnc",
+                                                 volume = "ArapucaEnc",
                                                  pos = 'FrontAraP%d_%d' % (i,j),
                                                  rot = "rPlus180AboutX")
                 placeBack = geom.structure.Placement('ArapucaBack%d_%d' % (i,j),                                                
-                                                 volume = "volArapucaEnc",
+                                                 volume = "ArapucaEnc",
                                                  pos = 'BackAraP%d_%d' % (i,j),
                                                  rot = "rIdentity")
                 
@@ -467,7 +467,7 @@ class CryostatBuilder(gegede.builder.Builder):
         # Vertical bars for longer laterals
         BarDepth = globals.get('VerticalBar_y')
         vertBar = geom.shapes.Box('VerticalBar', dx=globals.get('VerticalBar_x')/2, dy=globals.get('VerticalBar_y')/2, dz=globals.get('VerticalBar_z')/2)
-        vertBarLV = make_volume(geom, "G10", vertBar)
+        vertBarLV = make_volume(geom, "FR4", vertBar)
         
         ncols = 60
         zpos = -shortwall_z + ara_len

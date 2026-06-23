@@ -40,7 +40,7 @@ class ApexBuilder(gegede.builder.Builder):
                                            shape = backing)
 
         # define the larger volume
-        arapucaEnc_LV = geom.structure.Volume('volArapucaEnc',
+        arapucaEnc_LV = geom.structure.Volume('ArapucaEnc',
                                               material = "LAr",
                                               shape = arapucaEnc)
         # place volumes
