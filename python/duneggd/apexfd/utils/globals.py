@@ -20,7 +20,7 @@ class Params:
     _world['pdsconfig'] = 0
     _world['wires'] = True
     _world['tpc'] = True
-    _world['simple'] = True
+    _world['simple'] = False
 
     _tpc['nChans'] = {'Ind1': 286, 'Ind1Bot': 96, 'Ind2': 286, 'Col': 292}
     _tpc['wirePitchU'] = Q('0.765cm')

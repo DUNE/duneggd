@@ -69,7 +69,19 @@ _PTP_WLSCOMP = [(_eV(e), v) for e, v in zip(
  [0.016285,0.0520565,0.0788851,0.132542,0.275628,0.409771,0.543914,0.678057,0.722772,0.821143,
   0.955286,1.0,0.946343,0.8122,0.740657,0.8122,0.678057,0.534971,0.400828,0.266685,0.132542,0.00734215])]
 
+# Optical-surface energy grid (eV -> MeV) : 2.5,5,7,7.5,8,9,9.5,10.136 eV
+_SURF_E = [2.5, 5.0, 7.0, 7.5, 8.0, 9.0, 9.5, 10.136]
 
+def _surf(vals):
+    return [(_eV(e), v) for e, v in zip(_SURF_E, vals)]
+
+_ZERO_EFF      = _surf([0.0]*8)
+_ANODE_REFL    = _surf([0.20,0.20,0.20,0.20, 0.0,0.0,0.0,0.0])
+_FC_REFL       = _surf([0.7]*8)
+_ARABACK_REFL  = _surf([1.0]*8)
+_CRYO_REFL     = _surf([0.4,0.4,0.4,0.4, 0.3,0.3,0.3,0.3])
+
+##################### Now start building materials #####################
 def construct_materials(geom):
     e_vacuum = geom.matter.Element("videRef", "VACUUM", 1, "1g/mole")
     e_pb = geom.matter.Element("lead", "Pb", 82, "207.2g/mole")
@@ -100,6 +112,11 @@ def construct_materials(geom):
                                                 components = (("videRef", 1.0),))
     m_aluminum_al = geom.matter.Mixture("ALUMINIUM_Al", density = "2.6990g/cc",
                                                 components = (("aluminum", 1.0000),))
+    skin_aluminum_al = geom.surfaces.OpticalSurface("AlSurface", 
+                                                    model="unified", finish="ground",
+                                                    type="dielectric_metal", value=0.0,
+                                                    properties=(("REFLECTIVITY", _FC_REFL),
+                                                                ("EFFICIENCY",   _ZERO_EFF)))
     m_silicon_si = geom.matter.Mixture("SILICON_Si", density = "2.3300g/cc",
                                                 components = (("silicon", 1.0000),))
     m_epoxy_resin = geom.matter.Molecule("epoxy_resin", density = "1.1250g/cc",
@@ -264,6 +281,11 @@ def construct_materials(geom):
                         elements = (("hydrogen", 4),
                                     ("carbon", 5),
                                     ("oxygen", 2)))
+    skin_mylar = geom.surfaces.OpticalSurface("MylarSurface",
+                                            model="unified", finish="ground",
+                                            type="dielectric_metal", value=0.0,
+                                            properties=(("REFLECTIVITY", _ARABACK_REFL),
+                                                        ("EFFICIENCY", _ZERO_EFF)))
     m_ptp = geom.matter.Molecule("pTP", density = "1.079g/cc",
                         elements = (("carbon", 18),
                                     ("hydrogen", 14)),
@@ -322,6 +344,11 @@ def construct_materials(geom):
                                                                         ("copper", 0.005),
                                                                         ("chromium", 0.003),
                                                                         ("carbon", 0.002)))
+    skin_dunesteel = geom.surfaces.OpticalSurface("fDuneSteelSurface",
+                                                  model="unified", finish="ground",
+                                                  type="dielectric_metal", value=0.0,
+                                                  properties=(("REFLECTIVITY", _CRYO_REFL),
+                                                              ("EFFICIENCY", _ZERO_EFF)))
     m_bp = geom.matter.Mixture("BP", density = "0.95g/cc",
                                components = (("hydrogen", 0.116),
                                              ("carbon", 0.612),
@@ -366,6 +393,6 @@ def construct_materials(geom):
                                                     ("sodium", 0.0069),
                                                     ("hydrogen", 0.09)
                                       ))
-    m_leadShield = geom.matter.Mixture("Lead", density="11.34g/cc",
+    m_leadShield = geom.matter.Mixture("Lead", density="11.348g/cc",
                                       components = (("lead", 1.0),
                                       ))

@@ -38,6 +38,9 @@ class ApexBuilder(gegede.builder.Builder):
         backing_LV = geom.structure.Volume('volBacking',
                                            material = "Mylar",
                                            shape = backing)
+        backing_OS = geom.surfaces.SkinSurface("AraBackingSurface",
+                                                surface="MylarSurface",
+                                                volume=backing_LV.name)
 
         # define the larger volume
         arapucaEnc_LV = geom.structure.Volume('ArapucaEnc',

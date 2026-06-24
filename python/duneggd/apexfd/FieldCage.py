@@ -165,6 +165,13 @@ class FieldCageBuilder(gegede.builder.Builder):
         fieldshaperSlim_LV = geom.structure.Volume('volFieldShaperSlim',
                                                    material = "ALUMINIUM_Al",
                                                    shape = unionShapeSlim)
+        # add optical surface
+        fieldshaper_OS = geom.surfaces.SkinSurface("FS_Surface",
+                                                   surface="AlSurface",
+                                                   volume=fieldshaper_LV.name)
+        fieldshaperSlim_OS = geom.surfaces.SkinSurface("FSSlim_Surface",
+                                                       surface="AlSurface",
+                                                       volume=fieldshaperSlim_LV.name)
 
         # add the volumes
         self.add_volume(fieldshaper_LV, fieldshaperSlim_LV)
