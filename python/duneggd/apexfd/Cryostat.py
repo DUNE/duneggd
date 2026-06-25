@@ -71,6 +71,12 @@ class CryostatBuilder(gegede.builder.Builder):
         # make the simple stuff
         anodePlate_LV = make_volume(geom, "vm2000", anodePlateBox)
         anodePlateBottom_LV = make_volume(geom, "vm2000", anodePlateBottomBox)
+        anodePlate_OS = geom.surfaces.SkinSurface("TopAnodeSurface", 
+                                                  surface="AnodeSurface",
+                                                  volume=anodePlate_LV.name)
+        anodePlateBottom_OS = geom.surfaces.SkinSurface("BottomAnodeSurface",
+                                                        surface="AnodeSurface",
+                                                        volume=anodePlateBottom_LV)
         gasAr_LV = make_volume(geom, "ArGas", gasArBox)
         steelshell_LV = make_volume(geom, "STEEL_STAINLESS_Fe7Cr2Ni", steelshellBox)
 

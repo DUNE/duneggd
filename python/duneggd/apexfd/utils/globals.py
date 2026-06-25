@@ -20,7 +20,7 @@ class Params:
     _world['pdsconfig'] = 0
     _world['wires'] = True
     _world['tpc'] = True
-    _world['simple'] = False
+    _world['simple'] = True
 
     _tpc['nChans'] = {'Ind1': 286, 'Ind1Bot': 96, 'Ind2': 286, 'Col': 292}
     _tpc['wirePitchU'] = Q('0.765cm')
@@ -347,7 +347,7 @@ class Params:
         cls._detenc['OriginZSet'] =  cls._detenc['DetEncZ']/2.0 - cls._detenc['SpaceSteelSupportToWall'] -                 \
                                             cls._detenc['SteelSupport_z'] - cls._detenc['FoamPadding'] -                   \
                                             cls._cryostat['SteelThickness'] - cls._cryostat['zLArBuffer']
-
+        
         if not cls._world['simple'] and (cls._world['workspace'] == 0 or cls._world['workspace'] == 4):
             cls._detenc['DetEncX'] = cls._detenc['Cavern_x']
             cls._detenc['DetEncY'] = cls._detenc['Cavern_y']
@@ -381,7 +381,7 @@ class Params:
                                                 cls._cryostat['SteelThickness'] -                                          \
                                                 cls._detenc['ConcreteBeamGap_z'] -                                         \
                                                 cls._cryostat['zLArBuffer']
-
+        
 
         # FieldCage parameters
         cls._fieldcage['FieldShaperLongTubeLength']  =  cls._tpc['lengthTPCActive']

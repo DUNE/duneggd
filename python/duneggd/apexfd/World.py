@@ -51,8 +51,8 @@ class WorldBuilder(gegede.builder.Builder):
                                              z = '-90 deg')
         detenc_place = geom.structure.Placement('place'+detenc.name,
                                                 volume = detencLV,
-                                                pos = detenc_pos,
-                                                rot = detenc_rot)
+                                                pos = detenc_pos)
+                                                #rot = detenc_rot)
 
         # place it inside the world volume
         worldLV.placements.append(detenc_place.name)

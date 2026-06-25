@@ -332,6 +332,11 @@ def construct_materials(geom):
     m_vm2000 = geom.matter.Molecule("vm2000", density = "1.2g/cc",
                                                 elements = (("carbon", 2),
                                                                         ("hydrogen", 4)))
+    skin_anode = geom.surfaces.OpticalSurface("AnodeSurface", 
+                                              model="unified", finish="ground",
+                                              type="dielectric_metal", value=0.0,
+                                              properties=(("REFLECTIVITY", _ANODE_REFL),
+                                                          ("EFFICIENCY", _ZERO_EFF)))
     WoodMaterial = geom.matter.Mixture("Wood", density = "0.5g/cc",
                                                 components = (("hydrogen", 0.06),
                                                                         ("carbon", 0.5),
