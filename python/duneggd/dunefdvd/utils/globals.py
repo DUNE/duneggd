@@ -43,7 +43,15 @@ class Params:
     _tpc['nSST_y'] = 2
 
     _tpc['driftTPCActive'] = Q('650.0cm')
+    # readout plane here is at the top of each rectangular block with dimensions given by the below thicknesses.
+    # For V, this block represents the 10mm gap between the two real PCBs
+    # For U and Z, these blocks represent the actual PCB thickness of 3.2mm
+    # volumes made from these are filled with LAr anyway
+    # strips are represented as cylinders with radius = padWidth etched on top of each block
     _tpc['padWidth'] = Q('0.02cm')
+    _tpc['PCBThicknessU'] = Q('0.32cm')
+    _tpc['PCBThicknessV'] = Q('1.0cm')
+    _tpc['PCBThicknessZ'] = Q('0.32cm')
 
     _cryostat['Argon_x'] = Q('1510cm')
     _cryostat['Argon_y'] = Q('1510cm')
@@ -263,7 +271,7 @@ class Params:
         cls._tpc['lengthTPCActivebottom'] = cls._tpc['nCRM_z'] * (cls._tpc['lengthCRM'] + cls._tpc['borderCRUBottom_z']) + cls._tpc['gapSST1_z']
 
 
-        cls._tpc['ReadoutPlane'] = cls._tpc['nViews'] * cls._tpc['padWidth']
+        cls._tpc['ReadoutPlane'] = cls._tpc['PCBThicknessU'] + cls._tpc['PCBThicknessV'] + cls._tpc['PCBThicknessZ'] + cls._tpc['padWidth']
         cls._tpc['anodePlateWidth'] = cls._tpc['padWidth']/2.
         cls._tpc['lengthAnodeBottom'] = cls._tpc['lengthCRM']
         cls._tpc['TPCActive_x'] = cls._tpc['driftTPCActive']

@@ -64,7 +64,6 @@ class WiresBuilder(gegede.builder.Builder):
         pitch = globals.get("wirePitch"+plane).magnitude
         theta_deg = globals.get("wireAngle"+plane) if plane != 'Z' else Q('0deg')
         theta = theta_deg.to('radian').magnitude
-        dia = globals.get("padWidth").magnitude
         self.winfos[plane] = []
 
         if plane == 'Z':

@@ -30,7 +30,7 @@ class TPCBuilder(gegede.builder.Builder):
         crmplaneBoxes = {}
         for plane in ['U', 'V', 'Z']:
             crmplaneBoxes[plane] = geom.shapes.Box('CRM'+plane+'plane',
-                                                   dx = 0.5*globals.get("padWidth"),
+                                                   dx = 0.5*globals.get("PCBThickness%s"%plane),
                                                    dy = 0.5*globals.get("TPCActive_y"),
                                                    dz = 0.5*globals.get("TPCActive_z"))
 
@@ -54,7 +54,7 @@ class TPCBuilder(gegede.builder.Builder):
 
         postpcs = {}
         tpcplanes_LV = {}
-        pid = 0
+        tpcplane_posx = 0.5*globals.get("TPC_x") + 0.5*globals.get("padWidth") - globals.get("ReadoutPlane")
 
         for plane in ['U', 'V', 'Z']:
             tpcplane_LV = geom.structure.Volume('vol'+self.name+'Plane'+plane,
@@ -67,7 +67,7 @@ class TPCBuilder(gegede.builder.Builder):
                     if plane == 'Z' and (globals.get("TPCActive_z").magnitude < 2*abs(w[1])):
                         print("Cannot place wire %d in view Z, as plane is too small\n" % n)
                     pos = geom.structure.Position('posWire%s%d' % (plane, n),
-                                                  x = Q('0cm'),
+                                                  x = +0.5*globals.get("PCBThickness%s"%plane) - 0.5*globals.get("padWidth"),  # etch strips on the top side of the plane Box
                                                   y = Q(str(w[2])+'cm'),
                                                   z = Q(str(w[1])+'cm'))
                     id = str(n) if plane != 'Z' else w[0]
@@ -81,10 +81,11 @@ class TPCBuilder(gegede.builder.Builder):
                     tpcplane_LV.placements.append(wire_place.name)
                     n += 1
             tpcplanes_LV[plane] = tpcplane_LV
-            postpcs[plane] = (0.5*globals.get("TPC_x") - (2.5 - pid)*globals.get("padWidth"),
+
+            postpcs[plane] = (tpcplane_posx + 0.5*globals.get("PCBThickness%s"%plane),
                               Q('0cm'),
                               Q('0cm'))
-            pid += 1
+            tpcplane_posx += globals.get("PCBThickness%s"%plane)
 
         # final placements
         tpc_LV = geom.structure.Volume('vol'+self.name,
