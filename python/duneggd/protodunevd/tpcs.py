@@ -316,8 +316,18 @@ class TPCBuilder(gegede.builder.Builder):
                 self.params['widthPCBActive'] / 2,
                 self.params['lengthPCBActive']
             ),
-            'plane': (
-                self.params['padWidth'],
+            'planeU': (
+                self.params['PCBThicknessU'],
+                self.params['widthPCBActive'] / 2,
+                self.params['lengthPCBActive']
+            ),
+            'planeV': (
+                self.params['PCBThicknessV'],
+                self.params['widthPCBActive'] / 2,
+                self.params['lengthPCBActive']
+            ),
+            'planeZ': (
+                self.params['PCBThicknessZ'],
                 self.params['widthPCBActive'] / 2,
                 self.params['lengthPCBActive']
             )
@@ -326,7 +336,7 @@ class TPCBuilder(gegede.builder.Builder):
         # Create shapes
         shapes = {
             'active': make_box('CRMActive', *dims['active']),
-            **{plane: make_box(f'CRM{plane}Plane', *dims['plane'])
+            **{plane: make_box(f'CRM{plane}Plane', *dims['plane%s'%plane])
                for plane in ['U', 'V', 'Z']}
         }
 
@@ -375,7 +385,7 @@ class TPCBuilder(gegede.builder.Builder):
                         # Place wire in U plane
                         pos = geom.structure.Position(
                             f"posWireU{wid}_{quad}",
-                            x=Q("0cm"),
+                            x=0.5*self.params['PCBThicknessU'] - 0.5*self.params['padWidth'],
                             y=wire[2],  # ycenter
                             z=wire[1])  # xcenter
                         rot = "rUWireAboutX"
@@ -404,7 +414,7 @@ class TPCBuilder(gegede.builder.Builder):
                         # Place wire in V plane
                         pos = geom.structure.Position(
                             f"posWireV{wid}_{quad}",
-                            x=Q("0cm"),
+                            x=0.5*self.params['PCBThicknessV'] - 0.5*self.params['padWidth'],
                             y=wire[2],  # ycenter 
                             z=wire[1])  # xcenter
                         rot = "rVWireAboutX"
@@ -444,7 +454,7 @@ class TPCBuilder(gegede.builder.Builder):
                     wid = i + quad * nch
                     pos = geom.structure.Position(
                         f"posWireZ{wid}_{quad}",
-                        x=Q("0cm"),
+                        x=0.5*self.params['PCBThicknessZ'] - 0.5*self.params['padWidth'],
                         y=Q("0cm"),
                         z=zpos)
                     rot = "rPlus90AboutX"
@@ -459,18 +469,24 @@ class TPCBuilder(gegede.builder.Builder):
             # Define placements
             placements = {
                 'active': (-self.params['ReadoutPlane']/2, 0, 0),
-                'plane_U': (0.5*dims['tpc'][0] - 2.5*self.params['padWidth'], 0, 0),
-                'plane_V': (0.5*dims['tpc'][0] - 1.5*self.params['padWidth'], 0, 0),
-                'plane_Z': (0.5*dims['tpc'][0] - 0.5*self.params['padWidth'], 0, 0)
+                'plane_U': (self.params['PCBThicknessU'], 0, 0),
+                'plane_V': (self.params['PCBThicknessV'], 0, 0),
+                'plane_Z': (self.params['PCBThicknessZ'], 0, 0)
             }
 
+            tpcplane_posx = 0.5*dims['tpc'][0] + 0.5*self.params['padWidth'] - self.params['ReadoutPlane']
             # Place all volumes
             for name, (x, y, z) in placements.items():
-                pos = geom.structure.Position(f"pos{name}{quad}_pos", x=x, y=Q('0cm'), z=Q('0cm'))
+                pos_x = x
+                if name != 'active':
+                    pos_x = tpcplane_posx + 0.5*x
+                pos = geom.structure.Position(f"pos{name}{quad}_pos", x=pos_x, y=Q('0cm'), z=Q('0cm'))
                 place = geom.structure.Placement(f"pos{name.split('_')[-1]}{quad}", 
                                               volume=vols[name], 
                                               pos=pos)
                 vols['tpc'].placements.append(place.name)
+                if name != 'active':
+                    tpcplane_posx += x
 
             self.add_volume(vols['tpc'])
 

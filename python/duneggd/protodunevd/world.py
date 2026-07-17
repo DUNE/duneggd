@@ -77,7 +77,7 @@ class WorldBuilder(gegede.builder.Builder):
             self.tpc['lengthTPCActive'] = (self.tpc['nCRM_z']/2) * self.tpc['lengthCRP']
 
             # Total readout plane thickness
-            self.tpc['ReadoutPlane'] = self.tpc['nViews'] * self.tpc['padWidth']
+            self.tpc['ReadoutPlane'] = self.tpc['PCBThicknessU'] + self.tpc['PCBThicknessV'] + self.tpc['PCBThicknessZ'] + self.tpc['padWidth']
 
         # Process Cryostat parameters
         if cryostat_parameters:
