@@ -241,7 +241,8 @@ class CryostatBuilder(gegede.builder.Builder):
                     'nCRM_z': self.tpc['nCRM_z'],
                     'nCRM_x': self.tpc['nCRM_x'],
                     'nViews': self.tpc['nViews'],
-                    'padWidth': self.tpc['padWidth']
+                    'padWidth': self.tpc['padWidth'],
+                    'ReadoutPlane': self.tpc['ReadoutPlane']
                 }
 
                 # Call placement function

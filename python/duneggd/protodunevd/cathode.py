@@ -272,10 +272,10 @@ class CathodeBuilder(gegede.builder.Builder):
                 volume.placements.append(place.name)
 
                 # Place top and bottom anode
-                anode_top_x = cathode_x + 0.5*self.params['heightCathode'] + params['driftTPCActive'] + params['nViews']*params['padWidth'] + self.params['anodePlateWidth']/2; #right above TPC vol
+                anode_top_x = cathode_x + 0.5*self.params['heightCathode'] + params['driftTPCActive'] + params['ReadoutPlane'] + self.params['anodePlateWidth']/2; #right above TPC vol
                 anode_top_y = module_y
                 anode_top_z = module_z
-                anode_bot_x = anode_top_x -2.*(params['driftTPCActive'] + params['nViews']*params['padWidth']) - self.params['anodePlateWidth'] - self.params['heightCathode'];
+                anode_bot_x = anode_top_x -2.*(params['driftTPCActive'] + params['ReadoutPlane']) - self.params['anodePlateWidth'] - self.params['heightCathode'];
                 anode_bot_y = module_y
                 anode_bot_z = module_z
 
