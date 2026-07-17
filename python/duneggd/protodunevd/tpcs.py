@@ -437,7 +437,7 @@ class TPCBuilder(gegede.builder.Builder):
                 wire_shape_z = geom.shapes.Tubs(
                     f"CRMWireZ{quad}",
                     rmax=self.params['padWidth']/2,
-                    dz=dims['plane'][1]/2.,  # Half width
+                    dz=dims['planeZ'][1]/2.,  # Half width
                     sphi="0deg",
                     dphi="360deg")
                 wire_vol_z = geom.structure.Volume(
