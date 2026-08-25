@@ -1,0 +1,5 @@
+cp larfd_nowires_AllAir_20cm.cfg larfd_nowires_AllAir_40cm.cfg
+cp larfd_nowires_AllAir_20cm.cfg larfd_nowires_AllAir_60cm.cfg
+cp larfd_nowires_AllAir_20cm.cfg larfd_nowires_AllAir_80cm.cfg
+cp larfd_nowires_AllAir_20cm.cfg larfd_nowires_AllAir_100cm.cfg
+cp larfd_nowires_AllAir_20cm.cfg larfd_nowires_AllAir_200cm.cfg

@@ -18,7 +18,7 @@ class CryostatBuilder(gegede.builder.Builder):
     #^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^
     def configure(self,
                   CryostatInnerDim    = [Q('15100mm'),Q('14000mm'),Q('62000mm')],
-                  cathodeThickness    = Q('0.016cm'),
+                  cathodeThickness    = None,
                   outerAPAs           = False,
                   nAPAs               = None,
                   IgnoredAPAs         = None,
@@ -151,20 +151,34 @@ class CryostatBuilder(gegede.builder.Builder):
                     self.tpcDim[2]]
         self.APAToAPA = APAToAPA
 
-        self.ColdInsulationThickness = self.Layer1Thickness + self.Layer2Thickness + self.Layer3Thickness
-        self.WarmCryostatThickness   = self.SteelThickness + self.IPEBeamHeight
+        self.ColdInsulationThickness = self.Layer1Thickness         + self.Layer2Thickness + self.Layer3Thickness
+        self.WarmCryostatThickness   = self.SteelThickness          + self.IPEBeamHeight
         self.TotalCryoLayer          = self.ColdInsulationThickness + self.WarmCryostatThickness
         
         self.CryostatOuterDim[0] = self.CryostatInnerDim[0] + 2 * self.TotalCryoLayer
         self.CryostatOuterDim[1] = self.CryostatInnerDim[1] + 2 * self.TotalCryoLayer
         self.CryostatOuterDim[2] = self.CryostatInnerDim[2] + 2 * self.TotalCryoLayer
 
+        
+        # self.WaterThickness      = 0.5*(self.CryostatOuterDim[1]
+        #                                 - self.CryostatInnerDim[1]
+        #                                 - 2*self.Layer1Thickness
+        #                                 - 2*self.Layer2Thickness
+        #                                 - 2*self.Layer3Thickness
+        #                                 - 2*self.SteelThickness
+        #                                 - 2*self.WarmCryostatThickness)
+        # self.WaterThickness      = Q('18inch')
+        
         # define cryostat shape and volume, will be placed by a builder owning this builder
         cryoBox = geom.shapes.Box('Cryostat',
                                   dx=0.5*self.CryostatOuterDim[0], 
                                   dy=0.5*self.CryostatOuterDim[1],
                                   dz=0.5*self.CryostatOuterDim[2])
-        cryo_lv = geom.structure.Volume('volCryostat', material='Air', shape=cryoBox)
+
+        if (self.doWaterShielding):
+            cryo_lv = geom.structure.Volume('volCryostat', material='Water', shape=cryoBox)
+        else:
+            cryo_lv = geom.structure.Volume('volCryostat', material='Air', shape=cryoBox)
         self.add_volume(cryo_lv)
 
         LArBox = geom.shapes.Box('LiquidArgon',
@@ -190,6 +204,31 @@ class CryostatBuilder(gegede.builder.Builder):
         GAr_lv             = geom.structure.Volume('volGaseousArgon', material='GAr', shape=GArBox)
         placement_GAr_in_C = geom.structure.Placement('placeGAr_in_Cryo', volume=GAr_lv, pos=GArPos)
         cryo_lv.placements.append(placement_GAr_in_C.name)
+
+        WaterY = (self.CryostatOuterDim[1] - self.CryostatInnerDim[1]) / 2
+        # --- TEST BLOCK -----
+        # WaterBox    = geom.shapes.Box('WaterBox',
+        #                               dx=0.5*self.CryostatOuterDim[0],
+        #                               dy=0.5*self.CryostatOuterDim[1], 
+        #                               dz=0.5*self.CryostatOuterDim[2])
+        # WaterSub    = geom.shapes.Box('WaterSub',
+        #                               dx=0.5*self.CryostatOuterDim[0],
+        #                               dy=0.5*(self.CryostatOuterDim[1]-self.WaterThickness),
+        #                               dz=0.5*self.CryostatOuterDim[2])
+        # WaterSubPos = geom.structure.Position('WaterSubPos', Q('0m'), self.WaterThickness, Q('0m'))
+        # WaterBox    = geom.shapes.Boolean('WaterMinusSubBox',
+        #                                  type   = 'subtraction',
+        #                                  first  = WaterBox,
+        #                                  second = WaterSub,
+        #                                  pos    = WaterSubPos)
+
+        # Water_lv   = geom.structure.Volume('volFloorWaterBox', material='Water', shape=WaterBox)
+        # WaterPos   = geom.structure.Position('posFloorWaterBox', Q('0m'), Q('0m'), Q('0m'))
+        # WaterPla   = geom.structure.Placement('placeFloorWaterBox', volume=Water_lv, pos=WaterPos)
+        # cryo_lv.placements.append(WaterPla.name)
+        
+        # --- TEST BLOCK -----
+
         
         # Define the cathode volume 
         cathodeBox = geom.shapes.Box('Cathode',
@@ -493,12 +532,12 @@ class CryostatBuilder(gegede.builder.Builder):
             
         if (self.nDSSBeam != None):
             self.ConstructDSS(geom, cryo_lv, self.beamInfo) 
+
+        print(self.beamInfo)
             
         if (self.nBeamX != None):
             self.ConstructAllBeam(geom, cryo_lv)
 
-        if (self.doWaterShielding):
-            self.PlaceWaterLayer(geom, cryo_lv, self.waterThickness, self.beamInfo)
             
 
         LAr_lv       = geom.structure.Volume('volLArInCryo', material='LAr', shape=LArBox)
@@ -715,7 +754,8 @@ class CryostatBuilder(gegede.builder.Builder):
                                                   rot    = rot)
         box_lv.placements.append(Placement_Beam.name)
         self.num = self.num+1
-
+        return FinalSub
+        
     def ConstructBeamFloor(self, geom, length, pos, rot, box_lv, plane):
         name = "BeamFloor_"+str(self.num)+plane
         SubtractionTub = geom.shapes.Tubs(name+'SubtractionHole',
@@ -745,6 +785,7 @@ class CryostatBuilder(gegede.builder.Builder):
         self.beamInfo["rot"]  .append(rot)
         box_lv.placements.append(Placement_Beam.name)
         self.num = self.num+1
+        return FinalSub
 
     def ConstructSmallBeam(self, geom, length, pos, rot, box_lv, plane):
         name = "BeamSmall_"+str(self.num)+plane
@@ -825,7 +866,6 @@ class CryostatBuilder(gegede.builder.Builder):
        
 
     def ConstructAllBeam(self, geom, box_lv):
-        
         print ("Constructing all the external beams")
         self.BeamInnerDim = [self.CryostatInnerDim[0] + 2 * (self.ColdInsulationThickness + self.SteelThickness),
                              self.CryostatInnerDim[1] + 2 * (self.ColdInsulationThickness + self.SteelThickness),
@@ -911,6 +951,8 @@ class CryostatBuilder(gegede.builder.Builder):
         print ("DONE - Constructing the Z external beams")
 
         print ("DONE - Constructing all the external beams")
+
+        
 
 
     def PlaceWaterLayer(self, geom, cryo_lv, waterThickness, beamInfo):
