@@ -250,7 +250,8 @@ class CryostatBuilder(gegede.builder.Builder):
                                                          pos = geom.structure.Position('posBot%s-%d' % (name, idx),
                                                                                        x = posbottom_x,
                                                                                        y = pos_y_bot,
-                                                                                       z = pos_z_bot))
+                                                                                       z = pos_z_bot),
+                                                         rot = "rPlus180AboutY")
                     tpcenc_LV.placements.append(place_bot.name)
                 idx += 1
                 pos_y += globals.get("widthCRM")
