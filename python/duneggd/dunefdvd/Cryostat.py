@@ -122,8 +122,7 @@ class CryostatBuilder(gegede.builder.Builder):
                 tpcenc_LV = self.placeOpDetsCathode(geom, arapuca_LV[1], tpcenc_LV)
 
             # place it inside the cryostat
-            tpcenc_x = 0.5*(globals.get("Argon_x") - globals.get("TPCEnclosure_x")) -                               \
-                       globals.get("HeightGaseousAr") + globals.get("anodePlateWidth")
+            tpcenc_x = globals.get("posTPCEncInCryo_x")
             tpcenc_y = Q('0cm')
             tpcenc_z = Q('0cm')
             place_tpcenc = geom.structure.Placement('place'+tpcencBox.name,
@@ -209,8 +208,7 @@ class CryostatBuilder(gegede.builder.Builder):
         if not globals.get("Cathode_switch"):
             return tpcenc_LV
 
-        cathode_x = 0.5*globals.get("TPCEnclosure_x") - globals.get("TPC_x") -                                      \
-                    globals.get("anodePlateWidth") - 0.5*globals.get("heightCathode")
+        cathode_x = globals.get("posCathodeInTPCEnc_x")
         cathode_y = -0.5*globals.get("TPCEnclosure_y") + 0.5*globals.get("widthCathode")
         cathode_z = -0.5*globals.get("TPCEnclosure_z") + 0.5*globals.get("lengthCathode")
         anode_toppos = 0.5*globals.get("TPCEnclosure_x") - 0.5*globals.get("anodePlateWidth")
@@ -297,8 +295,7 @@ class CryostatBuilder(gegede.builder.Builder):
         if globals.get("pdsconfig"):
             return tpcenc_LV
 
-        frCenter_x = 0.5*globals.get("TPCEnclosure_x") - globals.get("TPC_x") -                                     \
-                     globals.get("anodePlateWidth") - 0.5*globals.get("heightCathode")
+        frCenter_x = globals.get("posCathodeInTPCEnc_x")
         frCenter_y = -0.5*globals.get("TPCEnclosure_y") + 0.5*globals.get("widthCathode")
         frCenter_z = -0.5*globals.get("TPCEnclosure_z") + 0.5*globals.get("lengthCathode")
 
