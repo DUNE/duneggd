@@ -23,8 +23,9 @@ def construct_materials(geom):
     e_s = geom.matter.Element("sulphur", "S", 16, "32.065g/mole")
     e_p = geom.matter.Element("phosphorus", "P", 15, "30.973g/mole")
     e_mn = geom.matter.Element("manganese", "Mn", 25, "54.94g/mole")
-    e_b11 = geom.matter.Element("boron11", "B11", 4, "11.00g/mole")
-    e_b10 = geom.matter.Element("boron10", "B10", 4, "10.00g/mole")
+    e_b11 = geom.matter.Element("boron11", "B11", 5, "11.00g/mole")
+    e_b10 = geom.matter.Element("boron10", "B10", 5, "10.00g/mole")
+    e_pb = geom.matter.Element("lead", "Pb", 82, "207.2g/mole")
 
     m_vacuum = geom.matter.Mixture("Vacuum", density = "1.e-25g/cc",
 						components = (("videRef", 1.0),))
@@ -34,6 +35,9 @@ def construct_materials(geom):
 
     m_silicon_si = geom.matter.Mixture("SILICON_Si", density = "2.3300g/cc",
 						components = (("silicon", 1.0000),))
+
+    m_lead = geom.matter.Molecule("Lead", density = "11.35g/cc",
+						elements = (("lead", 1),))
 
     m_epoxy_resin = geom.matter.Molecule("epoxy_resin", density = "1.1250g/cc",
 						elements = (("carbon", 38),

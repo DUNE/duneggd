@@ -64,7 +64,7 @@ class SupportEncBuilder(gegede.builder.Builder):
         box_shape = geom.shapes.Box('box_name', dy=(BlockWidth)/2, dx=(BlockThickness/2.0), dz=(BlockWidth/2))
         boxshapevolume = geom.structure.Volume('boxshapeVol', material='BP', shape=box_shape)
         box_shape_pb = geom.shapes.Box('box_namePb', dy=(BlockWidth)/2, dx=(BlockThicknessPb/2.0), dz=(BlockWidth/2))
-        boxshapevolumePb = geom.structure.Volume('boxshapeLeadVol', material='lead', shape=box_shape_pb)
+        boxshapevolumePb = geom.structure.Volume('boxshapeLeadVol', material='Lead', shape=box_shape_pb)
 
         # start the loop
         zbsp = self.fSpacing
