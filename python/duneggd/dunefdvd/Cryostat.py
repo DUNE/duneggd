@@ -451,8 +451,7 @@ class CryostatBuilder(gegede.builder.Builder):
         # mesh sits flush with cathode top/bottom face (perl line 3200's
         # BotMesh_X formula is a typo; using the correct symmetric form here)
         x_face_offset = 0.5*(h - t)
-        frCenter_x = 0.5*globals.get("TPCEnclosure_x") - globals.get("TPC_x") - \
-                     globals.get("anodePlateWidth") - 0.5*h
+        frCenter_x = globals.get("posCathodeInTPCEnc_x")
 
         mesh_name = re.sub(r'vol', '', mesh_LV.name)
 
