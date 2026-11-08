@@ -30,11 +30,11 @@ class Params:
     _tpc['wireAngleV'] = Q('30.0deg')
     _tpc['widthPCBActive'] = Q('167.9cm')
 
-    _tpc['borderCRP'] = Q('0.85cm')
+    # CRP borders set so the top CRP array matches the VD layout drawings (ST1369597)
+    _tpc['borderCRP'] = Q('0.645cm')
     _tpc['gapCRP'] = Q('0.5cm')
-    _tpc['borderCRUBottom_z'] = Q('0.8cm')
-    _tpc['borderCRUBottom_y'] = Q('0.85cm')
-    _tpc['borderCRUBottom1side_z'] = Q('0.5cm')
+    _tpc['borderCRUBottom_z'] = Q('0.645cm')
+    _tpc['borderCRUBottom_y'] = Q('0.645cm')
     _tpc['gapCRP'] = Q('0.5cm')
 
     _tpc['nCRM_x'] = 2
@@ -293,6 +293,8 @@ class Params:
         cls._cryostat['TPCEnclosure_z'] = cls._tpc['nCRM_z']*(cls._tpc['lengthCRM'] + cls._tpc['borderCRP']) +             \
                                           (cls._tpc['nSST1_z'] - 1) * cls._tpc['gapSST1_z'] +                              \
                                           cls._tpc['nSST2_z'] * cls._tpc['gapSST2_z']
+        # bottom CRUs have no superstructures: spaced evenly over the length of the top array
+        cls._tpc['borderCRUBottom1side_z'] = 0.5*(cls._cryostat['TPCEnclosure_z']/cls._tpc['nCRM_z'] - cls._tpc['lengthCRM'])
         # TPC enclosure sits below the gas and top liquid buffer; the cathode sits one CRM below the top anode
         cls._cryostat['posTPCEncInCryo_x'] = 0.5*(cls._cryostat['Argon_x'] - cls._cryostat['TPCEnclosure_x']) -           \
                                              cls._cryostat['HeightGaseousAr'] - cls._cryostat['xLArBufferTop'] +          \
