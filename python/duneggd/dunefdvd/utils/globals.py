@@ -112,6 +112,7 @@ class Params:
     _fieldcage['FieldShaperTorRad'] = Q('2.3cm')
     _fieldcage['FieldCageArapucaWindowLength'] = Q('670cm')
     _fieldcage['FieldShaperSeparation'] = Q('5.92cm') # keeps 108 shapers per drift
+    _fieldcage['FieldCageToCRPEdge'] = Q('5.1cm') # CRP edge to field-cage inner face (VD layout drawings, ST1369597)
 
     _cathode['heightCathode'] = Q('6.1cm')
     _cathode['CathodeBorder'] = Q('4.0cm')
@@ -358,8 +359,8 @@ class Params:
                                       0.5*cls._cryostat['TPCEnclosure_z'])
 
         # FieldCage parameters
-        cls._fieldcage['FieldShaperLongTubeLength']  =  cls._tpc['lengthTPCActive']
-        cls._fieldcage['FieldShaperShortTubeLength'] =  cls._tpc['widthTPCActive']
+        cls._fieldcage['FieldShaperLongTubeLength']  =  cls._tpc['lengthTPCActive'] + 2*cls._fieldcage['FieldCageToCRPEdge']
+        cls._fieldcage['FieldShaperShortTubeLength'] =  cls._tpc['widthTPCActive'] + 2*cls._fieldcage['FieldCageToCRPEdge']
         cls._fieldcage['FieldShaperLength'] = cls._fieldcage['FieldShaperLongTubeLength'] +                                \
                                                      2*cls._fieldcage['FieldShaperOuterRadius'] +                          \
                                                      2*cls._fieldcage['FieldShaperTorRad']
