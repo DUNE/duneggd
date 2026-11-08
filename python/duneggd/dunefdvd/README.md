@@ -29,6 +29,8 @@ For checking overlaps, one can run `check_overlap.C`
 
 X-Arapuca mesh structures (lateral membrane mesh, cathode-side conductive mesh, cathode resistive mesh) ported from `generate_protodunevd_v5_refactored.pl` are off by default. Set `ArapucaMesh_switch = True` in the `[Arapuca]` section of the cfg to enable; mesh parameters live in the `_arapuca` group of `utils/globals.py`.
 
+World origin : x at the cathode centre (mid-drift for the single drift volume 1x8x14), y at the centre of the active volume, z at the upstream (cryogenics-side) face of the CRP array.
+
 v7 : Consistent with [PERL v7](https://github.com/DUNE/dunecore/blob/develop/dunecore/Geometry/gdml/generate_dunevd10kt_3view_30deg_v7_refactored.pl), but adds Detailed Cryostat Structure (I-beams, Belts, Shield Walls) and Placement in Cavern Hall
 
 v8 : Homogenizes Inner Cryostat Structure (Membrane, Field Cage, CRPs) to latest drawings
