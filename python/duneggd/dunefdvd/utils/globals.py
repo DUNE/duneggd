@@ -111,7 +111,7 @@ class Params:
     _fieldcage['FieldShaperOuterRadiusSlim'] = Q('0.75cm')
     _fieldcage['FieldShaperTorRad'] = Q('2.3cm')
     _fieldcage['FieldCageArapucaWindowLength'] = Q('670cm')
-    _fieldcage['FieldShaperSeparation'] = Q('6.0cm')
+    _fieldcage['FieldShaperSeparation'] = Q('5.92cm') # keeps 108 shapers per drift
 
     _cathode['heightCathode'] = Q('6.1cm')
     _cathode['CathodeBorder'] = Q('4.0cm')
