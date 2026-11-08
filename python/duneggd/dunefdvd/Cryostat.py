@@ -353,13 +353,10 @@ class CryostatBuilder(gegede.builder.Builder):
 
         for i in range(int(globals.get("NFieldShapers").magnitude) + 1):
             dist = i*globals.get("FieldShaperSeparation")
-            pos_x = 0.5*globals.get("Argon_x") - globals.get("HeightGaseousAr") -                                   \
-                    (globals.get("driftTPCActive") + globals.get("ReadoutPlane")) +                                 \
+            pos_x = globals.get("posCathodeInCryo_x") + 0.5*globals.get("heightCathode") +                          \
                     (i + 0.5)*globals.get("FieldShaperSeparation")
             if reversed:
-                pos_x = 0.5*globals.get("Argon_x") - globals.get("HeightGaseousAr") -                               \
-                        (globals.get("driftTPCActive") + globals.get("ReadoutPlane")) -                             \
-                        globals.get("heightCathode") -                                                              \
+                pos_x = globals.get("posCathodeInCryo_x") - 0.5*globals.get("heightCathode") -                      \
                         (i + 0.5)*globals.get("FieldShaperSeparation")
 
             name = re.sub(r'vol', '', fs_LV.name)
@@ -389,8 +386,9 @@ class CryostatBuilder(gegede.builder.Builder):
         if (globals.get("pdsconfig") != 0 or globals.get("nCRM_y") != 8):
             return cryo_LV
 
-        frCenter_x = 0.5*globals.get("Argon_x") - globals.get("HeightGaseousAr") -                                  \
-                     0.5*globals.get("padWidth")
+        # frames are measured from the top readout plane; the bottom drift mirrors the top about the cathode
+        frCenter_x = globals.get("posCathodeInCryo_x") + 0.5*globals.get("heightCathode") +                         \
+                     globals.get("TPC_x") - 0.5*globals.get("padWidth")
         frCenter_z = -19*0.5*globals.get("lengthCathode") +                                                         \
                      (40 - globals.get("nCRM_z"))*0.25*globals.get("lengthCathode")
 
@@ -405,8 +403,7 @@ class CryostatBuilder(gegede.builder.Builder):
                 elif ara < 8:
                     ara_x = frCenter_x - globals.get("FirstFrameVertDist")
                 else:
-                    ara_x = -frCenter_x - globals.get("HeightGaseousAr") + globals.get("xLArBuffer") +              \
-                            globals.get("FirstFrameVertDist")
+                    ara_x = 2*globals.get("posCathodeInCryo_x") - frCenter_x + globals.get("FirstFrameVertDist")
 
                 ara_y = 0.5*globals.get("Argon_y") - globals.get("FrameToArapucaSpaceLat")
                 delta_sens = -0.5*globals.get("ArapucaOut_y") +                                                     \
@@ -435,8 +432,9 @@ class CryostatBuilder(gegede.builder.Builder):
         if (globals.get("pdsconfig") != 0 or globals.get("nCRM_y") != 8):
             return cryo_LV
 
-        frCenter_x = 0.5*globals.get("Argon_x") - globals.get("HeightGaseousAr") -                                  \
-                     0.5*globals.get("padWidth")
+        # frames are measured from the top readout plane; the bottom drift mirrors the top about the cathode
+        frCenter_x = globals.get("posCathodeInCryo_x") + 0.5*globals.get("heightCathode") +                         \
+                     globals.get("TPC_x") - 0.5*globals.get("padWidth")
         frCenter_z = -19*0.5*globals.get("lengthCathode") +                                                         \
                      (40 - globals.get("nCRM_z"))*0.25*globals.get("lengthCathode")
 
@@ -451,8 +449,7 @@ class CryostatBuilder(gegede.builder.Builder):
                 elif ara < 8:
                     ara_x = frCenter_x - globals.get("FirstFrameVertDist")
                 else:
-                    ara_x = -frCenter_x - globals.get("HeightGaseousAr") + globals.get("xLArBuffer") +              \
-                            globals.get("FirstFrameVertDist")
+                    ara_x = 2*globals.get("posCathodeInCryo_x") - frCenter_x + globals.get("FirstFrameVertDist")
                 ara_y = frCenter_y
 
                 ara_z = 0.5*globals.get("Argon_z") - globals.get("FrameToArapucaSpaceLat")

@@ -316,6 +316,7 @@ class Params:
                                              cls._cryostat['HeightGaseousAr'] + cls._tpc['anodePlateWidth']
         cls._cryostat['posCathodeInTPCEnc_x'] = 0.5*cls._cryostat['TPCEnclosure_x'] - cls._tpc['TPC_x'] -                 \
                                                 cls._tpc['anodePlateWidth'] - 0.5*cls._cathode['heightCathode']
+        cls._cryostat['posCathodeInCryo_x'] = cls._cryostat['posTPCEncInCryo_x'] + cls._cryostat['posCathodeInTPCEnc_x']
 
 
 
@@ -360,12 +361,10 @@ class Params:
         # world origin, as in the perl geometry: cathode centre (mid-drift for a single drift volume) in x,
         # active-volume centre in y, upstream TPC-enclosure face in z
         if cls._tpc['nCRM_x'] == 2:
-            cls._detenc['OriginXSet'] = -(cls._detenc['posCryoInDetEnc_x'] + cls._cryostat['posTPCEncInCryo_x'] +         \
-                                          cls._cryostat['posCathodeInTPCEnc_x'])
+            cls._detenc['OriginXSet'] = -(cls._detenc['posCryoInDetEnc_x'] + cls._cryostat['posCathodeInCryo_x'])
         else:
-            cls._detenc['OriginXSet'] = -(cls._detenc['posCryoInDetEnc_x'] + cls._cryostat['posTPCEncInCryo_x'] +         \
-                                          cls._cryostat['posCathodeInTPCEnc_x'] + 0.5*cls._cathode['heightCathode'] + \
-                                          0.5*cls._tpc['driftTPCActive'])
+            cls._detenc['OriginXSet'] = -(cls._detenc['posCryoInDetEnc_x'] + cls._cryostat['posCathodeInCryo_x'] +        \
+                                          0.5*cls._cathode['heightCathode'] + 0.5*cls._tpc['driftTPCActive'])
         cls._detenc['OriginYSet'] = -cls._detenc['posCryoInDetEnc_y']
         cls._detenc['OriginZSet'] = -(cls._detenc['posCryoInDetEnc_z'] - 0.5*cls._cryostat['TPCEnclosure_z'])
 
