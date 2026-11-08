@@ -169,9 +169,9 @@ void gl()
 {
     gSystem->IgnoreSignal(kSigSegmentationViolation, true);
     TEveManager::Create();
-    // TGeoManager::Import("dunevd10kt_v8_1x8x14_ggd_nowires.gdml");
-    // TGeoManager::Import("dunevd10kt_v8_2x8x40_ggd_nowires.gdml");
-    TGeoManager::Import("dunevd10kt_v8_full10kt_ggd_nowires.gdml");
+    // TGeoManager::Import("dunevd10kt_3view_30deg_v8_1x8x14_ggd_nowires.gdml");
+    // TGeoManager::Import("dunevd10kt_3view_30deg_v8_2x8x40_ggd_nowires.gdml");
+    TGeoManager::Import("dunevd10kt_3view_30deg_v8_full10kt_ggd_nowires.gdml");
 
     TGeoNode* world = gGeoManager->GetTopNode();
 
