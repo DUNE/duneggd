@@ -30,6 +30,6 @@ For checking overlaps, one can run `check_overlap.C`
 v7 : Consistent with [PERL v7](https://github.com/DUNE/dunecore/blob/develop/dunecore/Geometry/gdml/generate_dunevd10kt_3view_30deg_v7_refactored.pl), but adds Detailed Cryostat Structure (I-beams, Belts, Shield Walls) and Placement in Cavern Hall
 
 v8 : Homogenizes Inner Cryostat Structure (Membrane, Field Cage, CRPs) to latest drawings
-- 8a : Cathode thickness, drift distance, and gaseous and liquid argon buffers follow the drawings in all workspaces.
-- 8b : CRP borders match the drawings and the TPC is shifted towards the TCO (west) wall.
-- 8c : Field-shaper pitch keeps 108 shapers per drift and the field cage sits 5.1 cm outside the CRP edges.
+- 8a : Cathode thickness (6.1 cm), drift distance (641.2 cm, cold), gaseous argon (49 cm) and liquid argon buffers (33.3 cm above the top CRPs, 29.2 cm below the bottom CRPs, 79.9 cm at the long walls) follow the drawings in all workspaces.
+- 8b : CRP borders (0.645 cm) match the drawings and the TPC is shifted 20.45 cm towards the TCO (west) wall, leaving 79.9 cm (TCO) and 120.8 cm (cryogenics) end-wall buffers.
+- 8c : Field-shaper pitch (5.92 cm) keeps 108 shapers per drift and the field cage sits 5.1 cm outside the CRP edges.
