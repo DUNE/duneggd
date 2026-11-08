@@ -19,9 +19,9 @@ class ProtoDUNEVDBuilder(gegede.builder.Builder):
 
     def __init__(self, name):
         super(ProtoDUNEVDBuilder, self).__init__(name)
-        
+
         # Initialize parameters as None
-        self.cryo = None 
+        self.cryo = None
         self.tpc = None
         self.steel = None
         self.cathode = None
@@ -33,7 +33,7 @@ class ProtoDUNEVDBuilder(gegede.builder.Builder):
         self.DetEncZ = None
 
         self.OriginXSet = None
-        self.OriginYSet = None 
+        self.OriginYSet = None
         self.OriginZSet = None
 
         self.DP_CRT_switch = None  # Add this line
@@ -43,19 +43,19 @@ class ProtoDUNEVDBuilder(gegede.builder.Builder):
         # for name, builder in self.builders.items():
         #     self.add_builder(name, builder)
 
-    def configure(self, cryostat_parameters=None, tpc_parameters=None, 
+    def configure(self, cryostat_parameters=None, tpc_parameters=None,
                  steel_parameters=None, beam_parameters=None, crt_parameters=None,
-                 cathode_parameters=None, xarapuca_parameters=None,  
-                 fieldcage_parameters=None,  
-                 pmt_parameters=None,  
-                 DetEncX=None, DetEncY=None, DetEncZ=None, FoamPadding=None, 
-                 OriginXSet=None, OriginYSet=None, OriginZSet=None,  
+                 cathode_parameters=None, xarapuca_parameters=None,
+                 fieldcage_parameters=None,
+                 pmt_parameters=None,
+                 DetEncX=None, DetEncY=None, DetEncZ=None, FoamPadding=None,
+                 OriginXSet=None, OriginYSet=None, OriginZSet=None,
                  cathode_switch=True, fieldcage_switch=True, arapucamesh_switch=True,  # Add these lines
                  DP_CRT_switch=None, HD_CRT_switch=None,  # Add these lines
-                 print_config=False,  
-                 print_construct=False,  
+                 print_config=False,
+                 print_construct=False,
                  **kwds):
-        
+
         if print_config:
             print('Configure ProtoDUNE-VD <- World')
         # Add guard against double configuration
@@ -64,7 +64,7 @@ class ProtoDUNEVDBuilder(gegede.builder.Builder):
 
         # Store the parameters
         self.DetEncX = DetEncX
-        self.DetEncY = DetEncY 
+        self.DetEncY = DetEncY
         self.DetEncZ = DetEncZ
         self.FoamPadding = FoamPadding
 
@@ -72,7 +72,7 @@ class ProtoDUNEVDBuilder(gegede.builder.Builder):
         self.OriginXSet = OriginXSet
         self.OriginYSet = OriginYSet
         self.OriginZSet = OriginZSet
-        
+
         if cryostat_parameters:
             self.cryo = cryostat_parameters
         if tpc_parameters:
@@ -81,11 +81,11 @@ class ProtoDUNEVDBuilder(gegede.builder.Builder):
             self.steel = steel_parameters
         if cathode_parameters:
             self.cathode = cathode_parameters
-        if xarapuca_parameters:  
+        if xarapuca_parameters:
             self.xarapuca = xarapuca_parameters
-        if fieldcage_parameters:  
+        if fieldcage_parameters:
             self.fieldcage = fieldcage_parameters
-        if pmt_parameters:  
+        if pmt_parameters:
             self.pmt = pmt_parameters
 
         self.cathode_switch = cathode_switch  # Add this line
@@ -117,30 +117,30 @@ class ProtoDUNEVDBuilder(gegede.builder.Builder):
                 builder.configure(cryostat_parameters=self.cryo,
                       tpc_parameters=self.tpc,
                       cathode_parameters=self.cathode,
-                      xarapuca_parameters=self.xarapuca,  
-                      fieldcage_parameters=self.fieldcage,  
-                      pmt_parameters=self.pmt,  
+                      xarapuca_parameters=self.xarapuca,
+                      fieldcage_parameters=self.fieldcage,
+                      pmt_parameters=self.pmt,
                       cathode_switch=self.cathode_switch,  # Add this line
                       fieldcage_switch=self.fieldcage_switch,  # Add this line
                       arapucamesh_switch=self.arapucamesh_switch,  # Add this line
-                      print_config=print_config,  
-                      print_construct=print_construct,  
+                      print_config=print_config,
+                      print_construct=print_construct,
                       **kwds)
             if name == 'crt':
                 builder.configure(crt_parameters=crt_parameters,
                     steel_parameters=self.steel,
-                    OriginXSet=self.OriginXSet,  
+                    OriginXSet=self.OriginXSet,
                     OriginYSet=self.OriginYSet,
                     OriginZSet=self.OriginZSet,
                     DP_CRT_switch=self.DP_CRT_switch,  # Add this line
                     HD_CRT_switch=self.HD_CRT_switch,  # Add this line
-                    print_config=print_config,  
-                    print_construct=print_construct,  
+                    print_config=print_config,
+                    print_construct=print_construct,
                     **kwds)
             if name == 'steelsupport':
                 builder.configure(steel_parameters=self.steel,
-                    print_config=print_config,  
-                    print_construct=print_construct,  
+                    print_config=print_config,
+                    print_construct=print_construct,
                     **kwds)
             if name == 'foam':
                 builder.configure(
@@ -162,32 +162,14 @@ class ProtoDUNEVDBuilder(gegede.builder.Builder):
                                    dx=self.DetEncX,
                                    dy=self.DetEncY,
                                    dz=self.DetEncZ)
-        
-        main_lv = geom.structure.Volume(self.name, 
+
+        main_lv = geom.structure.Volume(self.name,
                                       material='Air',
                                       shape=main_shape)
 
-        # Here we would add the construction of:
-        # Cryostat
         # Get the cryostat volume from the cryostat builder
         cryo_builder = self.get_builder("cryostat")
         cryo_vol = cryo_builder.get_volume()
-
-        # Create a placement for the cryostat in the detector enclosure
-        # Place it at the center (0,0,0) since the PERL script shows posCryoInDetEnc=(0,0,0)
-        cryo_pos = geom.structure.Position(
-            "cryo_pos",
-            x=Q('0cm'), 
-            y=Q('0cm'),
-            z=Q('0cm'))
-        
-        cryo_place = geom.structure.Placement(
-            "cryo_place",
-            volume=cryo_vol,
-            pos=cryo_pos)
-
-        # Add the cryostat placement to the detector enclosure volume
-        main_lv.placements.append(cryo_place.name)
 
         # Place beam elements - add this
         beam_builder = self.get_builder("beamelements")
@@ -205,6 +187,20 @@ class ProtoDUNEVDBuilder(gegede.builder.Builder):
         crt_builder = self.get_builder('crt')
         crt_builder.place_in_volume(geom, main_lv)
 
+        # NOTICE: volCryostat has to be added at the end per LArSoft requirement
+        # Add the cryostat placement to the detector enclosure volume
+        # Create a placement for the cryostat in the detector enclosure
+        # Place it at the center (0,0,0) since the PERL script shows posCryoInDetEnc=(0,0,0)
+        cryo_pos = geom.structure.Position(
+            "cryo_pos",
+            x=Q('0cm'),
+            y=Q('0cm'),
+            z=Q('0cm'))
+
+        cryo_place = geom.structure.Placement(
+            "cryo_place",
+            volume=cryo_vol,
+            pos=cryo_pos)
+        main_lv.placements.append(cryo_place.name)
+
         self.add_volume(main_lv)
-
-

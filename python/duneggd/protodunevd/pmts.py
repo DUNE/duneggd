@@ -12,12 +12,12 @@ class PMTBuilder(gegede.builder.Builder):
     Implements both thick and slim field shapers arranged vertically.
     '''
 
-    def configure(self, 
+    def configure(self,
                  pmt_parameters=None,
                  print_config=False,
                  print_construct=False,
                  **kwds):
-        
+
         if print_config:
             print('Configure PMTs <- Cryostat <- ProtoDUNE-VD <- World')
         if hasattr(self, '_configured'):
@@ -25,22 +25,22 @@ class PMTBuilder(gegede.builder.Builder):
 
         if pmt_parameters:
             self.params = pmt_parameters
-        
+
         # Generate all PMT positions
         self.generate_pmt_positions()
-        
+
         self._configured = True
         self.print_construct = print_construct
 
     def generate_pmt_positions(self):
         '''Generate the full list of PMT positions'''
         self.pmt_positions = []
-        
+
         # Helper to make position dictionary
         def make_pos(x=None, y=None, z=None):
             pos = {}
             pos['x'] = x if x is not None else Q('0cm')
-            pos['y'] = y if y is not None else Q('0cm') 
+            pos['y'] = y if y is not None else Q('0cm')
             pos['z'] = z if z is not None else Q('0cm')
             return pos
 
@@ -60,17 +60,18 @@ class PMTBuilder(gegede.builder.Builder):
             make_pos(y=y[2], z=z[0]),      # pos9 - y=0, z=306.0
             make_pos(y=y[3], z=z[0]),      # pos10 - y=-170.0, z=306.0
         ])
-         # Horizontal PMTs 
+         # Horizontal PMTs
         htop = self.params['horizontal_pmt_pos_top']
         hbot = self.params['horizontal_pmt_pos_bot']
         hz = self.params['horizontal_pmt_z']
         hy = self.params['horizontal_pmt_y']
+        pmtoffset = self.params['pmt_offset']
 
         self.pmt_positions.extend([
-            make_pos(x=htop, y=hy, z=hz),        # pos11 - x=-225.9, y=221.0, z=228.9
-            make_pos(x=hbot, y=hy, z=hz),        # pos12 - x=-301.7, y=221.0, z=228.9
-            make_pos(x=htop, y=-hy, z=hz),       # pos13 - x=-225.9, y=-221.0, z=228.9  
-            make_pos(x=hbot, y=-hy, z=hz),       # pos14 - x=-301.7, y=-221.0, z=228.9
+            make_pos(x=htop, y=hy, z=hz),        # pos11 - # Horizontal PMTs nonTCO side PEN
+            make_pos(x=hbot, y=hy, z=hz),        # pos12 - # Horizontal PMTs nonTCO side PEN
+            make_pos(x=htop, y=-hy, z=hz),       # pos13 - # Horizontal PMTs TCO side TPB
+            make_pos(x=hbot, y=-hy, z=hz),       # pos14 - # Horizontal PMTs TCO side TPB
             make_pos(y=y[1], z=z[2]),      # pos15 - y=170.0, z=-204.0
             make_pos(y=y[2], z=z[2]),      # pos16 - y=0, z=-204.0
             make_pos(y=y[3], z=z[2]),      # pos17 - y=-170.0, z=-204.0
@@ -80,10 +81,10 @@ class PMTBuilder(gegede.builder.Builder):
         ])
 
         self.pmt_positions.extend([
-            make_pos(x=htop, y=hy, z=-hz),       # pos21 - x=-225.9, y=221.0, z=-228.9
-            make_pos(x=hbot, y=hy, z=-hz),       # pos22 - x=-301.7, y=221.0, z=-228.9
-            make_pos(x=htop, y=-hy, z=-hz),      # pos23 - x=-225.9, y=-221.0, z=-228.9
-            make_pos(x=hbot, y=-hy, z=-hz),      # pos24 - x=-301.7, y=-221.0, z=-228.9
+            make_pos(x=htop, y=hy+pmtoffset, z=-hz),       # pos21 - # Horizontal PMTs near the beam plug TPB + offset
+            make_pos(x=hbot, y=hy+pmtoffset, z=-hz),       # pos22 - # Horizontal PMTs near the beam plug TPB + offset
+            make_pos(x=htop, y=-hy, z=-hz),      # pos23 - # Horizontal PMTs TCO side TPB
+            make_pos(x=hbot, y=-hy, z=-hz),      # pos24 - # Horizontal PMTs TCO side TPB
         ])
 
     def construct(self, geom):
@@ -101,7 +102,7 @@ class PMTBuilder(gegede.builder.Builder):
 
         # Main PMT volume shape
         pmt_vol = geom.shapes.Tubs("PMTVolume",
-            rmin=Q('0cm'), 
+            rmin=Q('0cm'),
             rmax=self.params['pmt_radius'],
             dz=self.params['pmt_height'],
             sphi=Q('0deg'),
@@ -129,7 +130,7 @@ class PMTBuilder(gegede.builder.Builder):
             type='union',
             first=mid_cylinder,
             second=top_sphere,
-            pos=geom.structure.Position("pmt_pos1", 
+            pos=geom.structure.Position("pmt_pos1",
                 x=Q('0mm'), y=Q('0mm'), z=Q('-57.2051768689367mm')))
 
         # Bottom spherical part
@@ -168,17 +169,17 @@ class PMTBuilder(gegede.builder.Builder):
         # TPB coating layer
         coating = geom.shapes.Sphere("pmt_coating",
             rmin=Q('133mm'),
-            rmax=Q('133.2mm'), 
+            rmax=Q('133.2mm'),
             sphi=Q('0deg'),
             dphi=Q('360deg'),
             stheta=Q('0deg'),
             dtheta=Q('50deg'))
 
         # Create volumes
-        coat_vol = geom.structure.Volume("pmtCoatVol",
+        coat_vol = geom.structure.Volume("volOpDetSensitive_pmtCoatVol",
             material="LAr",
             shape=coating)
-        coat_vol.params.append(("SensDet","PhotonDetector"))
+        #coat_vol.params.append(("SensDet","PhotonDetector"))
 
         pmt_main_vol = geom.structure.Volume("allpmt",
             material="Glass",
@@ -204,13 +205,13 @@ class PMTBuilder(gegede.builder.Builder):
         pmt_coated_vol.placements.append(coat_place.name)
 
         # Create PEN foil PMT volume
-        pen_vol = geom.structure.Volume("pmtFoilVol",
+        pen_vol = geom.structure.Volume("volOpDetSensitive_pmtFoilVol",
             material="LAr",
             shape=pen_plate)
-        pen_vol.params.append(("SensDet","PhotonDetector"))
+        #pen_vol.params.append(("SensDet","PhotonDetector"))
 
         pmt_foil_vol = geom.structure.Volume("volPMT_foil",
-            material="LAr", 
+            material="LAr",
             shape=pmt_vol)
 
         # Place PMT and foil in foil volume
@@ -230,19 +231,19 @@ class PMTBuilder(gegede.builder.Builder):
         # Add volumes to builder
         self.add_volume(pmt_coated_vol)
         self.add_volume(pmt_foil_vol)
-    
+
 
     def place_pmts(self, geom, cryo_vol):
         '''Place PMTs in cryostat volume'''
-        
+
         # Loop through all PMT positions
         for i in range(len(self.pmt_positions)):
             k = i + 1
-            
+
             # Determine rotation based on PMT location
             if k in self.params['pmt_left_rotated']:
                 rot = 'rPlus180AboutX'
-            elif k in self.params['pmt_right_rotated']: 
+            elif k in self.params['pmt_right_rotated']:
                 rot = 'rIdentity'
             else:
                 rot = 'rMinus90AboutY'
@@ -260,14 +261,14 @@ class PMTBuilder(gegede.builder.Builder):
                 pos_dict['x'] = self.params['pmt_pos_x']
                 pos = geom.structure.Position(f"posPMT{i}", **pos_dict)
 
-                
+
             # Create and add placement
             place = geom.structure.Placement(f"placePMT{i}",
-            volume=pmt_vol, 
+            volume=pmt_vol,
             pos=pos,
             rot=rot)
-            
 
-            
-            
+
+
+
             cryo_vol.placements.append(place.name)

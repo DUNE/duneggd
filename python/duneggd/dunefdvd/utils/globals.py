@@ -30,11 +30,11 @@ class Params:
     _tpc['wireAngleV'] = Q('30.0deg')
     _tpc['widthPCBActive'] = Q('167.9cm')
 
-    _tpc['borderCRP'] = Q('0.85cm')
+    # CRP borders set so the top CRP array matches the VD layout drawings (ST1369597)
+    _tpc['borderCRP'] = Q('0.645cm')
     _tpc['gapCRP'] = Q('0.5cm')
-    _tpc['borderCRUBottom_z'] = Q('0.8cm')
-    _tpc['borderCRUBottom_y'] = Q('0.85cm')
-    _tpc['borderCRUBottom1side_z'] = Q('0.5cm')
+    _tpc['borderCRUBottom_z'] = Q('0.645cm')
+    _tpc['borderCRUBottom_y'] = Q('0.645cm')
     _tpc['gapCRP'] = Q('0.5cm')
 
     _tpc['nCRM_x'] = 2
@@ -42,13 +42,16 @@ class Params:
     _tpc['nSST2_z'] = 2
     _tpc['nSST_y'] = 2
 
-    _tpc['driftTPCActive'] = Q('650.0cm')
+    _tpc['driftTPCActive'] = Q('641.2cm') # cold
     _tpc['padWidth'] = Q('0.02cm')
 
-    _cryostat['Argon_x'] = Q('1510cm')
-    _cryostat['Argon_y'] = Q('1510cm')
-    _cryostat['Argon_z'] = Q('6200cm')
-    _cryostat['HeightGaseousAr'] = Q('100cm')
+    # liquid and gas buffers between the inner membrane and the TPC (VD detector layout drawings, ST1369597)
+    _cryostat['HeightGaseousAr'] = Q('49cm')
+    _cryostat['xLArBufferTop'] = Q('33.3cm') # liquid surface to top readout plane
+    _cryostat['xLArBuffer'] = Q('29.2cm') # bottom readout plane (cathode for a single drift volume) to floor
+    _cryostat['yLArBuffer'] = Q('79.9cm')
+    _cryostat['zLArBufferUpstream'] = Q('120.8cm') # cryogenics (east) wall
+    _cryostat['zLArBufferDownstream'] = Q('79.9cm') # TCO (west) wall
     _cryostat['SteelThickness'] = Q('0.12cm') # membrane
 
     # support structure dimensions (simple boxes)
@@ -108,9 +111,10 @@ class Params:
     _fieldcage['FieldShaperOuterRadiusSlim'] = Q('0.75cm')
     _fieldcage['FieldShaperTorRad'] = Q('2.3cm')
     _fieldcage['FieldCageArapucaWindowLength'] = Q('670cm')
-    _fieldcage['FieldShaperSeparation'] = Q('6.0cm')
+    _fieldcage['FieldShaperSeparation'] = Q('5.92cm') # keeps 108 shapers per drift
+    _fieldcage['FieldCageToCRPEdge'] = Q('5.1cm') # CRP edge to field-cage inner face (VD layout drawings, ST1369597)
 
-    _cathode['heightCathode'] = Q('4.0cm')
+    _cathode['heightCathode'] = Q('6.1cm')
     _cathode['CathodeBorder'] = Q('4.0cm')
     _cathode['widthCathodeVoid'] = Q('76.35cm')
     _cathode['lengthCathodeVoid'] = Q('67.0cm')
@@ -305,37 +309,18 @@ class Params:
         cls._tpc['TPC_y'] = cls._tpc['widthCRM']
         cls._tpc['TPC_z'] = cls._tpc['lengthCRM']
 
-        if not cls._world['simple'] and (cls._world['workspace'] == 0 or cls._world['workspace'] == 4):
-            # actual dimensions
-            cls._cryostat['Argon_x'] = Q('1400cm')
-            cls._cryostat['HeightGaseousAr'] = Q('5cm')
-
-        # Cryostat parameters
-        if cls._world['workspace'] != 0:
-            if cls._tpc['nCRM_x']== 1:
-                cls._cryostat['Argon_x'] = cls._tpc['driftTPCActive'] + cls._cryostat['HeightGaseousAr'] +                 \
-                                                  cls._tpc['ReadoutPlane'] + Q('100cm')
-            cls._cryostat['Argon_y'] = cls._tpc['widthTPCActive'] + Q('162cm')
-            cls._cryostat['Argon_z'] = cls._tpc['lengthTPCActive'] + Q('214.0cm')
-
-        if cls._tpc['nCRM_x'] == 1:
-            cls._cryostat['xLArBuffer'] = cls._cryostat['Argon_x'] - cls._tpc['driftTPCActive'] -                          \
-                                                 cls._cryostat['HeightGaseousAr'] - cls._tpc['ReadoutPlane'] -             \
-                                                 cls._cathode['heightCathode']
-        else:
-            cls._cryostat['xLArBuffer'] = cls._cryostat['Argon_x'] - 2*cls._tpc['driftTPCActive'] -                        \
-                                                 cls._cryostat['HeightGaseousAr'] - 2*cls._tpc['ReadoutPlane'] -           \
-                                                 cls._cathode['heightCathode']
-        cls._cryostat['yLArBuffer'] = 0.5 * (cls._cryostat['Argon_y'] - cls._tpc['widthTPCActive'])
-        cls._cryostat['zLArBuffer'] = 0.5 * (cls._cryostat['Argon_z'] - cls._tpc['lengthTPCActive'])
+        # Cryostat parameters: the argon volume wraps the TPC with the membrane buffers
+        cls._cryostat['TPCEnclosure_x'] = cls._tpc['nCRM_x']*(cls._tpc['TPC_x'] + cls._tpc['anodePlateWidth']) +           \
+                                          cls._cathode['heightCathode']
+        cls._cryostat['Argon_x'] = cls._cryostat['HeightGaseousAr'] + cls._cryostat['xLArBufferTop'] +                    \
+                                   cls._tpc['nCRM_x']*cls._tpc['TPC_x'] + cls._cathode['heightCathode'] +                 \
+                                   cls._cryostat['xLArBuffer']
+        cls._cryostat['Argon_y'] = cls._tpc['widthTPCActive'] + 2*cls._cryostat['yLArBuffer']
+        cls._cryostat['Argon_z'] = cls._tpc['lengthTPCActive'] + cls._cryostat['zLArBufferUpstream'] +                     \
+                                   cls._cryostat['zLArBufferDownstream']
         cls._cryostat['Cryostat_x'] = cls._cryostat['Argon_x'] + 2*cls._cryostat['SteelThickness']
         cls._cryostat['Cryostat_y'] = cls._cryostat['Argon_y'] + 2*cls._cryostat['SteelThickness']
         cls._cryostat['Cryostat_z'] = cls._cryostat['Argon_z'] + 2*cls._cryostat['SteelThickness']
-        cls._cryostat['TPCEnclosure_x'] = cls._cryostat['Argon_x'] -                                                       \
-                                                 cls._cryostat['HeightGaseousAr'] +                                        \
-                                                 cls._tpc['nCRM_x']*cls._tpc['anodePlateWidth'] -                          \
-                                                 cls._cryostat['xLArBuffer']
-
         cls._cryostat['TPCEnclosure_y'] = cls._tpc['nCRM_y']*(cls._tpc['widthCRM'] + cls._tpc['borderCRP']) +              \
                                           (cls._tpc['nSST_y'] - 1) * cls._tpc['gapSST_y']
         cls._cryostat['TPCEnclosure_ybottom'] = cls._tpc['nCRM_y']*(cls._tpc['widthCRM'] + cls._tpc['borderCRUBottom_y'])+ \
@@ -343,11 +328,16 @@ class Params:
         cls._cryostat['TPCEnclosure_z'] = cls._tpc['nCRM_z']*(cls._tpc['lengthCRM'] + cls._tpc['borderCRP']) +             \
                                           (cls._tpc['nSST1_z'] - 1) * cls._tpc['gapSST1_z'] +                              \
                                           cls._tpc['nSST2_z'] * cls._tpc['gapSST2_z']
-        # TPC enclosure hangs from the gas layer; the cathode sits one CRM below the top anode
+        # bottom CRUs have no superstructures: spaced evenly over the length of the top array
+        cls._tpc['borderCRUBottom1side_z'] = 0.5*(cls._cryostat['TPCEnclosure_z']/cls._tpc['nCRM_z'] - cls._tpc['lengthCRM'])
+        # TPC enclosure sits below the gas and top liquid buffer; the cathode sits one CRM below the top anode
         cls._cryostat['posTPCEncInCryo_x'] = 0.5*(cls._cryostat['Argon_x'] - cls._cryostat['TPCEnclosure_x']) -           \
-                                             cls._cryostat['HeightGaseousAr'] + cls._tpc['anodePlateWidth']
+                                             cls._cryostat['HeightGaseousAr'] - cls._cryostat['xLArBufferTop'] +          \
+                                             cls._tpc['anodePlateWidth']
         cls._cryostat['posCathodeInTPCEnc_x'] = 0.5*cls._cryostat['TPCEnclosure_x'] - cls._tpc['TPC_x'] -                 \
                                                 cls._tpc['anodePlateWidth'] - 0.5*cls._cathode['heightCathode']
+        cls._cryostat['posCathodeInCryo_x'] = cls._cryostat['posTPCEncInCryo_x'] + cls._cryostat['posCathodeInTPCEnc_x']
+        cls._cryostat['posTPCEncInCryo_z'] = 0.5*(cls._cryostat['zLArBufferUpstream'] - cls._cryostat['zLArBufferDownstream'])
 
 
 
@@ -392,18 +382,17 @@ class Params:
         # world origin, as in the perl geometry: cathode centre (mid-drift for a single drift volume) in x,
         # active-volume centre in y, upstream TPC-enclosure face in z
         if cls._tpc['nCRM_x'] == 2:
-            cls._detenc['OriginXSet'] = -(cls._detenc['posCryoInDetEnc_x'] + cls._cryostat['posTPCEncInCryo_x'] +         \
-                                          cls._cryostat['posCathodeInTPCEnc_x'])
+            cls._detenc['OriginXSet'] = -(cls._detenc['posCryoInDetEnc_x'] + cls._cryostat['posCathodeInCryo_x'])
         else:
-            cls._detenc['OriginXSet'] = -(cls._detenc['posCryoInDetEnc_x'] + cls._cryostat['posTPCEncInCryo_x'] +         \
-                                          cls._cryostat['posCathodeInTPCEnc_x'] + 0.5*cls._cathode['heightCathode'] + \
-                                          0.5*cls._tpc['driftTPCActive'])
+            cls._detenc['OriginXSet'] = -(cls._detenc['posCryoInDetEnc_x'] + cls._cryostat['posCathodeInCryo_x'] +        \
+                                          0.5*cls._cathode['heightCathode'] + 0.5*cls._tpc['driftTPCActive'])
         cls._detenc['OriginYSet'] = -cls._detenc['posCryoInDetEnc_y']
-        cls._detenc['OriginZSet'] = -(cls._detenc['posCryoInDetEnc_z'] - 0.5*cls._cryostat['TPCEnclosure_z'])
+        cls._detenc['OriginZSet'] = -(cls._detenc['posCryoInDetEnc_z'] + cls._cryostat['posTPCEncInCryo_z'] -              \
+                                      0.5*cls._cryostat['TPCEnclosure_z'])
 
         # FieldCage parameters
-        cls._fieldcage['FieldShaperLongTubeLength']  =  cls._tpc['lengthTPCActive']
-        cls._fieldcage['FieldShaperShortTubeLength'] =  cls._tpc['widthTPCActive']
+        cls._fieldcage['FieldShaperLongTubeLength']  =  cls._tpc['lengthTPCActive'] + 2*cls._fieldcage['FieldCageToCRPEdge']
+        cls._fieldcage['FieldShaperShortTubeLength'] =  cls._tpc['widthTPCActive'] + 2*cls._fieldcage['FieldCageToCRPEdge']
         cls._fieldcage['FieldShaperLength'] = cls._fieldcage['FieldShaperLongTubeLength'] +                                \
                                                      2*cls._fieldcage['FieldShaperOuterRadius'] +                          \
                                                      2*cls._fieldcage['FieldShaperTorRad']
