@@ -124,7 +124,7 @@ class CryostatBuilder(gegede.builder.Builder):
             # place it inside the cryostat
             tpcenc_x = globals.get("posTPCEncInCryo_x")
             tpcenc_y = Q('0cm')
-            tpcenc_z = Q('0cm')
+            tpcenc_z = globals.get("posTPCEncInCryo_z")
             place_tpcenc = geom.structure.Placement('place'+tpcencBox.name,
                                                     volume = tpcenc_LV,
                                                     pos = geom.structure.Position('pos'+tpcencBox.name,
@@ -349,7 +349,7 @@ class CryostatBuilder(gegede.builder.Builder):
             return cryo_LV
 
         pos_y = -0.5*globals.get("FieldShaperShortTubeLength") - globals.get("FieldShaperTorRad")
-        pos_z = Q('0cm')
+        pos_z = globals.get("posTPCEncInCryo_z")
 
         for i in range(int(globals.get("NFieldShapers").magnitude) + 1):
             dist = i*globals.get("FieldShaperSeparation")
@@ -389,7 +389,7 @@ class CryostatBuilder(gegede.builder.Builder):
         # frames are measured from the top readout plane; the bottom drift mirrors the top about the cathode
         frCenter_x = globals.get("posCathodeInCryo_x") + 0.5*globals.get("heightCathode") +                         \
                      globals.get("TPC_x") - 0.5*globals.get("padWidth")
-        frCenter_z = -19*0.5*globals.get("lengthCathode") +                                                         \
+        frCenter_z = globals.get("posTPCEncInCryo_z") - 19*0.5*globals.get("lengthCathode") +                       \
                      (40 - globals.get("nCRM_z"))*0.25*globals.get("lengthCathode")
 
         name = re.sub(r'vol', '', arapuca_LV.name)
@@ -479,7 +479,7 @@ class CryostatBuilder(gegede.builder.Builder):
             return cryo_LV
 
         frCenter_x = 0.5*globals.get("TPC_x") - 0.5*globals.get("padWidth")
-        frCenter_z = -19*0.5*globals.get("lengthCathode") +                                                         \
+        frCenter_z = globals.get("posTPCEncInCryo_z") - 19*0.5*globals.get("lengthCathode") +                       \
                      (40 - globals.get("nCRM_z"))*0.25*globals.get("lengthCathode")
 
         name = re.sub(r'vol', '', arapuca_LV.name)

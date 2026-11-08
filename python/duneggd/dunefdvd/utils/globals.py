@@ -50,7 +50,8 @@ class Params:
     _cryostat['xLArBufferTop'] = Q('33.3cm') # liquid surface to top readout plane
     _cryostat['xLArBuffer'] = Q('29.2cm') # bottom readout plane (cathode for a single drift volume) to floor
     _cryostat['yLArBuffer'] = Q('79.9cm')
-    _cryostat['zLArBuffer'] = Q('100.35cm')
+    _cryostat['zLArBufferUpstream'] = Q('120.8cm') # cryogenics (east) wall
+    _cryostat['zLArBufferDownstream'] = Q('79.9cm') # TCO (west) wall
     _cryostat['SteelThickness'] = Q('0.12cm') # membrane
 
     # support structure dimensions (simple boxes)
@@ -282,7 +283,8 @@ class Params:
                                    cls._tpc['nCRM_x']*cls._tpc['TPC_x'] + cls._cathode['heightCathode'] +                 \
                                    cls._cryostat['xLArBuffer']
         cls._cryostat['Argon_y'] = cls._tpc['widthTPCActive'] + 2*cls._cryostat['yLArBuffer']
-        cls._cryostat['Argon_z'] = cls._tpc['lengthTPCActive'] + 2*cls._cryostat['zLArBuffer']
+        cls._cryostat['Argon_z'] = cls._tpc['lengthTPCActive'] + cls._cryostat['zLArBufferUpstream'] +                     \
+                                   cls._cryostat['zLArBufferDownstream']
         cls._cryostat['Cryostat_x'] = cls._cryostat['Argon_x'] + 2*cls._cryostat['SteelThickness']
         cls._cryostat['Cryostat_y'] = cls._cryostat['Argon_y'] + 2*cls._cryostat['SteelThickness']
         cls._cryostat['Cryostat_z'] = cls._cryostat['Argon_z'] + 2*cls._cryostat['SteelThickness']
@@ -302,6 +304,7 @@ class Params:
         cls._cryostat['posCathodeInTPCEnc_x'] = 0.5*cls._cryostat['TPCEnclosure_x'] - cls._tpc['TPC_x'] -                 \
                                                 cls._tpc['anodePlateWidth'] - 0.5*cls._cathode['heightCathode']
         cls._cryostat['posCathodeInCryo_x'] = cls._cryostat['posTPCEncInCryo_x'] + cls._cryostat['posCathodeInTPCEnc_x']
+        cls._cryostat['posTPCEncInCryo_z'] = 0.5*(cls._cryostat['zLArBufferUpstream'] - cls._cryostat['zLArBufferDownstream'])
 
 
 
@@ -351,7 +354,8 @@ class Params:
             cls._detenc['OriginXSet'] = -(cls._detenc['posCryoInDetEnc_x'] + cls._cryostat['posCathodeInCryo_x'] +        \
                                           0.5*cls._cathode['heightCathode'] + 0.5*cls._tpc['driftTPCActive'])
         cls._detenc['OriginYSet'] = -cls._detenc['posCryoInDetEnc_y']
-        cls._detenc['OriginZSet'] = -(cls._detenc['posCryoInDetEnc_z'] - 0.5*cls._cryostat['TPCEnclosure_z'])
+        cls._detenc['OriginZSet'] = -(cls._detenc['posCryoInDetEnc_z'] + cls._cryostat['posTPCEncInCryo_z'] -              \
+                                      0.5*cls._cryostat['TPCEnclosure_z'])
 
         # FieldCage parameters
         cls._fieldcage['FieldShaperLongTubeLength']  =  cls._tpc['lengthTPCActive']
