@@ -44,8 +44,10 @@ class SupportEncBuilder(gegede.builder.Builder):
         self.add_volume(supportencLV)
         supportencLV = self.construct_place_IBeams(geom, supportencLV)
         supportencLV = self.construct_place_Belts(geom, supportencLV)
-        supportencLV = self.construct_place_ShieldingFloors(geom, supportencLV)
-        supportencLV = self.construct_place_ShieldingWalls(geom, supportencLV)
+        # without shielding the envelope keeps its size, so the cryostat and cavern layout don't move
+        if globals.get("Shielding_switch"):
+            supportencLV = self.construct_place_ShieldingFloors(geom, supportencLV)
+            supportencLV = self.construct_place_ShieldingWalls(geom, supportencLV)
 
         cryostat = self.get_builder("CryostatEnc")
         cryostatLV = cryostat.get_volume()
