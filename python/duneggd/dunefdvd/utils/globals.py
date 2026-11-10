@@ -16,6 +16,7 @@ class Params:
     # set the long list of defaults
     _world['FieldCage_switch'] = True
     _world['Cathode_switch'] = True
+    _world['Shielding_switch'] = False # shield walls and floor shielding outside the I-beams
     _world['workspace'] = 0
     _world['pdsconfig'] = 0
     _world['wires'] = True
